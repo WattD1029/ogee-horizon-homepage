@@ -10,6 +10,8 @@ tags:
   - figma
   - slideshow
   - responsive-images
+  - video
+  - reduced-motion
 ---
 
 # Build an Art-Directed Figma Hero on Horizon Slideshow Primitives
@@ -25,6 +27,11 @@ The existing Horizon `hero` section supports static media compositions, while
 the existing `slideshow` section supports carousel behavior but only one
 background media item per standard slide.
 
+The carousel later needed a Shopify-hosted video slide with the same editable
+copy and CTA model. The video had to play only while selected, remain muted,
+respect reduced-motion preferences, preserve a user pause across navigation,
+and keep the original image slide as the initial LCP candidate.
+
 ## Symptoms
 
 - A single background image cannot preserve the independent model and product
@@ -33,6 +40,10 @@ background media item per standard slide.
 - The mobile layout hides the description and places copy above the imagery.
 - Global theme typography and button radius do not exactly match the Figma file.
 - Editing the shared `_slide` block would affect every standard slideshow.
+- A video that plays outside its selected slide wastes bandwidth and creates
+  motion the visitor cannot see.
+- Removing native video controls requires an equivalent accessible Play/Pause
+  control that matches the campaign layout.
 
 ## What Didn't Work
 
@@ -75,6 +86,19 @@ store and can bypass localized Shopify Markets routing. A product picker is the
 preferred destination. When a preview store does not contain the product, store
 only the product handle and build the fallback from `routes.root_url`.
 
+### Treating video autoplay as a one-time attribute
+
+An `autoplay` attribute cannot express slideshow selection, hidden-tab state,
+reduced-motion preferences, autoplay rejection, or a user pause that should
+survive navigating away and back. Playback needs a small controller tied to the
+carousel's selection event.
+
+### Loading the MP4 from the theme repository
+
+Committing campaign MP4 files bypasses Shopify's media management and
+transcoding workflow and increases repository weight. Use a Shopify `video`
+setting and upload the production file through Content > Files.
+
 ## Solution
 
 Create a dedicated section and dedicated theme block:
@@ -109,6 +133,24 @@ The block owns:
 - Desktop and mobile content layout.
 - Product-first CTA routing with a localized product-handle fallback.
 - Separate desktop and mobile button hotspot coordinates.
+- Shopify video plus optional desktop and mobile poster images.
+- A visible HTML copy and CTA overlay for video campaigns.
+
+Add a narrow `assets/ogee-hero-video.js` component that consumes the shared
+`slideshow:select` event. Track whether the slide is selected, whether the
+document is visible, whether reduced motion is requested, and whether the user
+explicitly paused playback.
+
+Render the video muted, looping, inline, without native controls, and with
+`preload="metadata"`. Keep the poster visible until playback actually starts.
+Pause immediately when another slide is selected or the document becomes
+hidden. Resume only when the slide is selected, motion is allowed, and the user
+has not explicitly paused it. With reduced motion enabled, require the custom
+Play control. Catch rejected `video.play()` promises and retain the poster and
+Play state.
+
+Keep the first image slide in the homepage template and let merchants add the
+Shopify-hosted video as a separate later slide. Do not commit the MP4.
 
 Use section-scoped CSS variables for merchant-editable single-property values.
 Keep structural differences in responsive CSS classes.
@@ -167,6 +209,16 @@ When any slide uses full-bleed artwork, make the section's effective height mode
 artwork and transparent hotspot in the same coordinate system. Layered-only
 slides can continue using fixed height.
 
+Apply the same ratio rule to campaign video slides when the video and posters
+use a known artwork ratio. Use `object-fit: cover` for desktop campaign framing
+and `contain` on mobile when preserving the entire frame is more important than
+filling the container.
+
+The video controller remains independent of slideshow autoplay. Model playback
+as derived state: selected slide, visible document, motion allowed, and not
+user-paused. This prevents background playback and avoids overriding a visitor's
+explicit pause when they return to the slide.
+
 ## Prevention
 
 - Inspect existing theme primitives before creating carousel JavaScript.
@@ -176,7 +228,23 @@ slides can continue using fixed height.
 - Preserve transparent image aspect ratios when translating Figma bounds.
 - Give controls at least a 44px interactive area even when the visible progress
   indicator is only 1px high.
+- Keep campaign CTA hit targets at least 44px tall even when the visual button
+  in the reference is shorter.
 - Avoid autoplay unless an accessible pause control is present.
+- Do not inherit mobile copy visibility blindly from another media layout. If a
+  video reference includes description text, explicitly override shared mobile
+  rules that hide descriptions.
+- White copy over moving video needs a stable contrast treatment. A text shadow
+  alone is not sufficient across bright frames; use a tested scrim, gradient,
+  or per-campaign overlay.
+- Pause video when its slide is deselected or the document becomes hidden.
+- Preserve a user-initiated pause when navigating away and back.
+- Treat reduced motion as poster-first and require an explicit Play action.
+- Catch rejected playback promises and leave the poster and Play state visible.
+- Keep campaign video muted and use localized Play/Pause labels.
+- Keep the first image slide as the LCP candidate and avoid eager-loading later
+  video assets.
+- Do not commit production campaign MP4 files to the theme repository.
 - Hide or omit controls when the section contains only one slide.
 - Keep the homepage JSON unchanged until production assets and links are ready.
 - Verify desktop, tablet, and mobile in a Shopify preview before activating the
@@ -210,6 +278,7 @@ slides can continue using fixed height.
 
 - [Ogee hero slideshow section](../../../sections/ogee-hero-slideshow.liquid)
 - [Ogee hero slide block](../../../blocks/_ogee-hero-slide.liquid)
+- [Ogee hero video controller](../../../assets/ogee-hero-video.js)
 - [Shared slideshow section](../../../sections/slideshow.liquid)
 - [Shared slideshow runtime](../../../assets/slideshow.js)
 
@@ -218,6 +287,10 @@ slides can continue using fixed height.
 When a Figma hero combines campaign-specific art direction with standard
 carousel behavior, build a narrow presentation block on top of the theme's
 existing interaction primitive. Reuse behavior; isolate composition.
+
+For video slides, model autoplay as derived state rather than an HTML attribute:
+selected slide + visible document + motion allowed + not user-paused. Only show
+the moving frame after playback succeeds.
 
 ## Compound Summary
 
@@ -233,3 +306,10 @@ accessible fallback. Before launch, select the local Shopify product so Shopify
 owns the destination object rather than relying on the handle fallback. Exact
 Chronicle Display and Helvetica Neue fidelity also depends on the store having
 licensed fonts configured.
+
+The same dedicated block can support Shopify-hosted video without changing the
+shared slideshow runtime. A small controller coordinates selection, document
+visibility, reduced motion, autoplay rejection, and remembered user pauses.
+Review of the first overlay revision added three launch guardrails: explicitly
+show reference-required mobile description text, retain 44px CTA hit targets,
+and provide stable contrast for white copy over changing video frames.

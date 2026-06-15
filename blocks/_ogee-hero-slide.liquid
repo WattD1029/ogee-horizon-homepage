@@ -11,6 +11,9 @@
   assign product_image = block_settings.image_2
   assign full_bleed_image = block_settings.full_bleed_image
   assign full_bleed_image_mobile = block_settings.full_bleed_image_mobile
+  assign video = block_settings.video
+  assign video_poster = block_settings.video_poster
+  assign video_poster_mobile = block_settings.video_poster_mobile
   assign has_full_bleed_media = false
   assign cta_url = block_settings.link
   assign cta_accessible_label = block_settings.button_label
@@ -41,6 +44,10 @@
 
   if full_bleed_image == blank
     assign full_bleed_image = full_bleed_image_mobile
+  endif
+
+  if video_poster == blank
+    assign video_poster = video_poster_mobile
   endif
 
   if full_bleed_image != blank
@@ -80,6 +87,8 @@
   assign slide_class = 'ogee-hero-slide'
   if media_layout == 'full_bleed'
     assign slide_class = slide_class | append: ' ogee-hero-slide--full-bleed'
+  elsif media_layout == 'video'
+    assign slide_class = slide_class | append: ' ogee-hero-slide--video'
   endif
 %}
 
@@ -131,6 +140,69 @@
     </picture>
   {% else %}
     {{ 'lifestyle-1' | placeholder_svg_tag: 'ogee-hero-slide__full-bleed-image placeholder-svg' }}
+  {% endif %}
+{% endcapture %}
+
+{% capture video_poster_media %}
+  {% if video_poster != blank %}
+    <picture>
+      {% if video_poster_mobile != blank %}
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {% for image_width in mobile_widths_array %}
+              {{ video_poster_mobile | image_url: width: image_width }} {{ image_width }}w{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          "
+          sizes="100vw"
+          width="{{ video_poster_mobile.width }}"
+          height="{{ video_poster_mobile.height }}"
+        >
+      {% endif %}
+      {{
+        video_poster
+        | image_url: width: 2560
+        | image_tag:
+          widths: desktop_widths,
+          sizes: '100vw',
+          loading: 'lazy',
+          fetchpriority: 'low',
+          alt: '',
+          class: 'ogee-hero-slide__video-poster-image'
+      }}
+    </picture>
+  {% elsif block_settings.bundled_campaign == 'crystal_contour' %}
+    <picture>
+      <source
+        media="(max-width: 749px)"
+        srcset="{{ 'ogee-crystal-contour-hero-mobile.jpg' | asset_url }}"
+        width="780"
+        height="624"
+      >
+      <img
+        src="{{ 'ogee-crystal-contour-hero-desktop.jpg' | asset_url }}"
+        alt=""
+        class="ogee-hero-slide__video-poster-image"
+        width="3840"
+        height="1152"
+        loading="lazy"
+        fetchpriority="low"
+      >
+    </picture>
+  {% elsif video.preview_image != blank %}
+    {{
+      video.preview_image
+      | image_url: width: 2560
+      | image_tag:
+        widths: desktop_widths,
+        sizes: '100vw',
+        loading: 'lazy',
+        fetchpriority: 'low',
+        alt: '',
+        class: 'ogee-hero-slide__video-poster-image'
+    }}
+  {% else %}
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'ogee-hero-slide__video-poster-image placeholder-svg' }}
   {% endif %}
 {% endcapture %}
 
@@ -239,6 +311,78 @@
         {% endif %}
       ></a>
     {% endif %}
+  {% elsif media_layout == 'video' %}
+    <ogee-hero-video-component class="ogee-hero-slide__video-component">
+      <div class="ogee-hero-slide__video-copy-panel">
+        <div class="ogee-hero-slide__copy">
+          {% if block_settings.eyebrow != blank %}
+            <p class="ogee-hero-slide__eyebrow">{{ block_settings.eyebrow | escape }}</p>
+          {% endif %}
+
+          {% if block_settings.heading != blank %}
+            <{{ heading_tag }} class="ogee-hero-slide__heading">{{ block_settings.heading | escape }}</{{ heading_tag }}>
+          {% endif %}
+
+          {% if block_settings.description != blank %}
+            <p class="ogee-hero-slide__description">{{ block_settings.description | escape }}</p>
+          {% endif %}
+        </div>
+
+        {% if block_settings.button_label != blank %}
+          <a
+            class="ogee-hero-slide__button"
+            {% if cta_url != blank %}
+              href="{{ cta_url }}"
+            {% else %}
+              role="link"
+              aria-disabled="true"
+            {% endif %}
+            {% if block_settings.open_in_new_tab %}
+              target="_blank"
+              rel="noopener"
+            {% endif %}
+          >
+            {{ block_settings.button_label | escape }}
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="ogee-hero-slide__video-media">
+        <div class="ogee-hero-slide__video-poster" ref="poster" aria-hidden="true">
+          {{ video_poster_media }}
+        </div>
+
+        {% if video != blank %}
+          {{
+            video
+            | video_tag:
+              autoplay: false,
+              loop: true,
+              muted: true,
+              controls: false,
+              playsinline: true,
+              preload: 'metadata',
+              class: 'ogee-hero-slide__video',
+              ref: 'video'
+          }}
+        {% endif %}
+      </div>
+
+      {% if video != blank %}
+        <button
+          class="ogee-hero-slide__video-toggle"
+          type="button"
+          ref="toggle"
+          on:click="/togglePlayback"
+          aria-label="{{ 'accessibility.play_video' | t | escape }}"
+          data-play-label="{{ 'accessibility.play_video' | t | escape }}"
+          data-pause-label="{{ 'accessibility.pause_video' | t | escape }}"
+        >
+          <span ref="playIcon" aria-hidden="true">{{- 'icon-play.svg' | inline_asset_content -}}</span>
+          <span ref="pauseIcon" aria-hidden="true" hidden>{{- 'icon-pause.svg' | inline_asset_content -}}</span>
+        </button>
+      {% endif %}
+    </ogee-hero-video-component>
   {% else %}
     <div class="ogee-hero-slide__media ogee-hero-slide__media--model" aria-hidden="true">
       {{ model_media }}
@@ -462,6 +606,131 @@
     outline-offset: 3px;
   }
 
+  .ogee-hero-slide__video-component {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: 100%;
+    height: 100%;
+    background: var(--ogee-hero-background);
+  }
+
+  .ogee-hero-slide__video-copy-panel {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: min(86%, 440px);
+    padding: 0;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 1px 10px rgb(0 0 0 / 35%);
+    transform: translateX(-50%);
+  }
+
+  .ogee-hero-slide--video .ogee-hero-slide__copy {
+    gap: 3px;
+  }
+
+  .ogee-hero-slide--video .ogee-hero-slide__eyebrow,
+  .ogee-hero-slide--video .ogee-hero-slide__heading,
+  .ogee-hero-slide--video .ogee-hero-slide__description {
+    color: #fff;
+  }
+
+  .ogee-hero-slide--video .ogee-hero-slide__eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+
+  .ogee-hero-slide--video .ogee-hero-slide__heading {
+    font-size: clamp(1.55rem, 7vw, 1.875rem);
+    line-height: 1.05;
+  }
+
+  .ogee-hero-slide--video .ogee-hero-slide__button {
+    width: 110px;
+    min-height: 32px;
+    padding-inline: 16px;
+    font-size: 0.6875rem;
+  }
+
+  .ogee-hero-slide__video-media {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .ogee-hero-slide__video-poster,
+  .ogee-hero-slide__video-poster picture,
+  .ogee-hero-slide__video-poster-image,
+  .ogee-hero-slide__video {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ogee-hero-slide__video-poster {
+    z-index: 1;
+    opacity: 1;
+    transition: opacity 180ms ease;
+  }
+
+  .ogee-hero-slide__video-poster-image,
+  .ogee-hero-slide__video {
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .ogee-hero-slide__video {
+    z-index: 0;
+    opacity: 0;
+  }
+
+  .ogee-hero-slide__video-component[playing] .ogee-hero-slide__video {
+    opacity: 1;
+  }
+
+  .ogee-hero-slide__video-component[playing] .ogee-hero-slide__video-poster {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ogee-hero-slide__video-toggle {
+    position: absolute;
+    bottom: 0;
+    left: 18px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    padding: 12px;
+    color: var(--ogee-hero-navigation-color);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  .ogee-hero-slide__video-toggle span,
+  .ogee-hero-slide__video-toggle svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ogee-hero-slide__video-toggle:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: -4px;
+  }
+
   @media screen and (min-width: 750px) {
     .ogee-hero-slide__campaign-cta {
       top: var(--campaign-cta-y);
@@ -509,6 +778,91 @@
     .ogee-hero-slide__description {
       display: block;
     }
+
+    .ogee-hero-slide__video-component {
+      display: block;
+    }
+
+    .ogee-hero-slide__video-copy-panel {
+      top: clamp(22px, 4.8vw, 72px);
+      left: 50%;
+      z-index: 2;
+      align-items: center;
+      gap: 18px;
+      width: min(440px, 40vw);
+      padding: 0;
+      background: transparent;
+      backdrop-filter: none;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    .ogee-hero-slide--video .ogee-hero-slide__copy {
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ogee-hero-slide--video .ogee-hero-slide__eyebrow {
+      font-size: 0.75rem;
+    }
+
+    .ogee-hero-slide--video .ogee-hero-slide__heading {
+      font-size: clamp(2rem, 2.75vw, 2.75rem);
+      line-height: 1.08;
+    }
+
+    .ogee-hero-slide__video-media,
+    .ogee-hero-slide__video-poster,
+    .ogee-hero-slide__video-poster picture,
+    .ogee-hero-slide__video-poster-image,
+    .ogee-hero-slide__video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ogee-hero-slide__video-poster-image,
+    .ogee-hero-slide__video {
+      object-fit: cover;
+    }
+
+    .ogee-hero-slide__video-toggle {
+      left: clamp(18px, 2vw, 32px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ogee-hero-slide__video-poster {
+      transition: none;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 899px) {
+    .ogee-hero-slide__video-copy-panel {
+      top: 10px;
+      left: 50%;
+      gap: 8px;
+      width: 360px;
+      padding: 0;
+    }
+
+    .ogee-hero-slide--video .ogee-hero-slide__copy {
+      gap: 2px;
+    }
+
+    .ogee-hero-slide--video .ogee-hero-slide__heading {
+      font-size: 1.75rem;
+    }
+
+    .ogee-hero-slide--video .ogee-hero-slide__description {
+      font-size: 0.8125rem;
+      line-height: 1.25;
+    }
+
+    .ogee-hero-slide--video .ogee-hero-slide__button {
+      min-height: 32px;
+    }
   }
 {% endstylesheet %}
 
@@ -529,9 +883,31 @@
         {
           "value": "full_bleed",
           "label": "Full-bleed campaign"
+        },
+        {
+          "value": "video",
+          "label": "Video"
         }
       ],
       "default": "layered"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "visible_if": "{{ block.settings.media_layout == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster",
+      "label": "Desktop video poster",
+      "visible_if": "{{ block.settings.media_layout == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster_mobile",
+      "label": "Mobile video poster",
+      "visible_if": "{{ block.settings.media_layout == 'video' }}"
     },
     {
       "type": "image_picker",
@@ -560,7 +936,7 @@
         }
       ],
       "default": "none",
-      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' or block.settings.media_layout == 'video' }}"
     },
     {
       "type": "header",

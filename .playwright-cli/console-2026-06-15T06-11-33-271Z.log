@@ -1,0 +1,58 @@
+[    1226ms] [ERROR] Access to script at 'http://cdn.shopify.com/shopifycloud/storefront/assets/storefront/origin_trials-c173577b.js' from origin 'http://127.0.0.1:9292' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://127.0.0.1:9292/:0
+[    1226ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://cdn.shopify.com/shopifycloud/storefront/assets/storefront/origin_trials-c173577b.js:0
+[    1295ms] [INFO] [HotReload] Connected @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:299
+[    1440ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[    1632ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ogee-li63n1as.myshopify.com/api/2026-01/graphql.json:0
+[    1632ms] [ERROR] [shopify-account] Menu "customer-account-main-menu" not found in Storefront API. Falling back to default menu items. @ https://cdn.shopify.com/storefront/web-components/account.js:0
+[    1721ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:9292/favicon.ico:0
+[    1856ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.colors_D3qBuvXW.esm.js:0
+[    1867ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.index_D2TDKUjp.esm.js:0
+[    2126ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[    2547ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://shop.app/accounts/pre_auth?client_id=e81a11f1-64df-426b-88d4-9e73d00f80b6&analytics_trace_id=1e6b36f8-d772-4214-8a3b-2338a6edc425&flow=embed&flow_version=account_menu&target_origin=http%3A%2F%2F127.0.0.1%3A9292&storefront_domain=https%3A%2F%2Fogee-li63n1as.myshopify.com&scope=openid+email%3Averified+pay%3Asession_token+profile+shop%3Aaccount_uuid&locale=en:0
+[   15450ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[   42292ms] [INFO] [HotReload] Updated sections for "sections/header-announcements.liquid": [header_announcements_9jGBFp] @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:145
+[   44522ms] [INFO] [HotReload] Full reload: blocks/_announcement.liquid @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:55
+[   45748ms] [ERROR] [HotReload] Connection closed by the server, attempting to reconnect... @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:304
+[   45901ms] [INFO] [HotReload] Connected @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:299
+[   46112ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ogee-li63n1as.myshopify.com/api/2026-01/graphql.json:0
+[   46112ms] [ERROR] [shopify-account] Menu "customer-account-main-menu" not found in Storefront API. Falling back to default menu items. @ https://cdn.shopify.com/storefront/web-components/account.js:0
+[   46194ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.colors_D3qBuvXW.esm.js:0
+[   46202ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.index_D2TDKUjp.esm.js:0
+[   46762ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://shop.app/accounts/pre_auth?client_id=e81a11f1-64df-426b-88d4-9e73d00f80b6&analytics_trace_id=9ffe45ea-2fe7-4220-b604-3648348e0e88&flow=embed&flow_version=account_menu&target_origin=http%3A%2F%2F127.0.0.1%3A9292&storefront_domain=https%3A%2F%2Fogee-li63n1as.myshopify.com&scope=openid+email%3Averified+pay%3Asession_token+profile+shop%3Aaccount_uuid&locale=en:0
+[   47380ms] [INFO] [HotReload] Full reload: assets/announcement-bar.js @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:55
+[   48313ms] [ERROR] [HotReload] Connection closed by the server, attempting to reconnect... @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:304
+[   48426ms] [INFO] [HotReload] Connected @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:299
+[   48613ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ogee-li63n1as.myshopify.com/api/2026-01/graphql.json:0
+[   48614ms] [ERROR] [shopify-account] Menu "customer-account-main-menu" not found in Storefront API. Falling back to default menu items. @ https://cdn.shopify.com/storefront/web-components/account.js:0
+[   48726ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.colors_D3qBuvXW.esm.js:0
+[   48734ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.index_D2TDKUjp.esm.js:0
+[   49403ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://shop.app/accounts/pre_auth?client_id=e81a11f1-64df-426b-88d4-9e73d00f80b6&analytics_trace_id=a6a6ecc2-8c91-4d5a-a023-5c0421dd71c4&flow=embed&flow_version=account_menu&target_origin=http%3A%2F%2F127.0.0.1%3A9292&storefront_domain=https%3A%2F%2Fogee-li63n1as.myshopify.com&scope=openid+email%3Averified+pay%3Asession_token+profile+shop%3Aaccount_uuid&locale=en:0
+[   61159ms] [INFO] [HotReload] Full reload: assets/announcement-bar.js @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:55
+[   62042ms] [ERROR] [HotReload] Connection closed by the server, attempting to reconnect... @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:304
+[   62190ms] [INFO] [HotReload] Connected @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:299
+[   62375ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ogee-li63n1as.myshopify.com/api/2026-01/graphql.json:0
+[   62376ms] [ERROR] [shopify-account] Menu "customer-account-main-menu" not found in Storefront API. Falling back to default menu items. @ https://cdn.shopify.com/storefront/web-components/account.js:0
+[   62492ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.colors_D3qBuvXW.esm.js:0
+[   62499ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.index_D2TDKUjp.esm.js:0
+[   63080ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://shop.app/accounts/pre_auth?client_id=e81a11f1-64df-426b-88d4-9e73d00f80b6&analytics_trace_id=7146e78d-f934-4aa7-96d7-56e478f97947&flow=embed&flow_version=account_menu&target_origin=http%3A%2F%2F127.0.0.1%3A9292&storefront_domain=https%3A%2F%2Fogee-li63n1as.myshopify.com&scope=openid+email%3Averified+pay%3Asession_token+profile+shop%3Aaccount_uuid&locale=en:0
+[   73306ms] [ERROR] [HotReload] Connection closed by the server, attempting to reconnect... @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:304
+[   73427ms] [INFO] [HotReload] Connected @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:299
+[   73436ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[   73629ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ogee-li63n1as.myshopify.com/api/2026-01/graphql.json:0
+[   73630ms] [ERROR] [shopify-account] Menu "customer-account-main-menu" not found in Storefront API. Falling back to default menu items. @ https://cdn.shopify.com/storefront/web-components/account.js:0
+[   73772ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.colors_D3qBuvXW.esm.js:0
+[   73779ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.index_D2TDKUjp.esm.js:0
+[   74089ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[   74352ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://shop.app/accounts/pre_auth?client_id=e81a11f1-64df-426b-88d4-9e73d00f80b6&analytics_trace_id=a220c06d-a62e-4dd5-af4e-85bb4984abd8&flow=embed&flow_version=account_menu&target_origin=http%3A%2F%2F127.0.0.1%3A9292&storefront_domain=https%3A%2F%2Fogee-li63n1as.myshopify.com&scope=openid+email%3Averified+pay%3Asession_token+profile+shop%3Aaccount_uuid&locale=en:0
+[  108441ms] [ERROR] [HotReload] Connection closed by the server, attempting to reconnect... @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:304
+[  108554ms] [INFO] [HotReload] Connected @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:299
+[  108745ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ogee-li63n1as.myshopify.com/api/2026-01/graphql.json:0
+[  108745ms] [ERROR] [shopify-account] Menu "customer-account-main-menu" not found in Storefront API. Falling back to default menu items. @ https://cdn.shopify.com/storefront/web-components/account.js:0
+[  108867ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.colors_D3qBuvXW.esm.js:0
+[  108875ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ https://cdn.shopify.com/shopifycloud/shop-js/modules/v2/chunk.index_D2TDKUjp.esm.js:0
+[  109498ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://shop.app/accounts/pre_auth?client_id=e81a11f1-64df-426b-88d4-9e73d00f80b6&analytics_trace_id=2229f531-befd-48f2-a721-892e1fb60398&flow=embed&flow_version=account_menu&target_origin=http%3A%2F%2F127.0.0.1%3A9292&storefront_domain=https%3A%2F%2Fogee-li63n1as.myshopify.com&scope=openid+email%3Averified+pay%3Asession_token+profile+shop%3Aaccount_uuid&locale=en:0
+[  114569ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[  114597ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[  115136ms] [VERBOSE] Rendering was performed in a subtree hidden by content-visibility. @ :3180
+[  237195ms] [ERROR] [HotReload] Connection closed by the server, attempting to reconnect... @ http://127.0.0.1:9292/cdn/shopifycloud/theme-hot-reload/theme-hot-reload.js:304
+[  237195ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ http://127.0.0.1:9292/:0

@@ -1,0 +1,122 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#MainContent"
+  - generic [ref=e3]:
+    - complementary [ref=e6]:
+      - paragraph [ref=e10]: Welcome to our store
+    - banner [ref=e11]:
+      - generic [ref=e12]:
+        - heading "Ogee" [level=1] [ref=e14]
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - link "Ogee" [ref=e18] [cursor=pointer]:
+              - /url: /
+              - generic [ref=e19]: Ogee
+            - navigation "Primary" [ref=e22]:
+              - list [ref=e24]:
+                - generic:
+                  - link "Home" [ref=e25] [cursor=pointer]:
+                    - /url: /
+                    - generic [ref=e26]: Home
+                  - link "Catalog" [ref=e27] [cursor=pointer]:
+                    - /url: /collections/all
+                    - generic [ref=e28]: Catalog
+                  - link "Contact" [ref=e29] [cursor=pointer]:
+                    - /url: /pages/contact
+                    - generic [ref=e30]: Contact
+          - generic [ref=e31]:
+            - button "Search" [ref=e33] [cursor=pointer]:
+              - generic:
+                - img
+            - generic [ref=e34]:
+              - button "Account" [ref=e39] [cursor=pointer]:
+                - img [ref=e41]
+              - button "Cart" [ref=e44] [cursor=pointer]:
+                - generic [ref=e45]:
+                  - generic:
+                    - img
+              - status [ref=e48]
+  - main [ref=e49]:
+    - generic [ref=e51]:
+      - heading "Slideshow" [level=2] [ref=e52]
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - paragraph [ref=e58]: The art of contour
+          - heading "Free Blender Brush" [level=1] [ref=e59]
+          - paragraph [ref=e60]: With every Crystal Contour Collection purchase.
+        - 'link "Shop now: Free Blender Brush" [ref=e61] [cursor=pointer]':
+          - /url: /products/sculpted-face-stick-bundle-3pc
+    - generic [ref=e64]:
+      - heading "Products" [level=3] [ref=e69]
+      - generic [ref=e70]:
+        - generic [ref=e75]:
+          - img [ref=e81]
+          - heading "Product title" [level=3] [ref=e92]
+          - generic [ref=e95]: $19.99
+        - generic [ref=e100]:
+          - img [ref=e106]
+          - heading "Product title" [level=3] [ref=e122]
+          - generic [ref=e125]: $19.99
+        - generic [ref=e130]:
+          - img [ref=e136]
+          - heading "Product title" [level=3] [ref=e150]
+          - generic [ref=e153]: $19.99
+        - generic [ref=e158]:
+          - img [ref=e164]
+          - heading "Product title" [level=3] [ref=e175]
+          - generic [ref=e178]: $19.99
+        - generic [ref=e183]:
+          - img [ref=e189]
+          - heading "Product title" [level=3] [ref=e205]
+          - generic [ref=e208]: $19.99
+        - generic [ref=e213]:
+          - img [ref=e219]
+          - heading "Product title" [level=3] [ref=e233]
+          - generic [ref=e236]: $19.99
+        - generic [ref=e241]:
+          - img [ref=e247]
+          - heading "Product title" [level=3] [ref=e258]
+          - generic [ref=e261]: $19.99
+        - generic [ref=e266]:
+          - img [ref=e272]
+          - heading "Product title" [level=3] [ref=e288]
+          - generic [ref=e291]: $19.99
+  - contentinfo [ref=e292]:
+    - generic [ref=e296]:
+      - generic [ref=e298]:
+        - heading "Join our email list" [level=2] [ref=e300]
+        - paragraph [ref=e302]: Get exclusive deals and early access to new products.
+        - generic [ref=e305]:
+          - generic [ref=e306]: Email
+          - textbox "Email" [ref=e307]:
+            - /placeholder: Email address
+          - button "Sign up" [ref=e308] [cursor=pointer]
+      - group [ref=e310]:
+        - generic "Footer menu" [ref=e311]
+        - navigation "Footer menu" [ref=e312]:
+          - list [ref=e313]:
+            - listitem [ref=e314]:
+              - link "Search" [ref=e315] [cursor=pointer]:
+                - /url: /search
+      - group [ref=e317]:
+        - generic "Main menu" [ref=e318]
+        - navigation "Main menu" [ref=e319]:
+          - list [ref=e320]:
+            - listitem [ref=e321]:
+              - link "Home" [ref=e322] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e323]:
+              - link "Catalog" [ref=e324] [cursor=pointer]:
+                - /url: /collections/all
+            - listitem [ref=e325]:
+              - link "Contact" [ref=e326] [cursor=pointer]:
+                - /url: /pages/contact
+    - generic [ref=e330]:
+      - generic [ref=e332]:
+        - text: © 2026
+        - link "Ogee" [ref=e333] [cursor=pointer]:
+          - /url: /
+        - text: ","
+        - link "Powered by Shopify" [ref=e334] [cursor=pointer]:
+          - /url: https://www.shopify.com?utm_campaign=poweredby&utm_medium=shopify&utm_source=onlinestore
+      - button "Terms and Policies" [ref=e336] [cursor=pointer]
