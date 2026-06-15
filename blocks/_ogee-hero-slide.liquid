@@ -1,0 +1,765 @@
+{% doc %}
+  Renders an Ogee homepage hero slide with independently positioned model and product imagery.
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign block_index = section.blocks | find_index: 'id', block.id
+  assign media_layout = block_settings.media_layout | default: 'layered'
+
+  assign model_image = block_settings.image_1
+  assign product_image = block_settings.image_2
+  assign full_bleed_image = block_settings.full_bleed_image
+  assign full_bleed_image_mobile = block_settings.full_bleed_image_mobile
+  assign has_full_bleed_media = false
+  assign cta_url = block_settings.link
+  assign cta_accessible_label = block_settings.button_label
+
+  if block_settings.product != blank
+    assign cta_url = block_settings.product.url
+  endif
+
+  if block_settings.fallback_product_handle != blank
+    if block_settings.product == blank
+      assign fallback_product_handle = block_settings.fallback_product_handle | handleize
+      assign product_path = routes.root_url | append: '/products/' | append: fallback_product_handle
+      assign cta_url = product_path | replace: '//products/', '/products/'
+    endif
+  endif
+
+  if cta_accessible_label == blank
+    if block_settings.product != blank
+      assign cta_accessible_label = block_settings.product.title | prepend: 'Shop '
+    elsif block_settings.heading != blank
+      assign cta_accessible_label = block_settings.heading | prepend: 'Shop '
+    else
+      assign cta_accessible_label = 'Shop product'
+    endif
+  elsif block_settings.heading != blank
+    assign cta_accessible_label = cta_accessible_label | append: ': ' | append: block_settings.heading
+  endif
+
+  if full_bleed_image == blank
+    assign full_bleed_image = full_bleed_image_mobile
+  endif
+
+  if full_bleed_image != blank
+    assign has_full_bleed_media = true
+  elsif block_settings.bundled_campaign == 'crystal_contour'
+    assign has_full_bleed_media = true
+  endif
+
+  if model_image == blank
+    assign model_image = block_settings.image_1_mobile
+  endif
+  if product_image == blank
+    assign product_image = block_settings.image_2_mobile
+  endif
+
+  assign loading = 'lazy'
+  assign model_fetch_priority = 'low'
+  assign product_fetch_priority = 'low'
+
+  if block_index == 0 and section.index <= 3
+    assign loading = 'eager'
+  endif
+  if block_index == 0 and section.index == 1
+    assign model_fetch_priority = 'high'
+    assign product_fetch_priority = 'auto'
+  endif
+
+  assign heading_tag = 'h2'
+  if block_index == 0
+    assign heading_tag = 'h1'
+  endif
+
+  assign desktop_widths = '640, 960, 1280, 1600, 1920, 2560'
+  assign mobile_widths = '390, 585, 780, 1170'
+  assign mobile_widths_array = mobile_widths | split: ', '
+
+  assign slide_class = 'ogee-hero-slide'
+  if media_layout == 'full_bleed'
+    assign slide_class = slide_class | append: ' ogee-hero-slide--full-bleed'
+  endif
+%}
+
+{% capture full_bleed_media %}
+  {% if full_bleed_image != blank %}
+    <picture>
+      {% if full_bleed_image_mobile != blank %}
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {% for image_width in mobile_widths_array %}
+              {{ full_bleed_image_mobile | image_url: width: image_width }} {{ image_width }}w{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          "
+          sizes="100vw"
+          width="{{ full_bleed_image_mobile.width }}"
+          height="{{ full_bleed_image_mobile.height }}"
+        >
+      {% endif %}
+      {{
+        full_bleed_image
+        | image_url: width: 2560
+        | image_tag:
+          widths: desktop_widths,
+          sizes: '100vw',
+          loading: loading,
+          fetchpriority: model_fetch_priority,
+          alt: '',
+          class: 'ogee-hero-slide__full-bleed-image'
+      }}
+    </picture>
+  {% elsif block_settings.bundled_campaign == 'crystal_contour' %}
+    <picture>
+      <source
+        media="(max-width: 749px)"
+        srcset="{{ 'ogee-crystal-contour-hero-mobile.jpg' | asset_url }}"
+        width="780"
+        height="624"
+      >
+      <img
+        src="{{ 'ogee-crystal-contour-hero-desktop.jpg' | asset_url }}"
+        alt=""
+        class="ogee-hero-slide__full-bleed-image"
+        width="3840"
+        height="1152"
+        loading="{{ loading }}"
+        fetchpriority="{{ model_fetch_priority }}"
+      >
+    </picture>
+  {% else %}
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'ogee-hero-slide__full-bleed-image placeholder-svg' }}
+  {% endif %}
+{% endcapture %}
+
+{% capture model_media %}
+  {% if model_image != blank %}
+    <picture>
+      {% if block_settings.custom_mobile_media and block_settings.image_1_mobile != blank %}
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {% for image_width in mobile_widths_array %}
+              {{ block_settings.image_1_mobile | image_url: width: image_width }} {{ image_width }}w{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          "
+          sizes="124vw"
+          width="{{ block_settings.image_1_mobile.width }}"
+          height="{{ block_settings.image_1_mobile.height }}"
+        >
+      {% endif %}
+      {{
+        model_image
+        | image_url: width: 2560
+        | image_tag:
+          widths: desktop_widths,
+          sizes: '64vw',
+          loading: loading,
+          fetchpriority: model_fetch_priority,
+          alt: model_image.alt,
+          class: 'ogee-hero-slide__image'
+      }}
+    </picture>
+  {% else %}
+    {{ 'hero-apparel-1' | placeholder_svg_tag: 'ogee-hero-slide__image placeholder-svg' }}
+  {% endif %}
+{% endcapture %}
+
+{% capture product_media %}
+  {% if product_image != blank %}
+    <picture>
+      {% if block_settings.custom_mobile_media and block_settings.image_2_mobile != blank %}
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {% for image_width in mobile_widths_array %}
+              {{ block_settings.image_2_mobile | image_url: width: image_width }} {{ image_width }}w{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          "
+          sizes="80vw"
+          width="{{ block_settings.image_2_mobile.width }}"
+          height="{{ block_settings.image_2_mobile.height }}"
+        >
+      {% endif %}
+      {{
+        product_image
+        | image_url: width: 1600
+        | image_tag:
+          widths: desktop_widths,
+          sizes: '37vw',
+          loading: loading,
+          fetchpriority: product_fetch_priority,
+          alt: product_image.alt,
+          class: 'ogee-hero-slide__image'
+      }}
+    </picture>
+  {% else %}
+    {{ 'product-1' | placeholder_svg_tag: 'ogee-hero-slide__image placeholder-svg' }}
+  {% endif %}
+{% endcapture %}
+
+{% capture children %}
+  {% if media_layout == 'full_bleed' %}
+    <div class="ogee-hero-slide__media ogee-hero-slide__media--full-bleed" aria-hidden="true">
+      {{ full_bleed_media }}
+    </div>
+
+    <div class="visually-hidden">
+      {% if block_settings.eyebrow != blank %}
+        <p>{{ block_settings.eyebrow | escape }}</p>
+      {% endif %}
+      {% if block_settings.heading != blank %}
+        <{{ heading_tag }}>{{ block_settings.heading | escape }}</{{ heading_tag }}>
+      {% endif %}
+      {% if block_settings.description != blank %}
+        <p>{{ block_settings.description | escape }}</p>
+      {% endif %}
+    </div>
+
+    {% if has_full_bleed_media and cta_url != blank %}
+      <a
+        class="ogee-hero-slide__campaign-cta"
+        href="{{ cta_url }}"
+        aria-label="{{ cta_accessible_label | escape }}"
+        style="
+          --campaign-cta-x: {{ block_settings.cta_x }}%;
+          --campaign-cta-y: {{ block_settings.cta_y }}%;
+          --campaign-cta-width: {{ block_settings.cta_width }}%;
+          --campaign-cta-height: {{ block_settings.cta_height }}%;
+          --campaign-cta-x-mobile: {{ block_settings.cta_x_mobile }}%;
+          --campaign-cta-y-mobile: {{ block_settings.cta_y_mobile }}%;
+          --campaign-cta-width-mobile: {{ block_settings.cta_width_mobile }}%;
+          --campaign-cta-height-mobile: {{ block_settings.cta_height_mobile }}%;
+        "
+        {% if block_settings.open_in_new_tab %}
+          target="_blank"
+          rel="noopener"
+        {% endif %}
+      ></a>
+    {% endif %}
+  {% else %}
+    <div class="ogee-hero-slide__media ogee-hero-slide__media--model" aria-hidden="true">
+      {{ model_media }}
+    </div>
+
+    <div class="ogee-hero-slide__media ogee-hero-slide__media--product" aria-hidden="true">
+      {{ product_media }}
+    </div>
+
+    <div class="ogee-hero-slide__content">
+      <div class="ogee-hero-slide__copy">
+        {% if block_settings.eyebrow != blank %}
+          <p class="ogee-hero-slide__eyebrow">{{ block_settings.eyebrow | escape }}</p>
+        {% endif %}
+
+        {% if block_settings.heading != blank %}
+          <{{ heading_tag }} class="ogee-hero-slide__heading">{{ block_settings.heading | escape }}</{{ heading_tag }}>
+        {% endif %}
+
+        {% if block_settings.description != blank %}
+          <p class="ogee-hero-slide__description">{{ block_settings.description | escape }}</p>
+        {% endif %}
+      </div>
+
+      {% if block_settings.button_label != blank %}
+        <a
+          class="ogee-hero-slide__button"
+          {% if cta_url != blank %}
+            href="{{ cta_url }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+          {% endif %}
+          {% if block_settings.open_in_new_tab %}
+            target="_blank"
+            rel="noopener"
+          {% endif %}
+        >
+          {{ block_settings.button_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endcapture %}
+
+{% render 'slideshow-slide',
+  index: block_index,
+  class: slide_class,
+  children: children,
+  attributes: block.shopify_attributes,
+  slide_id: block.id
+%}
+
+{% stylesheet %}
+  .ogee-hero-slide {
+    position: relative;
+    isolation: isolate;
+    color: var(--ogee-hero-body-color);
+  }
+
+  .ogee-hero-slide__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ogee-hero-slide__media picture {
+    display: contents;
+  }
+
+  .ogee-hero-slide__media--full-bleed picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ogee-hero-slide__full-bleed-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .ogee-hero-slide__campaign-cta {
+    position: absolute;
+    top: var(--campaign-cta-y-mobile);
+    left: var(--campaign-cta-x-mobile);
+    z-index: 2;
+    display: block;
+    width: var(--campaign-cta-width-mobile);
+    min-width: var(--minimum-touch-target);
+    height: var(--campaign-cta-height-mobile);
+    min-height: var(--minimum-touch-target);
+    transform: translate(-50%, -50%);
+  }
+
+  .ogee-hero-slide__campaign-cta:focus-visible {
+    outline: 3px solid var(--ogee-hero-button-color);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px var(--ogee-hero-button-background);
+  }
+
+  .ogee-hero-slide__image {
+    position: absolute;
+    display: block;
+    max-width: none;
+  }
+
+  .ogee-hero-slide__media--model .ogee-hero-slide__image {
+    top: 35.87%;
+    left: 33.13%;
+    width: auto;
+    height: 64.13%;
+    transform: translateX(-50%);
+  }
+
+  .ogee-hero-slide__media--product .ogee-hero-slide__image {
+    top: 69.11%;
+    left: 79.1%;
+    width: auto;
+    height: 41.52%;
+    transform: translateX(-50%);
+  }
+
+  .ogee-hero-slide__image.placeholder-svg {
+    object-fit: cover;
+    background: transparent;
+  }
+
+  .ogee-hero-slide__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 1200px;
+    padding: 32px 30px 0;
+    text-align: center;
+  }
+
+  .ogee-hero-slide__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .ogee-hero-slide__eyebrow,
+  .ogee-hero-slide__heading,
+  .ogee-hero-slide__description {
+    width: 100%;
+    margin: 0;
+  }
+
+  .ogee-hero-slide__eyebrow {
+    color: var(--ogee-hero-eyebrow-color);
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .ogee-hero-slide__heading {
+    color: var(--ogee-hero-heading-color);
+    font-family: var(--font-heading--family);
+    font-size: 1.75rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .ogee-hero-slide__description {
+    display: none;
+    color: var(--ogee-hero-body-color);
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .ogee-hero-slide__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    min-height: var(--minimum-touch-target);
+    padding-inline: 32px;
+    color: var(--ogee-hero-button-color);
+    background: var(--ogee-hero-button-background);
+    border-radius: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .ogee-hero-slide__button[aria-disabled='true'] {
+    cursor: default;
+  }
+
+  .ogee-hero-slide__button:focus-visible {
+    outline: 2px solid var(--ogee-hero-button-background);
+    outline-offset: 3px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ogee-hero-slide__campaign-cta {
+      top: var(--campaign-cta-y);
+      left: var(--campaign-cta-x);
+      width: var(--campaign-cta-width);
+      height: var(--campaign-cta-height);
+    }
+
+    .ogee-hero-slide__media--model .ogee-hero-slide__image {
+      top: -14.37%;
+      left: 58.06%;
+      width: auto;
+      height: 116.92%;
+    }
+
+    .ogee-hero-slide__media--product .ogee-hero-slide__image {
+      top: 48.25%;
+      left: 81.74%;
+      width: auto;
+      height: 66.28%;
+    }
+
+    .ogee-hero-slide__content {
+      justify-content: center;
+      align-items: flex-start;
+      gap: 32px;
+      width: 600px;
+      height: 100%;
+      margin-inline-start: 100px;
+      padding: 40px;
+      text-align: left;
+    }
+
+    .ogee-hero-slide__copy {
+      align-items: flex-start;
+      gap: 10px;
+      max-width: none;
+    }
+
+    .ogee-hero-slide__heading {
+      font-size: 3rem;
+      text-wrap: pretty;
+    }
+
+    .ogee-hero-slide__description {
+      display: block;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ogee hero slide",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "media_layout",
+      "label": "Media layout",
+      "options": [
+        {
+          "value": "layered",
+          "label": "Layered images"
+        },
+        {
+          "value": "full_bleed",
+          "label": "Full-bleed campaign"
+        }
+      ],
+      "default": "layered"
+    },
+    {
+      "type": "image_picker",
+      "id": "full_bleed_image",
+      "label": "Desktop campaign image",
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "full_bleed_image_mobile",
+      "label": "Mobile campaign image",
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "select",
+      "id": "bundled_campaign",
+      "label": "Bundled campaign fallback",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "crystal_contour",
+          "label": "Crystal Contour free brush"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.media_1",
+      "visible_if": "{{ block.settings.media_layout == 'layered' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Model image",
+      "visible_if": "{{ block.settings.media_layout == 'layered' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.media_2",
+      "visible_if": "{{ block.settings.media_layout == 'layered' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Product image",
+      "visible_if": "{{ block.settings.media_layout == 'layered' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_media",
+      "label": "t:settings.custom_mobile_media",
+      "default": false,
+      "visible_if": "{{ block.settings.media_layout == 'layered' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1_mobile",
+      "label": "Mobile model image",
+      "visible_if": "{{ block.settings.custom_mobile_media }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2_mobile",
+      "label": "Mobile product image",
+      "visible_if": "{{ block.settings.custom_mobile_media }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Ogee hero product"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Award Winning Sculpting Stick For Ultimate Glow"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Effortlessly enhance the natural contours of the face with three easy-to-apply, balmy sticks."
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:settings.label",
+      "default": "Shop now"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Fallback link"
+    },
+    {
+      "type": "text",
+      "id": "fallback_product_handle",
+      "label": "Fallback product handle",
+      "info": "Uses this store's localized product URL when no product is selected."
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Desktop campaign button area",
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_x",
+      "label": "Horizontal center",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 52,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_y",
+      "label": "Vertical center",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 64,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_width",
+      "label": "Width",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 9,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_height",
+      "label": "Height",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 11,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "header",
+      "content": "Mobile campaign button area",
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_x_mobile",
+      "label": "Horizontal center",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 17,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_y_mobile",
+      "label": "Vertical center",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 56,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_width_mobile",
+      "label": "Width",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 25,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    },
+    {
+      "type": "range",
+      "id": "cta_height_mobile",
+      "label": "Height",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 10,
+      "visible_if": "{{ block.settings.media_layout == 'full_bleed' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ogee hero slide"
+    }
+  ]
+}
+{% endschema %}

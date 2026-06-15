@@ -1,0 +1,385 @@
+{% liquid
+  assign effective_height_mode = section.settings.height_mode
+
+  for slide_block in section.blocks
+    if slide_block.settings.media_layout == 'full_bleed'
+      assign effective_height_mode = 'image-ratio'
+      break
+    endif
+  endfor
+%}
+
+{% if section.blocks.size > 1 %}
+  {% capture controls %}
+    {% render 'slideshow-controls',
+      style: 'dots',
+      item_count: section.blocks.size,
+      show_arrows: false,
+      arrows_on_media: true,
+      controls_on_media: true,
+      pagination_position: 'right',
+      icon_style: 'none',
+      class: 'ogee-hero-slideshow__controls'
+    %}
+  {% endcapture %}
+{% endif %}
+
+{% capture slides %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+<div
+  class="ogee-hero-slideshow ogee-hero-slideshow--{{ effective_height_mode }}"
+  style="
+    --ogee-hero-height-desktop: {{ section.settings.desktop_height }}px;
+    --ogee-hero-height-mobile: {{ section.settings.mobile_height }}px;
+    --ogee-hero-ratio-desktop: {{ section.settings.desktop_artwork_ratio }};
+    --ogee-hero-ratio-mobile: {{ section.settings.mobile_artwork_ratio }};
+    --ogee-hero-background: {{ section.settings.background_color }};
+    --ogee-hero-eyebrow-color: {{ section.settings.eyebrow_color }};
+    --ogee-hero-heading-color: {{ section.settings.heading_color }};
+    --ogee-hero-body-color: {{ section.settings.body_color }};
+    --ogee-hero-button-background: {{ section.settings.button_background }};
+    --ogee-hero-button-color: {{ section.settings.button_color }};
+    --ogee-hero-navigation-color: {{ section.settings.navigation_color }};
+  "
+>
+  <h2 class="visually-hidden">{{ 'accessibility.slideshow' | t }}</h2>
+
+  {% render 'slideshow',
+    class: 'ogee-hero-slideshow__component',
+    controls: controls,
+    show_arrows: false,
+    autoplay: false,
+    infinite: true,
+    slides: slides,
+    slide_count: section.blocks.size
+  %}
+</div>
+
+{% stylesheet %}
+  .ogee-hero-slideshow,
+  .ogee-hero-slideshow slideshow-container,
+  .ogee-hero-slideshow slideshow-slides,
+  .ogee-hero-slideshow slideshow-slide {
+    min-height: var(--ogee-hero-height-mobile);
+    height: var(--ogee-hero-height-mobile);
+  }
+
+  .ogee-hero-slideshow {
+    position: relative;
+    width: 100%;
+    background: var(--ogee-hero-background);
+    overflow: hidden;
+  }
+
+  .ogee-hero-slideshow__component {
+    height: 100%;
+  }
+
+  .ogee-hero-slideshow slideshow-container,
+  .ogee-hero-slideshow slideshow-slides {
+    background: var(--ogee-hero-background);
+  }
+
+  .ogee-hero-slideshow slideshow-slide {
+    background: var(--ogee-hero-background);
+  }
+
+  .ogee-hero-slideshow--image-ratio,
+  .ogee-hero-slideshow--image-ratio slideshow-container,
+  .ogee-hero-slideshow--image-ratio slideshow-slides,
+  .ogee-hero-slideshow--image-ratio slideshow-slide {
+    min-height: 0;
+    height: calc(100vw / var(--ogee-hero-ratio-mobile));
+  }
+
+  .ogee-hero-slideshow__controls {
+    right: 0;
+    bottom: 0;
+    z-index: var(--layer-raised);
+    color: var(--ogee-hero-navigation-color);
+    mix-blend-mode: normal;
+  }
+
+  .ogee-hero-slideshow__controls .slideshow-controls__dots {
+    gap: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .ogee-hero-slideshow__controls .slideshow-controls__dots button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    margin: 0;
+    border-radius: 0;
+    color: var(--ogee-hero-navigation-color);
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
+  }
+
+  .ogee-hero-slideshow__controls .slideshow-controls__dots button::before {
+    content: '0';
+  }
+
+  .ogee-hero-slideshow__controls .slideshow-controls__dots button::after {
+    display: none;
+  }
+
+  .ogee-hero-slideshow__controls .slideshow-controls__dots button[aria-selected='true'] {
+    opacity: 1;
+  }
+
+  .ogee-hero-slideshow__controls .slideshow-controls__dots button:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: -4px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ogee-hero-slideshow slideshow-controls.ogee-hero-slideshow__controls[controls-on-media][pagination-position='right'] {
+      right: 18px;
+      bottom: 0;
+      left: 18px;
+      width: calc(100% - 36px);
+      min-height: var(--minimum-touch-target);
+      align-self: stretch;
+    }
+
+    .ogee-hero-slideshow__controls .slideshow-controls__dots {
+      display: flex;
+      width: 100%;
+      height: var(--minimum-touch-target);
+    }
+
+    .ogee-hero-slideshow__controls .slideshow-controls__dots li {
+      display: flex;
+      flex: 1 1 0;
+    }
+
+    .ogee-hero-slideshow__controls .slideshow-controls__dots button {
+      width: 100%;
+      height: var(--minimum-touch-target);
+      font-size: 0;
+      opacity: 1;
+    }
+
+    .ogee-hero-slideshow__controls .slideshow-controls__dots button::before {
+      display: none;
+    }
+
+    .ogee-hero-slideshow__controls .slideshow-controls__dots button::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 1px;
+      border-radius: 0;
+      background: color-mix(in srgb, var(--ogee-hero-navigation-color) 20%, transparent);
+      box-shadow: none;
+    }
+
+    .ogee-hero-slideshow__controls .slideshow-controls__dots button[aria-selected='true']::after {
+      background: var(--ogee-hero-navigation-color);
+    }
+
+    .ogee-hero-slideshow__controls .slideshow-controls__dots button:focus-visible {
+      outline-offset: -6px;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .ogee-hero-slideshow,
+    .ogee-hero-slideshow slideshow-container,
+    .ogee-hero-slideshow slideshow-slides,
+    .ogee-hero-slideshow slideshow-slide {
+      min-height: var(--ogee-hero-height-desktop);
+      height: var(--ogee-hero-height-desktop);
+    }
+
+    .ogee-hero-slideshow__controls {
+      padding: 2px;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .ogee-hero-slideshow--image-ratio,
+    .ogee-hero-slideshow--image-ratio slideshow-container,
+    .ogee-hero-slideshow--image-ratio slideshow-slides,
+    .ogee-hero-slideshow--image-ratio slideshow-slide {
+      min-height: 0;
+      height: calc(100vw / var(--ogee-hero-ratio-desktop));
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ogee hero slideshow",
+  "tag": "section",
+  "class": "ogee-hero-slideshow-section",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "_ogee-hero-slide"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "height_mode",
+      "label": "Height mode",
+      "options": [
+        {
+          "value": "fixed",
+          "label": "Fixed"
+        },
+        {
+          "value": "image-ratio",
+          "label": "Match campaign artwork"
+        }
+      ],
+      "default": "fixed",
+      "info": "Full-bleed campaign slides always use their artwork ratio so interactive areas remain aligned."
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "min": 500,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 700,
+      "visible_if": "{{ section.settings.height_mode == 'fixed' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "min": 400,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 500,
+      "visible_if": "{{ section.settings.height_mode == 'fixed' }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_artwork_ratio",
+      "label": "Desktop artwork ratio",
+      "options": [
+        {
+          "value": "3.333",
+          "label": "10:3"
+        },
+        {
+          "value": "2.4",
+          "label": "12:5"
+        },
+        {
+          "value": "2",
+          "label": "2:1"
+        },
+        {
+          "value": "1.778",
+          "label": "16:9"
+        }
+      ],
+      "default": "3.333",
+      "visible_if": "{{ section.settings.height_mode == 'image-ratio' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_artwork_ratio",
+      "label": "Mobile artwork ratio",
+      "options": [
+        {
+          "value": "1.25",
+          "label": "5:4"
+        },
+        {
+          "value": "1",
+          "label": "1:1"
+        },
+        {
+          "value": "0.8",
+          "label": "4:5"
+        },
+        {
+          "value": "0.5625",
+          "label": "9:16"
+        }
+      ],
+      "default": "1.25",
+      "visible_if": "{{ section.settings.height_mode == 'image-ratio' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#f9f5ef"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow",
+      "default": "#404040"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "t:settings.heading",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "t:settings.text",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "t:settings.primary_button_background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "t:settings.primary_button_text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "navigation_color",
+      "label": "t:content.carousel_navigation",
+      "default": "#333333"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ogee hero slideshow",
+      "category": "t:categories.banners",
+      "blocks": {
+        "slide": {
+          "type": "_ogee-hero-slide"
+        }
+      },
+      "block_order": ["slide"]
+    }
+  ]
+}
+{% endschema %}
