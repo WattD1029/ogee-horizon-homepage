@@ -367,21 +367,6 @@
           }}
         {% endif %}
       </div>
-
-      {% if video != blank %}
-        <button
-          class="ogee-hero-slide__video-toggle"
-          type="button"
-          ref="toggle"
-          on:click="/togglePlayback"
-          aria-label="{{ 'accessibility.play_video' | t | escape }}"
-          data-play-label="{{ 'accessibility.play_video' | t | escape }}"
-          data-pause-label="{{ 'accessibility.pause_video' | t | escape }}"
-        >
-          <span ref="playIcon" aria-hidden="true">{{- 'icon-play.svg' | inline_asset_content -}}</span>
-          <span ref="pauseIcon" aria-hidden="true" hidden>{{- 'icon-pause.svg' | inline_asset_content -}}</span>
-        </button>
-      {% endif %}
     </ogee-hero-video-component>
   {% else %}
     <div class="ogee-hero-slide__media ogee-hero-slide__media--model" aria-hidden="true">
@@ -702,35 +687,6 @@
     pointer-events: none;
   }
 
-  .ogee-hero-slide__video-toggle {
-    position: absolute;
-    bottom: 0;
-    left: 18px;
-    z-index: 3;
-    display: grid;
-    place-items: center;
-    width: var(--minimum-touch-target);
-    height: var(--minimum-touch-target);
-    padding: 12px;
-    color: var(--ogee-hero-navigation-color);
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    cursor: pointer;
-  }
-
-  .ogee-hero-slide__video-toggle span,
-  .ogee-hero-slide__video-toggle svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .ogee-hero-slide__video-toggle:focus-visible {
-    outline: 2px solid currentcolor;
-    outline-offset: -4px;
-  }
-
   @media screen and (min-width: 750px) {
     .ogee-hero-slide__campaign-cta {
       top: var(--campaign-cta-y);
@@ -827,9 +783,6 @@
       object-fit: cover;
     }
 
-    .ogee-hero-slide__video-toggle {
-      left: clamp(18px, 2vw, 32px);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -6,9 +6,6 @@ import { SlideshowSelectEvent } from '@theme/events';
  *
  * @typedef {Object} Refs
  * @property {HTMLVideoElement} [video]
- * @property {HTMLButtonElement} [toggle]
- * @property {HTMLElement} [playIcon]
- * @property {HTMLElement} [pauseIcon]
  *
  * @extends {Component<Refs>}
  */
@@ -16,7 +13,6 @@ class OgeeHeroVideoComponent extends Component {
   #slide;
   #slideshow;
   #reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  #userPaused = false;
   #selected = false;
 
   connectedCallback() {
@@ -33,6 +29,7 @@ class OgeeHeroVideoComponent extends Component {
     video.addEventListener('play', this.#handlePlay);
     video.addEventListener('pause', this.#handlePause);
     video.addEventListener('error', this.#handlePlaybackFailure);
+    video.addEventListener('volumechange', this.#handleVolumeChange);
     this.#slideshow?.addEventListener(SlideshowSelectEvent.eventName, this.#handleSlideSelect);
     document.addEventListener('visibilitychange', this.#handleVisibilityChange);
     this.#reducedMotion.addEventListener('change', this.#handleReducedMotionChange);
@@ -50,22 +47,10 @@ class OgeeHeroVideoComponent extends Component {
     video?.removeEventListener('play', this.#handlePlay);
     video?.removeEventListener('pause', this.#handlePause);
     video?.removeEventListener('error', this.#handlePlaybackFailure);
+    video?.removeEventListener('volumechange', this.#handleVolumeChange);
     this.#slideshow?.removeEventListener(SlideshowSelectEvent.eventName, this.#handleSlideSelect);
     document.removeEventListener('visibilitychange', this.#handleVisibilityChange);
     this.#reducedMotion.removeEventListener('change', this.#handleReducedMotionChange);
-  }
-
-  togglePlayback() {
-    const { video } = this.refs;
-    if (!video) return;
-
-    if (video.paused) {
-      this.#userPaused = false;
-      this.#play(true);
-    } else {
-      this.#userPaused = true;
-      video.pause();
-    }
   }
 
   /**
@@ -88,21 +73,18 @@ class OgeeHeroVideoComponent extends Component {
     const { video } = this.refs;
     if (!video) return;
 
-    if (!this.#selected || document.hidden || this.#userPaused || this.#reducedMotion.matches) {
+    if (!this.#selected || document.hidden || this.#reducedMotion.matches) {
       video.pause();
       return;
     }
 
-    this.#play(false);
+    this.#play();
   }
 
-  /**
-   * @param {boolean} userInitiated
-   */
-  async #play(userInitiated) {
+  async #play() {
     const { video } = this.refs;
     if (!video) return;
-    if (!userInitiated && (!this.#selected || document.hidden || this.#reducedMotion.matches)) return;
+    if (!this.#selected || document.hidden || this.#reducedMotion.matches) return;
 
     video.muted = true;
 
@@ -114,28 +96,21 @@ class OgeeHeroVideoComponent extends Component {
   }
 
   #handlePlay = () => {
-    const { toggle, playIcon, pauseIcon } = this.refs;
-    if (!toggle || !playIcon || !pauseIcon) return;
-
     this.setAttribute('playing', '');
-    toggle.setAttribute('aria-label', toggle.dataset.pauseLabel || 'Pause video');
-    playIcon.hidden = true;
-    pauseIcon.hidden = false;
   };
 
   #handlePause = () => {
-    const { toggle, playIcon, pauseIcon } = this.refs;
-    if (!toggle || !playIcon || !pauseIcon) return;
-
     this.removeAttribute('playing');
-    toggle.setAttribute('aria-label', toggle.dataset.playLabel || 'Play video');
-    playIcon.hidden = false;
-    pauseIcon.hidden = true;
   };
 
   #handlePlaybackFailure = () => {
     this.refs.video?.pause();
     this.#handlePause();
+  };
+
+  #handleVolumeChange = () => {
+    const { video } = this.refs;
+    if (video) video.muted = true;
   };
 }
 

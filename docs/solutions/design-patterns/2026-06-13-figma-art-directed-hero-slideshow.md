@@ -28,9 +28,9 @@ the existing `slideshow` section supports carousel behavior but only one
 background media item per standard slide.
 
 The carousel later needed a Shopify-hosted video slide with the same editable
-copy and CTA model. The video had to play only while selected, remain muted,
-respect reduced-motion preferences, preserve a user pause across navigation,
-and keep the original image slide as the initial LCP candidate.
+copy and CTA model. The video had to play only while selected, loop muted,
+respect reduced-motion preferences, omit visible native or custom playback
+controls, and keep the original image slide as the initial LCP candidate.
 
 ## Symptoms
 
@@ -42,8 +42,8 @@ and keep the original image slide as the initial LCP candidate.
 - Editing the shared `_slide` block would affect every standard slideshow.
 - A video that plays outside its selected slide wastes bandwidth and creates
   motion the visitor cannot see.
-- Removing native video controls requires an equivalent accessible Play/Pause
-  control that matches the campaign layout.
+- Removing native video controls means playback must be treated as decorative
+  campaign motion and reduced-motion visitors must receive the poster instead.
 
 ## What Didn't Work
 
@@ -89,9 +89,8 @@ only the product handle and build the fallback from `routes.root_url`.
 ### Treating video autoplay as a one-time attribute
 
 An `autoplay` attribute cannot express slideshow selection, hidden-tab state,
-reduced-motion preferences, autoplay rejection, or a user pause that should
-survive navigating away and back. Playback needs a small controller tied to the
-carousel's selection event.
+reduced-motion preferences, or autoplay rejection. Playback needs a small
+controller tied to the carousel's selection event.
 
 ### Loading the MP4 from the theme repository
 
@@ -138,16 +137,14 @@ The block owns:
 
 Add a narrow `assets/ogee-hero-video.js` component that consumes the shared
 `slideshow:select` event. Track whether the slide is selected, whether the
-document is visible, whether reduced motion is requested, and whether the user
-explicitly paused playback.
+document is visible, and whether reduced motion is requested.
 
 Render the video muted, looping, inline, without native controls, and with
 `preload="metadata"`. Keep the poster visible until playback actually starts.
 Pause immediately when another slide is selected or the document becomes
-hidden. Resume only when the slide is selected, motion is allowed, and the user
-has not explicitly paused it. With reduced motion enabled, require the custom
-Play control. Catch rejected `video.play()` promises and retain the poster and
-Play state.
+hidden. Resume only when the slide is selected and motion is allowed. With
+reduced motion enabled, keep the poster visible and do not autoplay. Catch
+rejected `video.play()` promises and retain the poster state.
 
 Keep the first image slide in the homepage template and let merchants add the
 Shopify-hosted video as a separate later slide. Do not commit the MP4.
@@ -215,9 +212,9 @@ and `contain` on mobile when preserving the entire frame is more important than
 filling the container.
 
 The video controller remains independent of slideshow autoplay. Model playback
-as derived state: selected slide, visible document, motion allowed, and not
-user-paused. This prevents background playback and avoids overriding a visitor's
-explicit pause when they return to the slide.
+as derived state: selected slide, visible document, and motion allowed. This
+prevents background playback without adding visible video controls to the
+campaign artwork.
 
 ## Prevention
 
@@ -230,7 +227,9 @@ explicit pause when they return to the slide.
   indicator is only 1px high.
 - Keep campaign CTA hit targets at least 44px tall even when the visual button
   in the reference is shorter.
-- Avoid autoplay unless an accessible pause control is present.
+- If a campaign intentionally omits visible video controls, treat the video as
+  decorative muted motion, keep it selected-slide-only, and provide a poster for
+  reduced-motion users. Confirm the accessibility trade-off before launch.
 - Do not inherit mobile copy visibility blindly from another media layout. If a
   video reference includes description text, explicitly override shared mobile
   rules that hide descriptions.
@@ -238,10 +237,9 @@ explicit pause when they return to the slide.
   alone is not sufficient across bright frames; use a tested scrim, gradient,
   or per-campaign overlay.
 - Pause video when its slide is deselected or the document becomes hidden.
-- Preserve a user-initiated pause when navigating away and back.
-- Treat reduced motion as poster-first and require an explicit Play action.
-- Catch rejected playback promises and leave the poster and Play state visible.
-- Keep campaign video muted and use localized Play/Pause labels.
+- Treat reduced motion as poster-first.
+- Catch rejected playback promises and leave the poster visible.
+- Keep campaign video muted.
 - Keep the first image slide as the LCP candidate and avoid eager-loading later
   video assets.
 - Do not commit production campaign MP4 files to the theme repository.
@@ -289,8 +287,8 @@ carousel behavior, build a narrow presentation block on top of the theme's
 existing interaction primitive. Reuse behavior; isolate composition.
 
 For video slides, model autoplay as derived state rather than an HTML attribute:
-selected slide + visible document + motion allowed + not user-paused. Only show
-the moving frame after playback succeeds.
+selected slide + visible document + motion allowed. Only show the moving frame
+after playback succeeds.
 
 ## Compound Summary
 
@@ -309,7 +307,7 @@ licensed fonts configured.
 
 The same dedicated block can support Shopify-hosted video without changing the
 shared slideshow runtime. A small controller coordinates selection, document
-visibility, reduced motion, autoplay rejection, and remembered user pauses.
+visibility, reduced motion, and autoplay rejection.
 Review of the first overlay revision added three launch guardrails: explicitly
 show reference-required mobile description text, retain 44px CTA hit targets,
 and provide stable contrast for white copy over changing video frames.
