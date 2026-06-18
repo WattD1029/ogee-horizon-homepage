@@ -44,6 +44,11 @@ controls, and keep the original image slide as the initial LCP candidate.
   motion the visitor cannot see.
 - Removing native video controls means playback must be treated as decorative
   campaign motion and reduced-motion visitors must receive the poster instead.
+- Mobile browser or theme-editor previews can show only the gray hero
+  background even when JavaScript reports that the selected video is playing.
+  This can happen when the media wrapper collapses, the poster remains layered
+  above the video, or the mobile `object-fit` choice letterboxes the video
+  against the section background.
 
 ## What Didn't Work
 
@@ -91,6 +96,14 @@ only the product handle and build the fallback from `routes.root_url`.
 An `autoplay` attribute cannot express slideshow selection, hidden-tab state,
 reduced-motion preferences, or autoplay rejection. Playback needs a small
 controller tied to the carousel's selection event.
+
+### Treating `video.play()` as proof the video is visible
+
+Browser playback state only proves the media element advanced. It does not
+prove the user can see it. On mobile, an absolutely positioned video inside a
+grid row with no intrinsic height can still report playback while the visible
+hero area shows the section background. A poster layer can also stay above the
+video if the UI waits only for a `play` event.
 
 ### Loading the MP4 from the theme repository
 
@@ -140,11 +153,23 @@ Add a narrow `assets/ogee-hero-video.js` component that consumes the shared
 document is visible, and whether reduced motion is requested.
 
 Render the video muted, looping, inline, without native controls, and with
-`preload="metadata"`. Keep the poster visible until playback actually starts.
+mobile-safe autoplay attributes. Use `autoplay`, `muted`, `playsinline`,
+`webkit-playsinline`, `loop`, and `preload="auto"` in the rendered markup and
+reassert the same properties from the controller because mobile Safari and
+theme-editor iframes can be stricter than desktop Chromium.
+
 Pause immediately when another slide is selected or the document becomes
 hidden. Resume only when the slide is selected and motion is allowed. With
 reduced motion enabled, keep the poster visible and do not autoplay. Catch
-rejected `video.play()` promises and retain the poster state.
+rejected `video.play()` promises and retry briefly while the selected slide is
+still eligible to play.
+
+Keep the mobile video media wrapper full-size and independent of intrinsic
+video height: position it absolutely inside the hero component with `inset: 0`,
+`width: 100%`, and `height: 100%`. Hide the poster both when playback starts
+and when media data is ready, so a delayed `play` event does not leave the
+poster or placeholder above the video. Use `object-fit: cover` when the design
+requires no gray borders, accepting that the video edges may crop.
 
 Keep the first image slide in the homepage template and let merchants add the
 Shopify-hosted video as a separate later slide. Do not commit the MP4.
@@ -207,14 +232,20 @@ artwork and transparent hotspot in the same coordinate system. Layered-only
 slides can continue using fixed height.
 
 Apply the same ratio rule to campaign video slides when the video and posters
-use a known artwork ratio. Use `object-fit: cover` for desktop campaign framing
-and `contain` on mobile when preserving the entire frame is more important than
-filling the container.
+use a known artwork ratio. Use `object-fit: cover` when the campaign frame must
+fill the hero without gray borders. Use `contain` only when preserving every
+edge of the video is more important than filling the container.
 
 The video controller remains independent of slideshow autoplay. Model playback
 as derived state: selected slide, visible document, and motion allowed. This
 prevents background playback without adding visible video controls to the
 campaign artwork.
+
+For mobile video validation, inspect both media state and rendered geometry.
+Confirm that the selected video is not paused, is muted and looping, has no
+native controls, and that the video element and its wrapper have non-zero
+dimensions matching the hero frame. Then record the mobile viewport to catch
+visual issues such as blank backgrounds or letterboxing.
 
 ## Prevention
 
@@ -239,6 +270,19 @@ campaign artwork.
 - Pause video when its slide is deselected or the document becomes hidden.
 - Treat reduced motion as poster-first.
 - Catch rejected playback promises and leave the poster visible.
+- Reassert `muted`, `defaultMuted`, `playsinline`, `webkit-playsinline`,
+  `loop`, `autoplay`, and `controls=false` from JavaScript for mobile autoplay
+  resilience.
+- Do not rely on playback state alone. Verify rendered video geometry and
+  record a mobile viewport when fixing mobile video issues.
+- If a mobile video shows gray borders, check `object-fit` before changing the
+  source asset. `contain` preserves the full frame and can letterbox; `cover`
+  fills the container and crops.
+- Avoid placing absolutely positioned video media in a grid row whose height
+  depends only on absolutely positioned children. Give the media wrapper an
+  explicit full-size absolute layer.
+- Hide the poster on `canplay` or `loadeddata` as well as on `play` when the
+  video should become visible as soon as media is ready.
 - Keep campaign video muted.
 - Keep the first image slide as the LCP candidate and avoid eager-loading later
   video assets.
@@ -288,7 +332,9 @@ existing interaction primitive. Reuse behavior; isolate composition.
 
 For video slides, model autoplay as derived state rather than an HTML attribute:
 selected slide + visible document + motion allowed. Only show the moving frame
-after playback succeeds.
+after playback succeeds or media data is ready, and separately verify the
+rendered box. Playback state and visual visibility are related but not the same
+thing.
 
 ## Compound Summary
 
@@ -311,3 +357,8 @@ visibility, reduced motion, and autoplay rejection.
 Review of the first overlay revision added three launch guardrails: explicitly
 show reference-required mobile description text, retain 44px CTA hit targets,
 and provide stable contrast for white copy over changing video frames.
+The mobile video follow-up added another guardrail: a selected video can be
+playing while still appearing blank if its wrapper collapses or its poster
+stays layered above it. The fix is to make the mobile media layer full-size,
+hide the poster on media readiness, use mobile-safe autoplay attributes, and
+choose `cover` instead of `contain` when the design requires no gray borders.
