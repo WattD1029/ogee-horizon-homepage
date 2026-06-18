@@ -77,6 +77,7 @@ class OgeeHeroVideoComponent extends Component {
   };
 
   #handleCanPlay = () => {
+    this.setAttribute('media-ready', '');
     this.#syncPlayback();
   };
 
