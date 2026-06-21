@@ -1,0 +1,497 @@
+{% liquid
+  assign section_settings = section.settings
+  assign cta_url = section_settings.link
+  assign cta_label = section_settings.button_label
+  assign cta_aria_label = cta_label
+
+  if section_settings.product != blank
+    assign cta_url = section_settings.product.url
+  endif
+
+  if cta_url == blank
+    if section_settings.fallback_product_handle != blank
+      assign fallback_product_handle = section_settings.fallback_product_handle | handleize
+      assign product_path = routes.root_url | append: '/products/' | append: fallback_product_handle
+      assign cta_url = product_path | replace: '//products/', '/products/'
+    endif
+  endif
+
+  if cta_label == blank
+    assign cta_label = 'Shop now'
+  endif
+
+  if section_settings.heading != blank
+    assign cta_aria_label = cta_label | append: ': ' | append: section_settings.heading
+  endif
+
+  assign loading = 'lazy'
+  assign fetch_priority = 'low'
+
+  if section.index <= 3
+    assign loading = 'eager'
+  endif
+
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+%}
+
+<div
+  class="ogee-promotion-offer-banner"
+  style="
+    --ogee-promo-background: {{ section_settings.background_color }};
+    --ogee-promo-text: {{ section_settings.text_color }};
+    --ogee-promo-muted: {{ section_settings.muted_text_color }};
+    --ogee-promo-button-background: {{ section_settings.button_background }};
+    --ogee-promo-button-color: {{ section_settings.button_color }};
+    --ogee-promo-desktop-height: {{ section_settings.desktop_height }}px;
+    --ogee-promo-mobile-height: {{ section_settings.mobile_height }}px;
+    --ogee-promo-content-max-width: {{ section_settings.content_max_width }}px;
+    --ogee-promo-image-width-desktop: {{ section_settings.image_width_desktop }}px;
+    --ogee-promo-image-width-mobile: {{ section_settings.image_width_mobile }}px;
+    --ogee-promo-image-x-desktop: {{ section_settings.image_x_desktop }}px;
+    --ogee-promo-image-y-desktop: {{ section_settings.image_y_desktop }}px;
+  "
+>
+  <div class="ogee-promotion-offer-banner__media" aria-hidden="true">
+    {% if section_settings.image != blank %}
+      {{
+        section_settings.image
+        | image_url: width: 440
+        | image_tag:
+          widths: '100, 200, 220, 440',
+          sizes: '(min-width: 1200px) 220px, 100px',
+          loading: loading,
+          fetchpriority: fetch_priority,
+          alt: '',
+          class: 'ogee-promotion-offer-banner__image'
+      }}
+    {% else %}
+      <img
+        src="{{ 'ogee-contour-product-stack.png' | asset_url }}"
+        alt=""
+        class="ogee-promotion-offer-banner__image"
+        width="440"
+        height="440"
+        loading="{{ loading }}"
+        fetchpriority="{{ fetch_priority }}"
+      >
+    {% endif %}
+  </div>
+
+  <div class="ogee-promotion-offer-banner__copy">
+    {% if section_settings.eyebrow != blank %}
+      <p class="ogee-promotion-offer-banner__eyebrow">{{ section_settings.eyebrow | escape }}</p>
+    {% endif %}
+
+    {% if section_settings.heading != blank %}
+      <h2 class="ogee-promotion-offer-banner__heading">{{ section_settings.heading | escape }}</h2>
+    {% endif %}
+
+    {% if section_settings.subheading != blank %}
+      <p class="ogee-promotion-offer-banner__subheading">{{ section_settings.subheading | escape }}</p>
+    {% endif %}
+  </div>
+
+  {% if cta_url != blank %}
+    <a
+      class="ogee-promotion-offer-banner__button"
+      href="{{ cta_url }}"
+      aria-label="{{ cta_aria_label | escape }}"
+      {% if section_settings.open_in_new_tab %}
+        target="_blank"
+        rel="noopener"
+      {% endif %}
+    >
+      {{ cta_label | escape }}
+    </a>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .ogee-promotion-offer-banner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(280px, 0.6fr) minmax(360px, var(--ogee-promo-content-max-width)) minmax(280px, 0.55fr);
+    align-items: center;
+    min-height: var(--ogee-promo-desktop-height);
+    padding: 42px 90px;
+    color: var(--ogee-promo-text);
+    background: var(--ogee-promo-background);
+    overflow: hidden;
+  }
+
+  .ogee-promotion-offer-banner__media {
+    position: absolute;
+    top: var(--ogee-promo-image-y-desktop);
+    left: var(--ogee-promo-image-x-desktop);
+    width: var(--ogee-promo-image-width-desktop);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .ogee-promotion-offer-banner__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .ogee-promotion-offer-banner__image--placeholder {
+    color: color-mix(in srgb, var(--ogee-promo-muted) 22%, transparent);
+  }
+
+  .ogee-promotion-offer-banner__copy {
+    z-index: 1;
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .ogee-promotion-offer-banner__eyebrow,
+  .ogee-promotion-offer-banner__heading,
+  .ogee-promotion-offer-banner__subheading {
+    margin: 0;
+  }
+
+  .ogee-promotion-offer-banner__eyebrow,
+  .ogee-promotion-offer-banner__subheading {
+    color: var(--ogee-promo-muted);
+    font-family: var(--font-body--family);
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  .ogee-promotion-offer-banner__eyebrow {
+    font-size: 1.75rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .ogee-promotion-offer-banner__heading {
+    max-width: 900px;
+    color: var(--ogee-promo-text);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(3.5rem, 3.2vw, 4.25rem);
+    font-style: normal;
+    font-weight: 300;
+    line-height: 0.98;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .ogee-promotion-offer-banner__subheading {
+    font-size: 1.875rem;
+  }
+
+  .ogee-promotion-offer-banner__button {
+    z-index: 1;
+    grid-column: 3;
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 380px);
+    min-height: 80px;
+    padding: 18px 44px;
+    color: var(--ogee-promo-button-color);
+    background: var(--ogee-promo-button-background);
+    border: 1px solid var(--ogee-promo-button-background);
+    border-radius: 0;
+    font-family: var(--font-body--family);
+    font-size: 1.375rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .ogee-promotion-offer-banner__button:hover {
+    color: var(--ogee-promo-button-background);
+    background: transparent;
+  }
+
+  .ogee-promotion-offer-banner__button:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 4px;
+  }
+
+  @media screen and (max-width: 1199px) {
+    .ogee-promotion-offer-banner {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      align-content: start;
+      min-height: var(--ogee-promo-mobile-height);
+      padding: 64px 30px 32px;
+      text-align: center;
+    }
+
+    .ogee-promotion-offer-banner__media {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: var(--ogee-promo-image-width-mobile);
+      max-width: 42vw;
+      margin-block-end: 52px;
+      transform: none;
+    }
+
+    .ogee-promotion-offer-banner__copy,
+    .ogee-promotion-offer-banner__button {
+      grid-column: 1;
+    }
+
+    .ogee-promotion-offer-banner__copy {
+      align-items: center;
+      gap: 26px;
+    }
+
+    .ogee-promotion-offer-banner__eyebrow {
+      font-size: 1.75rem;
+      letter-spacing: 0.03em;
+    }
+
+    .ogee-promotion-offer-banner__heading {
+      max-width: 620px;
+      font-size: clamp(3rem, 8.5vw, 4.25rem);
+      line-height: 1.06;
+    }
+
+    .ogee-promotion-offer-banner__subheading {
+      font-size: 1.875rem;
+    }
+
+    .ogee-promotion-offer-banner__button {
+      width: min(100%, 400px);
+      min-height: 84px;
+      margin-block-start: 54px;
+      font-size: 1.625rem;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .ogee-promotion-offer-banner {
+      padding-inline: 24px;
+    }
+
+    .ogee-promotion-offer-banner__media {
+      max-width: 48vw;
+      margin-block-end: 40px;
+    }
+
+    .ogee-promotion-offer-banner__eyebrow {
+      font-size: 1.25rem;
+    }
+
+    .ogee-promotion-offer-banner__heading {
+      font-size: clamp(2.4rem, 11vw, 3.25rem);
+    }
+
+    .ogee-promotion-offer-banner__subheading {
+      font-size: 1.35rem;
+    }
+
+    .ogee-promotion-offer-banner__button {
+      min-height: 68px;
+      margin-block-start: 40px;
+      font-size: 1.25rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ogee promotion offer",
+  "tag": "section",
+  "class": "ogee-promotion-offer-banner-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "THE CONTOUR COLLECTIONS"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Recognized With 5,000+ Five-Star Reviews."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Three-Step Glow Routine"
+    },
+    {
+      "type": "header",
+      "content": "t:content.media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Product stack image"
+    },
+    {
+      "type": "range",
+      "id": "image_width_desktop",
+      "label": "Desktop image width",
+      "min": 160,
+      "max": 440,
+      "step": 10,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "image_width_mobile",
+      "label": "Mobile image width",
+      "min": 80,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "image_x_desktop",
+      "label": "Desktop image horizontal position",
+      "min": -200,
+      "max": 360,
+      "step": 10,
+      "unit": "px",
+      "default": 110
+    },
+    {
+      "type": "range",
+      "id": "image_y_desktop",
+      "label": "Desktop image vertical position",
+      "min": 0,
+      "max": 420,
+      "step": 10,
+      "unit": "px",
+      "default": 210
+    },
+    {
+      "type": "header",
+      "content": "t:content.buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:settings.label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.custom_link"
+    },
+    {
+      "type": "text",
+      "id": "fallback_product_handle",
+      "label": "Fallback product handle",
+      "info": "Used only when no product or custom link is selected."
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "min": 280,
+      "max": 560,
+      "step": 10,
+      "unit": "px",
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "min": 560,
+      "max": 860,
+      "step": 10,
+      "unit": "px",
+      "default": 720
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content width",
+      "min": 520,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 760
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#4c4c4c"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "t:settings.primary_button_background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "t:settings.primary_button_text",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ogee promotion offer",
+      "category": "t:categories.banners"
+    }
+  ]
+}
+{% endschema %}
