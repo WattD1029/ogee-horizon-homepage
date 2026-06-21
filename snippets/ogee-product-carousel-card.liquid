@@ -1,0 +1,667 @@
+{% doc %}
+  Renders a product card tailored to the Ogee homepage product carousel.
+
+  @param {object} product - Product to render
+  @param {string} section_id - Parent section ID, used by product form components
+  @param {string} [card_id] - Unique suffix for form and element IDs
+  @param {string} [badge_label] - Optional badge text
+  @param {string} [subtitle_source] - Metafield/fallback source for the subtitle
+  @param {boolean} [show_vendor] - Whether to show product vendor/type fallback text
+  @param {boolean} [show_reviews] - Whether to render product review rating
+  @param {boolean} [show_swatches] - Whether to render variant swatches
+  @param {boolean} [show_wishlist] - Whether to render the decorative wishlist icon
+  @param {number} [fallback_rating] - Fallback rating for visual preview or demo content
+  @param {number} [fallback_rating_count] - Fallback rating count for visual preview or demo content
+  @param {string} [add_to_cart_label] - Label for direct add buttons
+  @param {string} [choose_options_label] - Label for option-selection buttons
+  @param {string} [quick_view_label] - Accessible label for the quick-view/product link button
+  @param {boolean} [transition_to_main_product] - Whether product-card media transitions should be enabled
+  @param {string} [loading] - Image loading attribute
+
+  @example
+  {% render 'ogee-product-carousel-card', product: product, section_id: section.id %}
+{% enddoc %}
+
+{% liquid
+  assign section_id = section_id | default: 'ogee-product-carousel'
+  assign card_id = card_id | default: product.id | default: 'placeholder'
+  assign badge_label = badge_label | default: 'New'
+  assign subtitle_source = subtitle_source | default: 'metafield'
+  assign add_to_cart_label = add_to_cart_label | default: 'Add to cart'
+  assign choose_options_label = choose_options_label | default: 'Select Shade'
+  assign quick_view_label = quick_view_label | default: 'View product'
+  assign loading = loading | default: 'lazy'
+  assign transition_to_main_product = transition_to_main_product | default: false
+
+  unless show_vendor == true
+    assign show_vendor = false
+  endunless
+  unless show_reviews == false
+    assign show_reviews = true
+  endunless
+  unless show_swatches == false
+    assign show_swatches = true
+  endunless
+  unless show_wishlist == false
+    assign show_wishlist = true
+  endunless
+
+  assign variant = product.selected_or_first_available_variant
+  assign can_add_to_cart = false
+  if variant.available
+    assign can_add_to_cart = true
+  endif
+
+  assign product_has_swatches = false
+  assign swatch_label = ''
+  if product != blank
+    if show_swatches
+      for product_option in product.options_with_values
+        assign swatch_count = product_option.values | map: 'swatch' | compact | size
+        if product_option.values.size > 1
+          if swatch_count > 0
+            assign product_has_swatches = true
+            if swatch_label == blank
+              assign swatch_label = product_option.selected_value
+              if swatch_label == blank
+                assign first_swatch_value = product_option.values | first
+                assign swatch_label = first_swatch_value.name
+              endif
+            endif
+          endif
+        endif
+      endfor
+    endif
+  endif
+
+  assign quick_add_button = 'choose'
+  if product.variants_count == 1
+    assign quick_add_button = 'add'
+  elsif product.options.size == 1
+    if product.selected_variant
+      assign quick_add_button = 'add'
+    elsif product_has_swatches
+      assign quick_add_button = 'add'
+    endif
+  endif
+
+  assign product_url = product.url
+  assign product_title = product.title
+  assign product_form_id = 'OgeeCarousel-ProductForm-' | append: section_id | append: '-' | append: card_id
+  assign product_card_id = 'OgeeCarousel-Card-' | append: section_id | append: '-' | append: card_id
+  assign featured_media_url = product.featured_media.preview_image | image_url: width: 5000
+
+  assign subtitle = ''
+  if subtitle_source == 'vendor'
+    assign subtitle = product.vendor
+  elsif subtitle_source == 'type'
+    assign subtitle = product.type
+  else
+    assign subtitle = product.metafields.custom.subtitle.value
+    if subtitle == blank
+      assign subtitle = product.metafields.custom.short_description.value
+    endif
+    if subtitle == blank
+      assign subtitle = product.metafields.descriptors.subtitle.value
+    endif
+    if subtitle == blank
+      assign subtitle = product.type
+    endif
+  endif
+
+  if show_vendor
+    if subtitle == blank
+      assign subtitle = product.vendor
+    endif
+  endif
+
+  assign image_sizes = '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 54vw'
+%}
+
+<product-card
+  class="ogee-product-card"
+  data-product-id="{{ product.id }}"
+  data-card-id="{{ product_card_id }}"
+  {% if transition_to_main_product and product != blank %}
+    data-product-transition="true"
+    data-featured-media-url="{{ featured_media_url }}"
+    on:click="/handleViewTransition"
+  {% endif %}
+>
+  <a
+    id="{{ product_card_id | md5 }}"
+    {% if product_url != blank %}
+      href="{{ product_url }}"
+    {% endif %}
+    class="ogee-product-card__link"
+    ref="productCardLink"
+    aria-label="{{ product_title | default: 'Product' | escape }}"
+  ></a>
+
+  <div
+    class="ogee-product-card__media"
+    ref="cardGallery"
+    {% if transition_to_main_product %}
+      data-view-transition-to-main-product
+    {% endif %}
+  >
+    {% if badge_label != blank %}
+      <span class="ogee-product-card__badge">{{ badge_label }}</span>
+    {% endif %}
+
+    {% if show_wishlist %}
+      <button
+        type="button"
+        class="ogee-product-card__wishlist"
+        aria-label="Save {{ product_title | default: 'product' | escape }}"
+      >
+        <svg viewBox="0 0 18 18" focusable="false" aria-hidden="true">
+          <path d="M9 15.2 3.4 9.7C1.9 8.2 1.8 5.8 3.2 4.4c1.3-1.3 3.5-1.3 4.8.1L9 5.6l1-1.1c1.3-1.4 3.5-1.4 4.8-.1 1.4 1.4 1.3 3.8-.2 5.3L9 15.2Z"></path>
+        </svg>
+      </button>
+    {% endif %}
+
+    {% if product != blank and product.media.size > 0 %}
+      {% liquid
+        assign product_media = product.featured_media | default: product.media.first
+        assign other_media = product.media | reject: 'id', product_media.id
+        assign media_list_to_show = product_media | concat: other_media
+        assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
+      %}
+
+      {% capture media_slides %}
+        {% for media in media_list_to_show %}
+          {% liquid
+            assign hidden = false
+            assign attributes = ''
+            assign image_ref = ''
+            if variant_images contains media.src
+              assign attributes = 'variant-image'
+              unless forloop.first
+                assign hidden = true
+              endunless
+            endif
+            if transition_to_main_product
+              assign image_ref = 'imagesToTransition[]'
+            endif
+          %}
+
+          {% capture media_children %}
+            {% render 'product-media',
+              media: media,
+              sizes: image_sizes,
+              loading: loading,
+              preview_image_only: true,
+              image_ref: image_ref,
+              widths: '320, 420, 560, 720, 900'
+            %}
+          {% endcapture %}
+
+          {% render 'slideshow-slide',
+            slide_id: media.id,
+            index: forloop.index0,
+            hidden: hidden,
+            class: 'ogee-product-card__media-slide',
+            attributes: attributes,
+            children: media_children
+          %}
+        {% endfor %}
+      {% endcapture %}
+
+      {% render 'slideshow',
+        ref: 'slideshow',
+        slides: media_slides,
+        slide_count: media_list_to_show.size,
+        class: 'ogee-product-card__media-slideshow',
+        show_arrows: false,
+        attributes: 'disabled="true"'
+      %}
+    {% else %}
+      <div class="ogee-product-card__placeholder" aria-hidden="true">
+        {{ 'product-apparel-1' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ogee-product-card__details">
+    <h3 class="ogee-product-card__title">
+      {% if product_url != blank %}
+        <a href="{{ product_url }}">{{ product_title }}</a>
+      {% else %}
+        {{ product_title | default: 'Product title' }}
+      {% endif %}
+    </h3>
+
+    {% if subtitle != blank %}
+      <p class="ogee-product-card__subtitle">{{ subtitle }}</p>
+    {% endif %}
+
+    {% if product != blank %}
+      <product-price class="ogee-product-card__price">
+        {% render 'price', product_resource: product, show_unit_price: false %}
+      </product-price>
+    {% else %}
+      <div class="ogee-product-card__price">{{ 10000 | money }}</div>
+    {% endif %}
+
+    {% if show_reviews %}
+      {% render 'ogee-product-rating',
+        product: product,
+        fallback_rating: fallback_rating,
+        fallback_count: fallback_rating_count
+      %}
+    {% endif %}
+
+    {% if product_has_swatches %}
+      <product-swatches class="ogee-product-card__swatches">
+        {% render 'variant-swatches', product_resource: product, has_option_selected: true %}
+      </product-swatches>
+      {% if swatch_label != blank %}
+        <p class="ogee-product-card__swatch-label">{{ swatch_label }}</p>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {% if product != blank %}
+    <quick-add-component
+      class="ogee-product-card__actions"
+      ref="quickAdd"
+      data-product-title="{{ product.title }}"
+      data-quick-add-button="{{ quick_add_button }}"
+      data-product-options-count="{{ product.options.size }}"
+    >
+      <product-form-component
+        data-section-id="{{ section_id }}"
+        data-product-id="{{ product.id }}"
+        on:submit="/handleSubmit"
+        class="ogee-product-card__product-form"
+      >
+        <div
+          class="visually-hidden"
+          aria-live="assertive"
+          role="status"
+          aria-atomic="true"
+          ref="liveRegion"
+        ></div>
+
+        {% form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' %}
+          <input
+            type="hidden"
+            name="id"
+            ref="variantId"
+            value="{{ variant.id }}"
+            {% if variant.available == false %}
+              disabled
+            {% endif %}
+          >
+          <input
+            type="hidden"
+            name="quantity"
+            value="{% if variant.quantity_rule.min %}{{ variant.quantity_rule.min }}{% else %}1{% endif %}"
+          >
+
+          {% render 'add-to-cart-button',
+            add_to_cart_text: add_to_cart_label,
+            class: 'ogee-product-card__button ogee-product-card__button--add',
+            can_add_to_cart: can_add_to_cart,
+            icon_only_on_mobile: false,
+            product: product
+          %}
+
+          <button
+            class="button ogee-product-card__button ogee-product-card__button--choose"
+            type="button"
+            name="add"
+            on:click="quick-add-component/handleClick"
+          >
+            <span class="add-to-cart-text">
+              <span class="add-to-cart-text__content">
+                <span>
+                  <span>{{ choose_options_label }}</span>
+                </span>
+              </span>
+            </span>
+          </button>
+        {% endform %}
+      </product-form-component>
+
+      <a
+        class="ogee-product-card__quick-view"
+        href="{{ product_url }}"
+        aria-label="{{ quick_view_label }}: {{ product.title | escape }}"
+      >
+        <svg viewBox="0 0 22 22" focusable="false" aria-hidden="true">
+          <path d="M11 5.2c4.5 0 7.7 4.5 7.8 4.7.2.3.2.7 0 1-.1.2-3.3 4.7-7.8 4.7s-7.7-4.5-7.8-4.7a.9.9 0 0 1 0-1c.1-.2 3.3-4.7 7.8-4.7Zm0 1.6c-2.9 0-5.3 2.4-6.1 3.6.8 1.1 3.2 3.6 6.1 3.6s5.3-2.4 6.1-3.6C16.3 9.2 13.9 6.8 11 6.8Zm0 1.2a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8Zm0 1.5a.9.9 0 1 0 0 1.8.9.9 0 0 0 0-1.8Z"></path>
+        </svg>
+      </a>
+    </quick-add-component>
+  {% endif %}
+</product-card>
+
+{% stylesheet %}
+  .ogee-product-card {
+    position: relative;
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+    container-type: inline-size;
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .ogee-product-card__link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .ogee-product-card__media {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #f0f0ef;
+  }
+
+  .ogee-product-card__media slideshow-container,
+  .ogee-product-card__media slideshow-slides,
+  .ogee-product-card__media slideshow-slide,
+  .ogee-product-card__media .product-media,
+  .ogee-product-card__media .product-media-container {
+    height: 100%;
+  }
+
+  .ogee-product-card__media img,
+  .ogee-product-card__placeholder svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ogee-product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    color: rgb(var(--color-foreground-rgb) / 0.22);
+  }
+
+  .ogee-product-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    padding: 5px 8px;
+    background: #f8f7f3;
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-card__wishlist {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: rgb(var(--color-foreground-rgb));
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .ogee-product-card__wishlist svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.35;
+  }
+
+  .ogee-product-card__details {
+    display: grid;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .ogee-product-card__title {
+    margin: 0;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  .ogee-product-card__title a {
+    position: relative;
+    z-index: 2;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ogee-product-card__subtitle {
+    min-height: 2.3em;
+    margin: 0;
+    color: rgb(var(--color-foreground-rgb) / 0.56);
+    font-size: 12px;
+    line-height: 1.15;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-card__price {
+    display: block;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  .ogee-product-card__price .price {
+    margin: 0;
+  }
+
+  .ogee-product-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 13px;
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .ogee-product-rating__stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .ogee-product-rating__star {
+    width: 9px;
+    height: 9px;
+    fill: transparent;
+    color: rgb(var(--color-foreground-rgb));
+    stroke: currentColor;
+    stroke-width: 1.6;
+  }
+
+  .ogee-product-rating__star--filled {
+    fill: currentColor;
+  }
+
+  .ogee-product-rating__count {
+    color: rgb(var(--color-foreground-rgb) / 0.48);
+    font-size: 9px;
+  }
+
+  .ogee-product-card__swatches {
+    position: relative;
+    z-index: 2;
+    display: block;
+  }
+
+  .ogee-product-card__swatches variant-swatches,
+  .ogee-product-card__swatches .variant-swatches {
+    justify-content: flex-start;
+  }
+
+  .ogee-product-card__swatch-label {
+    margin: -2px 0 0;
+    color: rgb(var(--color-foreground-rgb) / 0.45);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-card__actions {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    width: 100%;
+  }
+
+  .ogee-product-card__product-form {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ogee-product-card__product-form form {
+    width: 100%;
+  }
+
+  .ogee-product-card__button {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 0;
+    border-color: rgb(var(--color-foreground-rgb));
+    background: rgb(var(--color-foreground-rgb));
+    color: rgb(var(--color-background-rgb));
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-card__button .add-to-cart-icon,
+  .ogee-product-card__button .add-to-cart__added {
+    display: none;
+  }
+
+  .ogee-product-card__button .add-to-cart-text {
+    justify-content: center;
+  }
+
+  .ogee-product-card__button--choose {
+    display: none;
+  }
+
+  .ogee-product-card__quick-view {
+    display: none;
+  }
+
+  [data-quick-add-button='choose'] .ogee-product-card__button--add,
+  [data-quick-add-button='choose'] add-to-cart-component {
+    display: none;
+  }
+
+  [data-quick-add-button='choose'] .ogee-product-card__button--choose {
+    display: inline-flex;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ogee-product-card__actions {
+      position: absolute;
+      top: calc(100cqw - 60px);
+      left: 0;
+      width: 100%;
+      height: 60px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+
+    .ogee-product-card:hover .ogee-product-card__actions,
+    .ogee-product-card:focus-within .ogee-product-card__actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .ogee-product-card__button {
+      min-height: 60px;
+      height: 60px;
+    }
+
+    .ogee-product-card__quick-view {
+      display: grid;
+      place-items: center;
+      flex: 0 0 60px;
+      width: 60px;
+      height: 60px;
+      color: #fff;
+      background: #2e2e2e;
+      border-left: 4px solid #fff;
+      text-decoration: none;
+    }
+
+    .ogee-product-card__quick-view svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.2;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ogee-product-card {
+      gap: 14px;
+      grid-template-rows: auto 1fr auto;
+      height: 100%;
+    }
+
+    .ogee-product-card__media {
+      background: #f1f1ef;
+    }
+
+    .ogee-product-card__details {
+      align-content: start;
+      gap: 8px;
+    }
+
+    .ogee-product-card__title {
+      font-size: 14px;
+      line-height: 1.22;
+    }
+
+    .ogee-product-card__subtitle {
+      min-height: 2.4em;
+      font-size: 10px;
+    }
+
+    .ogee-product-card__price {
+      font-size: 14px;
+    }
+
+    .ogee-product-card__swatches,
+    .ogee-product-card__swatch-label {
+      display: none;
+    }
+
+    .ogee-product-card__actions add-to-cart-component,
+    .ogee-product-card__button--add {
+      display: none;
+    }
+
+    .ogee-product-card__button--choose {
+      display: inline-flex;
+    }
+
+    .ogee-product-card__button {
+      min-height: 36px;
+      border: 1px solid rgb(var(--color-foreground-rgb));
+      background: transparent;
+      color: rgb(var(--color-foreground-rgb));
+    }
+  }
+{% endstylesheet %}
