@@ -2,12 +2,13 @@
   assign effective_height_mode = section.settings.height_mode
 
   for slide_block in section.blocks
-    if slide_block.settings.media_layout == 'full_bleed'
+    if slide_block.settings.media_layout == 'full_bleed' or slide_block.settings.media_layout == 'video'
       assign effective_height_mode = 'image-ratio'
-      break
     endif
   endfor
 %}
+
+<script src="{{ 'ogee-hero-video.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
 {% if section.blocks.size > 1 %}
   {% capture controls %}
@@ -248,7 +249,7 @@
         }
       ],
       "default": "fixed",
-      "info": "Full-bleed campaign slides always use their artwork ratio so interactive areas remain aligned."
+      "info": "Full-bleed campaign and video slides always use their artwork ratio."
     },
     {
       "type": "range",

@@ -1,0 +1,33 @@
+╭─ success ────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│  Preview your theme (t)                                                      │
+│    • [1]                                                                     │
+│                                                                              │
+│  Next steps                                                                  │
+│    • Share your theme preview (p) [2]                                        │
+│      https://ogee-li63n1as.myshopify.com/?preview_theme_id=160205504617      │
+│    • Customize your theme at the theme editor (e) [3]                        │
+│    • Preview your gift cards (g) [4]                                         │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+[1] http://127.0.0.1:9292
+[2] https://ogee-li63n1as.myshopify.com/?preview_theme_id=160205504617
+[3] https://ogee-li63n1as.myshopify.com/admin/themes/160205504617/editor?hr=9292
+[4] http://127.0.0.1:9292/gift_cards/[store_id]/preview
+
+• 18:11:11 Request »    GET 200 / 
+• 18:11:20 Request »    GET 200 / 
+• 18:11:34 Request »    GET 200 / 
+• 18:11:34 Request »    GET 404 /favicon.ico 
+• 18:12:15  Synced » update sections/header-announcements.liquid
+• 18:12:18  Synced » update blocks/_announcement.liquid
+• 18:12:18 Request »    GET 200 / 
+• 18:12:18 Request »    GET 200 / 
+• 18:12:21 Request »    GET 200 / 
+• 18:12:21  Synced » update assets/announcement-bar.js
+• 18:12:21 Request »    GET 200 / 
+• 18:12:35 Request »    GET 200 / 
+• 18:12:35 Request »    GET 200 / 
+• 18:12:35  Synced » update assets/announcement-bar.js
+• 18:12:46 Request »    GET 200 / 
+• 18:13:21 Request »    GET 200 / 

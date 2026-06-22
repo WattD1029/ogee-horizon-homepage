@@ -1,0 +1,137 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#MainContent"
+  - generic [ref=e3]:
+    - complementary [ref=e6]:
+      - paragraph [ref=e10]: Welcome to our store
+    - banner [ref=e11]:
+      - generic [ref=e12]:
+        - heading "Ogee" [level=1] [ref=e14]
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - link "Ogee" [ref=e18] [cursor=pointer]:
+              - /url: /
+              - generic [ref=e19]: Ogee
+            - navigation "Primary" [ref=e22]:
+              - list [ref=e24]:
+                - generic:
+                  - link "Home" [ref=e25] [cursor=pointer]:
+                    - /url: /
+                    - generic [ref=e26]: Home
+                  - link "Catalog" [ref=e27] [cursor=pointer]:
+                    - /url: /collections/all
+                    - generic [ref=e28]: Catalog
+                  - link "Contact" [ref=e29] [cursor=pointer]:
+                    - /url: /pages/contact
+                    - generic [ref=e30]: Contact
+          - generic [ref=e31]:
+            - button "Search" [ref=e33] [cursor=pointer]:
+              - generic:
+                - img
+            - generic [ref=e34]:
+              - button "Account" [ref=e39] [cursor=pointer]:
+                - img [ref=e41]
+              - button "Cart" [ref=e44] [cursor=pointer]:
+                - generic [ref=e45]:
+                  - generic:
+                    - img
+              - status [ref=e48]
+  - main [ref=e49]:
+    - generic [ref=e51]:
+      - heading "Slideshow" [level=2] [ref=e52]
+      - generic [ref=e53]:
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - generic [ref=e57]:
+              - paragraph [ref=e58]: The art of contour
+              - heading "Free Blender Brush" [level=1] [ref=e59]
+              - paragraph [ref=e60]: With every Crystal Contour Collection purchase.
+            - 'link "Shop now: Free Blender Brush" [ref=e61] [cursor=pointer]':
+              - /url: /products/sculpted-face-stick-bundle-3pc
+          - generic [ref=e64] [cursor=pointer]:
+            - generic [ref=e65]:
+              - paragraph [ref=e66]: The art of contour
+              - heading [level=2] [ref=e67]: Free Blender Brush
+              - paragraph [ref=e68]: With every Crystal Contour Collection purchase.
+            - link [ref=e69]:
+              - /url: /products/sculpted-face-stick-bundle-3pc
+              - text: Shop now
+        - list [ref=e74]:
+          - listitem [ref=e75]:
+            - button "Slide 1 of 2" [ref=e76] [cursor=pointer]: 0 1
+          - listitem [ref=e77]:
+            - button "Slide 2 of 2" [ref=e78] [cursor=pointer]: 0 2
+    - generic [ref=e81]:
+      - heading "Products" [level=3] [ref=e86]
+      - generic [ref=e87]:
+        - generic [ref=e92]:
+          - img [ref=e98]
+          - heading "Product title" [level=3] [ref=e109]
+          - generic [ref=e112]: $19.99
+        - generic [ref=e117]:
+          - img [ref=e123]
+          - heading "Product title" [level=3] [ref=e139]
+          - generic [ref=e142]: $19.99
+        - generic [ref=e147]:
+          - img [ref=e153]
+          - heading "Product title" [level=3] [ref=e167]
+          - generic [ref=e170]: $19.99
+        - generic [ref=e175]:
+          - img [ref=e181]
+          - heading "Product title" [level=3] [ref=e192]
+          - generic [ref=e195]: $19.99
+        - generic [ref=e200]:
+          - img [ref=e206]
+          - heading "Product title" [level=3] [ref=e222]
+          - generic [ref=e225]: $19.99
+        - generic [ref=e230]:
+          - img [ref=e236]
+          - heading "Product title" [level=3] [ref=e250]
+          - generic [ref=e253]: $19.99
+        - generic [ref=e258]:
+          - img [ref=e264]
+          - heading "Product title" [level=3] [ref=e275]
+          - generic [ref=e278]: $19.99
+        - generic [ref=e283]:
+          - img [ref=e289]
+          - heading "Product title" [level=3] [ref=e305]
+          - generic [ref=e308]: $19.99
+  - contentinfo [ref=e309]:
+    - generic [ref=e313]:
+      - generic [ref=e315]:
+        - heading "Join our email list" [level=2] [ref=e317]
+        - paragraph [ref=e319]: Get exclusive deals and early access to new products.
+        - generic [ref=e322]:
+          - generic [ref=e323]: Email
+          - textbox "Email" [ref=e324]:
+            - /placeholder: Email address
+          - button "Sign up" [ref=e325] [cursor=pointer]
+      - group [ref=e327]:
+        - generic "Footer menu" [ref=e328]
+        - navigation "Footer menu" [ref=e329]:
+          - list [ref=e330]:
+            - listitem [ref=e331]:
+              - link "Search" [ref=e332] [cursor=pointer]:
+                - /url: /search
+      - group [ref=e334]:
+        - generic "Main menu" [ref=e335]
+        - navigation "Main menu" [ref=e336]:
+          - list [ref=e337]:
+            - listitem [ref=e338]:
+              - link "Home" [ref=e339] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e340]:
+              - link "Catalog" [ref=e341] [cursor=pointer]:
+                - /url: /collections/all
+            - listitem [ref=e342]:
+              - link "Contact" [ref=e343] [cursor=pointer]:
+                - /url: /pages/contact
+    - generic [ref=e347]:
+      - generic [ref=e349]:
+        - text: © 2026
+        - link "Ogee" [ref=e350] [cursor=pointer]:
+          - /url: /
+        - text: ","
+        - link "Powered by Shopify" [ref=e351] [cursor=pointer]:
+          - /url: https://www.shopify.com?utm_campaign=poweredby&utm_medium=shopify&utm_source=onlinestore
+      - button "Terms and Policies" [ref=e353] [cursor=pointer]
