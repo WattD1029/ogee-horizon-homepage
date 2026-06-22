@@ -17,37 +17,11 @@
         "announcement_BxgCk9": {
           "type": "_announcement",
           "settings": {
-            "text": "LIMITED TIME: FREE SHIPPING ON U.S. ORDERS $30+",
+            "text": "Welcome to our store",
             "link": "",
-            "font": "var(--font-body--family)",
-            "font_size": "0.875rem",
-            "weight": "300",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
-        },
-        "announcement_crystal_contour": {
-          "type": "_announcement",
-          "settings": {
-            "text": "FREE BLENDER BRUSH WITH EVERY CRYSTAL CONTOUR PURCHASE",
-            "link": "",
-            "font": "var(--font-body--family)",
-            "font_size": "0.875rem",
-            "weight": "300",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
-        },
-        "announcement_guarantee": {
-          "type": "_announcement",
-          "settings": {
-            "text": "FREE SHIPPING + 30-DAY GUARANTEE",
-            "link": "",
-            "font": "var(--font-body--family)",
-            "font_size": "0.875rem",
-            "weight": "300",
+            "font": "var(--font-subheading--family)",
+            "font_size": "0.75rem",
+            "weight": "",
             "letter_spacing": "normal",
             "case": "none"
           },
@@ -55,19 +29,16 @@
         }
       },
       "block_order": [
-        "announcement_BxgCk9",
-        "announcement_crystal_contour",
-        "announcement_guarantee"
+        "announcement_BxgCk9"
       ],
       "name": "t:names.announcement_bar",
       "settings": {
-        "section_width": "full-width",
-        "color_scheme": "scheme-5",
-        "background_color": "#000000",
-        "text_color": "#ffffff",
-        "divider_width": 0,
-        "padding-block-start": 0,
-        "padding-block-end": 0
+        "speed": 5,
+        "section_width": "page-width",
+        "color_scheme": "scheme-1",
+        "divider_width": 1,
+        "padding-block-start": 15,
+        "padding-block-end": 15
       }
     },
     "header_section": {
