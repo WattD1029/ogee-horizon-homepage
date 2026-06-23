@@ -53,7 +53,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "New",
-            "collection": "all",
+            "collection": "new",
             "button_label": "All New"
           },
           "blocks": {}
@@ -62,7 +62,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Bestsellers",
-            "collection": "all",
+            "collection": "bestsellers",
             "button_label": "All Bestsellers"
           },
           "blocks": {}
@@ -71,7 +71,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Makeup",
-            "collection": "all",
+            "collection": "makeup",
             "button_label": "All Makeup"
           },
           "blocks": {}
@@ -80,7 +80,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Skincare",
-            "collection": "all",
+            "collection": "skincare",
             "button_label": "All Skincare"
           },
           "blocks": {}
@@ -89,7 +89,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Bundles",
-            "collection": "all",
+            "collection": "bundles",
             "button_label": "All Bundles"
           },
           "blocks": {}
@@ -98,7 +98,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Accessories",
-            "collection": "all",
+            "collection": "accessories",
             "button_label": "All Accessories"
           },
           "blocks": {}
