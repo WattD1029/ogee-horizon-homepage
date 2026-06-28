@@ -69,7 +69,6 @@
               image_size: '2500x',
               autoplay: false,
               loop: true,
-              muted: false,
               controls: true,
               playsinline: true,
               preload: 'metadata',
@@ -280,7 +279,7 @@
     max-width: 100%;
     margin: 0;
     color: var(--story-split-media-title-color);
-    font-family: 'Chronicle Display', 'Chronicle Display Light', var(--font-heading--family);
+    font-family: 'Times New Roman', Times, serif;
     font-size: 3rem;
     font-style: normal;
     font-weight: 300;
@@ -317,7 +316,7 @@
 
   .story-split__heading {
     color: var(--story-split-copy-color);
-    font-family: 'Chronicle Display', 'Chronicle Display Light', var(--font-heading--family);
+    font-family: 'Times New Roman', Times, serif;
     font-size: 2rem;
     font-style: normal;
     font-weight: 300;
@@ -490,6 +489,28 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const storySplitVideos = document.querySelectorAll('.story-split__video');
+
+    storySplitVideos.forEach((video) => {
+      const enableAudio = () => {
+        video.defaultMuted = false;
+        video.muted = false;
+        video.removeAttribute('muted');
+
+        if (video.volume === 0) {
+          video.volume = 1;
+        }
+      };
+
+      enableAudio();
+      video.addEventListener('pointerdown', enableAudio, { once: true });
+      video.addEventListener('play', enableAudio, { once: true });
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
