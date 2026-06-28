@@ -6,24 +6,31 @@
   ></script>
 {% endif %}
 
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="section-background color-{{ section.settings.color_scheme }}"
+  style="background: {{ section.settings.background_color }};"
+></div>
 <aside
   class="announcement-bar spacing-style section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
-  style="{% render 'spacing-padding', settings: section.settings %}; --border-bottom-width: {{ section.settings.divider_width }}px;"
+  style="
+    {% render 'spacing-padding', settings: section.settings %};
+    --border-bottom-width: {{ section.settings.divider_width }}px;
+    --announcement-background: {{ section.settings.background_color }};
+    --announcement-foreground: {{ section.settings.text_color }};
+    background-color: {{ section.settings.background_color }};
+  "
 >
   {% liquid
-    assign autoplay = false
     assign show_arrows = false
     if section.blocks.size > 1
-      assign autoplay = true
       assign show_arrows = true
     endif
   %}
 
   <announcement-bar-component
     class="announcement-bar__slider"
-    {% if autoplay == true %}
-      autoplay="{{ section.settings.speed }}" aria-live="polite"
+    {% if show_arrows %}
+      aria-live="polite"
     {% endif %}
   >
     {% if show_arrows %}
@@ -38,14 +45,19 @@
 
 {% stylesheet %}
   .announcement-bar {
+    min-height: 44px;
+    color: var(--announcement-foreground);
+    background: var(--announcement-background);
     border-block-end: var(--border-bottom-width) solid var(--color-border);
   }
 
   .announcement-bar__slider {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
-    position: relative;
+    width: 100%;
+    min-height: 44px;
 
     @media screen and (max-width: 749px) {
       grid-column: 1 / -1;
@@ -55,8 +67,9 @@
   .announcement-bar__slides {
     display: grid;
     grid: [stack] auto / [stack] auto;
-    width: calc(100% - var(--button-size) * 2);
-    max-width: 680px;
+    width: calc(100% - 88px);
+    max-width: 566px;
+    min-width: 0;
     margin-inline: auto;
   }
 
@@ -65,6 +78,7 @@
   }
 
   .announcement-bar__slide {
+    min-width: 0;
     transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
     content-visibility: visible;
 
@@ -75,36 +89,43 @@
   }
 
   .announcement-bar__slider slideshow-arrows {
+    right: auto;
+    left: 50%;
+    width: min(100%, 630px);
     padding: 0;
     mix-blend-mode: normal;
+    transform: translateX(-50%);
   }
 
   .announcement-bar__slider slideshow-arrows .slideshow-control {
-    color: var(--color-foreground);
+    color: var(--announcement-foreground);
   }
 
   .announcement-bar__slider .slideshow-control {
     display: flex;
-    padding: 0;
-    width: var(--button-size);
-    height: var(--button-size);
     align-items: center;
     justify-content: center;
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    padding: 6px;
     opacity: 1;
     animation: none;
-
-    @media screen and (min-width: 750px) {
-      --slideshow-control-offset: calc((var(--button-size) - var(--icon-size-xs)) / 2);
-
-      .section--page-width &.slideshow-control--previous {
-        transform: translateX(var(--slideshow-control-offset));
-      }
-    }
   }
 
   .announcement-bar__slider .slideshow-control .svg-wrapper {
-    width: var(--icon-size-xs);
-    height: var(--icon-size-xs);
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+  }
+
+  @media screen and (min-width: 750px) {
+    .announcement-bar__slider .slideshow-control--previous {
+      transform: translateX(-6px);
+    }
+
+    .announcement-bar__slider .slideshow-control--next {
+      transform: translateX(6px);
+    }
   }
 
   .announcement-bar__slide {
@@ -115,9 +136,37 @@
     margin: 0;
   }
 
+  .announcement-bar .announcement-bar__text {
+    color: var(--announcement-foreground);
+    white-space: nowrap;
+  }
+
   .announcement-bar__link {
     position: absolute;
     inset: 0;
+  }
+
+  .announcement-bar__link:focus-visible,
+  .announcement-bar__slider .slideshow-control:focus-visible {
+    outline: 2px solid var(--announcement-foreground);
+    outline-offset: -4px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .announcement-bar__slides {
+      width: calc(100% - 88px);
+    }
+
+    .announcement-bar .announcement-bar__text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar__slide {
+      transition: none;
+    }
   }
 {% endstylesheet %}
 
@@ -133,15 +182,6 @@
     "groups": ["header"]
   },
   "settings": [
-    {
-      "type": "range",
-      "id": "speed",
-      "label": "t:settings.scroll_speed",
-      "min": 2,
-      "max": 10,
-      "default": 5,
-      "unit": "sec"
-    },
     {
       "type": "header",
       "content": "t:content.appearance"
@@ -169,6 +209,18 @@
       "label": "t:settings.color_scheme"
     },
     {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text and controls",
+      "default": "#ffffff"
+    },
+    {
       "type": "range",
       "id": "divider_width",
       "label": "t:settings.divider_thickness",
@@ -190,7 +242,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 15
+      "default": 0
     },
     {
       "type": "range",
@@ -200,7 +252,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 15
+      "default": 0
     }
   ],
   "presets": [

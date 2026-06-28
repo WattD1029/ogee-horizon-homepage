@@ -1,0 +1,957 @@
+{% liquid
+  assign active_tab_index = 0
+  assign has_tabs = false
+  if section.blocks.size > 0
+    assign has_tabs = true
+  endif
+
+  assign fallback_tabs = 'New,Bestsellers,Makeup,Skincare,Bundles,Accessories' | split: ','
+  assign fallback_collection_handles = 'new,bestsellers,makeup,skincare,bundles,accessories' | split: ','
+  assign fallback_button_labels = 'All New,All Bestsellers,All Makeup,All Skincare,All Bundles,All Accessories' | split: ','
+  assign active_cta_label = section.settings.button_label
+  assign active_cta_url = section.settings.button_link
+  if has_tabs
+    assign first_block = section.blocks | first
+    assign first_fallback_collection_handle = fallback_collection_handles | first
+    assign first_fallback_collection = collections[first_fallback_collection_handle]
+    if first_block.settings.button_label != blank
+      assign active_cta_label = first_block.settings.button_label
+    elsif active_cta_label == blank
+      assign active_cta_label = fallback_button_labels | first
+    endif
+    if first_block.settings.button_link != blank
+      assign active_cta_url = first_block.settings.button_link
+    elsif first_block.settings.collection != blank
+      assign active_cta_url = first_block.settings.collection.url
+    elsif first_fallback_collection != blank
+      assign active_cta_url = first_fallback_collection.url
+    endif
+  endif
+%}
+
+<section
+  class="product-carousel color-{{ section.settings.color_scheme }}"
+  style="
+    --product-carousel-padding-top: {{ section.settings.padding_top }}px;
+    --product-carousel-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --product-carousel-card-gap: {{ section.settings.card_gap }}px;
+    --product-carousel-products-desktop: {{ section.settings.products_visible_desktop }};
+    --product-carousel-products-mobile: {{ section.settings.products_visible_mobile }};
+  "
+>
+  <product-carousel class="product-carousel__inner">
+    <div class="product-carousel__header">
+      <div
+        class="product-carousel__tabs"
+        role="tablist"
+        aria-label="{{ section.settings.heading | default: 'Product collections' | escape }}"
+      >
+        {% if has_tabs %}
+          {% for tab_block in section.blocks %}
+            {% liquid
+              assign fallback_tab_label = ''
+              assign fallback_collection_handle = ''
+              assign fallback_button_label = ''
+              case forloop.index0
+                when 0
+                  assign fallback_tab_label = 'New'
+                  assign fallback_collection_handle = 'new'
+                  assign fallback_button_label = 'All New'
+                when 1
+                  assign fallback_tab_label = 'Bestsellers'
+                  assign fallback_collection_handle = 'bestsellers'
+                  assign fallback_button_label = 'All Bestsellers'
+                when 2
+                  assign fallback_tab_label = 'Makeup'
+                  assign fallback_collection_handle = 'makeup'
+                  assign fallback_button_label = 'All Makeup'
+                when 3
+                  assign fallback_tab_label = 'Skincare'
+                  assign fallback_collection_handle = 'skincare'
+                  assign fallback_button_label = 'All Skincare'
+                when 4
+                  assign fallback_tab_label = 'Bundles'
+                  assign fallback_collection_handle = 'bundles'
+                  assign fallback_button_label = 'All Bundles'
+                when 5
+                  assign fallback_tab_label = 'Accessories'
+                  assign fallback_collection_handle = 'accessories'
+                  assign fallback_button_label = 'All Accessories'
+              endcase
+              assign fallback_tab_collection = collections[fallback_collection_handle]
+
+              assign tab_label = tab_block.settings.label
+              if tab_label == blank
+                if tab_block.settings.collection != blank
+                  assign tab_label = tab_block.settings.collection.title
+                elsif fallback_tab_label != blank
+                  assign tab_label = fallback_tab_label
+                else
+                  assign tab_label = 'Tab ' | append: forloop.index
+                endif
+              endif
+
+              assign tab_url = tab_block.settings.button_link
+              if tab_url == blank
+                if tab_block.settings.collection != blank
+                  assign tab_url = tab_block.settings.collection.url
+                elsif fallback_tab_collection != blank
+                  assign tab_url = fallback_tab_collection.url
+                endif
+              endif
+
+              assign tab_button_label = tab_block.settings.button_label
+              if tab_button_label == blank
+                assign tab_button_label = fallback_button_label
+              endif
+              if tab_button_label == blank
+                assign tab_button_label = section.settings.button_label
+              endif
+            %}
+
+            <button
+              type="button"
+              class="product-carousel__tab"
+              id="ProductCarouselTab-{{ section.id }}-{{ tab_block.id }}"
+              role="tab"
+              aria-controls="ProductCarouselPanel-{{ section.id }}-{{ tab_block.id }}"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-tab-index="{{ forloop.index0 }}"
+              data-tab-url="{{ tab_url }}"
+              data-tab-button-label="{{ tab_button_label | escape }}"
+              {{ tab_block.shopify_attributes }}
+            >
+              {{ tab_label }}
+            </button>
+          {% endfor %}
+        {% else %}
+          {% for tab_label in fallback_tabs %}
+            <button
+              type="button"
+              class="product-carousel__tab"
+              id="ProductCarouselTab-{{ section.id }}-fallback-{{ forloop.index }}"
+              role="tab"
+              aria-controls="ProductCarouselPanel-{{ section.id }}-fallback"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-tab-index="0"
+              data-tab-url="{{ section.settings.button_link }}"
+              data-tab-button-label="{{ section.settings.button_label | escape }}"
+              {% unless forloop.first %}
+                disabled
+              {% endunless %}
+            >
+              {{ tab_label }}
+            </button>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      {% if active_cta_label != blank %}
+        <a
+          class="product-carousel__cta product-carousel__cta--desktop"
+          data-carousel-cta
+          {% if active_cta_url != blank %}
+            href="{{ active_cta_url }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+          {% endif %}
+        >
+          {{ active_cta_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="product-carousel__panels">
+      {% if has_tabs %}
+        {% for tab_block in section.blocks %}
+          {% liquid
+            assign tab_collection = tab_block.settings.collection
+            assign fallback_tab_label = ''
+            assign fallback_collection_handle = ''
+            case forloop.index0
+              when 0
+                assign fallback_tab_label = 'New'
+                assign fallback_collection_handle = 'new'
+              when 1
+                assign fallback_tab_label = 'Bestsellers'
+                assign fallback_collection_handle = 'bestsellers'
+              when 2
+                assign fallback_tab_label = 'Makeup'
+                assign fallback_collection_handle = 'makeup'
+              when 3
+                assign fallback_tab_label = 'Skincare'
+                assign fallback_collection_handle = 'skincare'
+              when 4
+                assign fallback_tab_label = 'Bundles'
+                assign fallback_collection_handle = 'bundles'
+              when 5
+                assign fallback_tab_label = 'Accessories'
+                assign fallback_collection_handle = 'accessories'
+            endcase
+            if tab_collection == blank
+              if fallback_collection_handle != blank
+                assign tab_collection = collections[fallback_collection_handle]
+              endif
+            endif
+            assign panel_hidden = true
+            if forloop.index0 == active_tab_index
+              assign panel_hidden = false
+            endif
+            assign panel_label = tab_block.settings.label
+            if panel_label == blank
+              assign panel_label = tab_collection.title
+            endif
+            if panel_label == blank
+              assign panel_label = fallback_tab_label
+            endif
+            if panel_label == blank
+              assign panel_label = 'Product carousel'
+            endif
+          %}
+
+          <div
+            class="product-carousel__panel"
+            id="ProductCarouselPanel-{{ section.id }}-{{ tab_block.id }}"
+            role="tabpanel"
+            aria-labelledby="ProductCarouselTab-{{ section.id }}-{{ tab_block.id }}"
+            data-carousel-panel
+            {% if panel_hidden %}
+              hidden
+            {% endif %}
+          >
+            {% if tab_collection != blank and tab_collection.products_count > 0 %}
+              {% liquid
+                assign product_limit = section.settings.max_products
+                assign slide_count = tab_collection.products_count
+                if slide_count > product_limit
+                  assign slide_count = product_limit
+                endif
+              %}
+
+              {% capture controls %}
+                {% render 'slideshow-controls',
+                  style: 'counter',
+                  item_count: slide_count,
+                  show_arrows: true,
+                  arrows_on_media: false,
+                  controls_on_media: false,
+                  pagination_position: 'right',
+                  icon_style: 'arrow',
+                  shape: 'none',
+                  class: 'product-carousel__controls'
+                %}
+              {% endcapture %}
+
+              {% capture slides %}
+                {% for product in tab_collection.products limit: product_limit %}
+                  {% capture slide_children %}
+                    {% render 'product-carousel-card',
+                      product: product,
+                      section_id: section.id,
+                      card_id: tab_block.id | append: '-' | append: product.id,
+                      badge_label: section.settings.badge_label,
+                      subtitle_source: section.settings.subtitle_source,
+                      show_vendor: section.settings.show_vendor,
+                      show_reviews: section.settings.show_reviews,
+                      show_swatches: section.settings.show_swatches,
+                      show_wishlist: section.settings.show_wishlist,
+                      fallback_rating: section.settings.fallback_rating,
+                      fallback_rating_count: section.settings.fallback_rating_count,
+                      add_to_cart_label: section.settings.add_to_cart_label,
+                      choose_options_label: section.settings.choose_options_label,
+                      quick_view_label: section.settings.quick_view_label,
+                      transition_to_main_product: section.settings.transition_to_main_product,
+                      loading: 'lazy'
+                    %}
+                  {% endcapture %}
+
+                  {% render 'slideshow-slide',
+                    slide_id: product.id,
+                    index: forloop.index0,
+                    class: 'product-carousel__slide',
+                    children: slide_children
+                  %}
+                {% endfor %}
+              {% endcapture %}
+
+              <h2 class="visually-hidden">{{ panel_label }}</h2>
+              {% render 'slideshow',
+                class: 'product-carousel__slideshow',
+                controls: controls,
+                slides: slides,
+                slide_count: slide_count,
+                show_arrows: true,
+                autoplay: false,
+                infinite: false
+              %}
+            {% elsif tab_collection != blank %}
+              <p class="product-carousel__empty">{{ section.settings.empty_text }}</p>
+            {% else %}
+              <div class="product-carousel__placeholder-grid" aria-label="{{ panel_label | escape }}">
+                {% for placeholder_index in (1..4) %}
+                  {% render 'product-carousel-card',
+                    product: blank,
+                    section_id: section.id,
+                    card_id: tab_block.id | append: '-placeholder-' | append: placeholder_index,
+                    badge_label: section.settings.badge_label,
+                    show_reviews: section.settings.show_reviews,
+                    show_wishlist: section.settings.show_wishlist,
+                    fallback_rating: section.settings.fallback_rating,
+                    fallback_rating_count: section.settings.fallback_rating_count
+                  %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <div
+          class="product-carousel__panel"
+          id="ProductCarouselPanel-{{ section.id }}-fallback"
+          role="tabpanel"
+          aria-labelledby="ProductCarouselTab-{{ section.id }}-fallback-1"
+          data-carousel-panel
+        >
+          <div class="product-carousel__placeholder-grid">
+            {% for placeholder_index in (1..4) %}
+              {% render 'product-carousel-card',
+                product: blank,
+                section_id: section.id,
+                card_id: 'fallback-placeholder-' | append: placeholder_index,
+                badge_label: section.settings.badge_label,
+                show_reviews: section.settings.show_reviews,
+                show_wishlist: section.settings.show_wishlist,
+                fallback_rating: section.settings.fallback_rating,
+                fallback_rating_count: section.settings.fallback_rating_count
+              %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if active_cta_label != blank %}
+      <a
+        class="product-carousel__cta product-carousel__cta--mobile"
+        data-carousel-cta
+        {% if active_cta_url != blank %}
+          href="{{ active_cta_url }}"
+        {% else %}
+          role="link"
+          aria-disabled="true"
+        {% endif %}
+      >
+        {{ active_cta_label }}
+      </a>
+    {% endif %}
+  </product-carousel>
+</section>
+
+{% stylesheet %}
+  .product-carousel {
+    padding-block: var(--product-carousel-padding-top) var(--product-carousel-padding-bottom);
+    background: rgb(var(--color-background-rgb));
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .product-carousel__inner {
+    display: block;
+    width: 100%;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .product-carousel__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+  }
+
+  .product-carousel__tabs {
+    display: flex;
+    align-items: flex-end;
+    gap: 28px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .product-carousel__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-carousel__tab {
+    position: relative;
+    flex: 0 0 auto;
+    padding: 0 0 17px;
+    color: rgb(var(--color-foreground-rgb) / 0.64);
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .product-carousel__tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    opacity: 0;
+  }
+
+  .product-carousel__tab[aria-selected='true'] {
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .product-carousel__tab[aria-selected='true']::after {
+    opacity: 1;
+  }
+
+  .product-carousel__tab:disabled {
+    cursor: default;
+  }
+
+  .product-carousel__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 178px;
+    min-height: 44px;
+    padding: 0 28px;
+    color: rgb(var(--color-foreground-rgb));
+    background: transparent;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.64);
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .product-carousel__cta[aria-disabled='true'] {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  .product-carousel__panels {
+    min-width: 0;
+  }
+
+  .product-carousel__panel[hidden] {
+    display: none;
+  }
+
+  .product-carousel__slideshow {
+    --slideshow-slide-width: calc(
+      (100% - (var(--product-carousel-card-gap) * (var(--product-carousel-products-desktop) - 1))) /
+        var(--product-carousel-products-desktop)
+    );
+    display: block;
+  }
+
+  .product-carousel__slideshow slideshow-slides {
+    gap: var(--product-carousel-card-gap);
+    scrollbar-width: none;
+  }
+
+  .product-carousel__slideshow slideshow-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-carousel__slide {
+    flex: 0 0 var(--slideshow-slide-width);
+    scroll-snap-align: start;
+  }
+
+  .product-carousel__controls {
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 46px;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.22);
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .product-carousel__controls .slideshow-controls__counter {
+    display: none;
+  }
+
+  .product-carousel__controls .slideshow-controls__arrows {
+    gap: 0;
+  }
+
+  .product-carousel__controls .slideshow-control {
+    width: 48px;
+    height: 48px;
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .product-carousel__placeholder-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--product-carousel-card-gap);
+  }
+
+  .product-carousel__empty {
+    margin: 36px 0;
+    color: rgb(var(--color-foreground-rgb) / 0.64);
+    font-size: 14px;
+  }
+
+  .product-carousel__cta--mobile {
+    display: none;
+  }
+
+  @media screen and (max-width: 989px) {
+    .product-carousel__slideshow {
+      --slideshow-slide-width: calc(
+        (100% - (var(--product-carousel-card-gap) * 2)) /
+          3
+      );
+    }
+
+    .product-carousel__placeholder-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-carousel {
+      padding-block: min(var(--product-carousel-padding-top), 40px)
+        min(var(--product-carousel-padding-bottom), 44px);
+    }
+
+    .product-carousel__inner {
+      padding-inline: 16px;
+    }
+
+    .product-carousel__header {
+      display: block;
+      margin-inline: -16px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      border-bottom: 0;
+    }
+
+    .product-carousel__tabs {
+      display: flex;
+      gap: 24px;
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      padding-inline: 16px 32px;
+      padding-top: 2px;
+      padding-bottom: 1px;
+      box-sizing: border-box;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-inline: contain;
+      scroll-padding-inline: 16px;
+      scroll-snap-type: x proximity;
+      touch-action: pan-x;
+      -webkit-overflow-scrolling: touch;
+      border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+    }
+
+    .product-carousel__tab {
+      white-space: nowrap;
+      scroll-snap-align: start;
+      padding-bottom: 15px;
+      font-size: 11px;
+    }
+
+    .product-carousel__cta--desktop,
+    .product-carousel__controls {
+      display: none;
+    }
+
+    .product-carousel__slideshow {
+      --slideshow-slide-width: calc(
+        (100% - (var(--product-carousel-card-gap) * (var(--product-carousel-products-mobile) - 1))) /
+          var(--product-carousel-products-mobile)
+      );
+    }
+
+    .product-carousel__slideshow slideshow-slides {
+      align-items: stretch;
+    }
+
+    .product-carousel__slide {
+      display: flex;
+    }
+
+    .product-carousel__slide > product-card {
+      width: 100%;
+    }
+
+    .product-carousel__placeholder-grid {
+      display: flex;
+      gap: var(--product-carousel-card-gap);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .product-carousel__placeholder-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .product-carousel__placeholder-grid > * {
+      flex: 0 0 var(--slideshow-slide-width);
+      scroll-snap-align: start;
+    }
+
+    .product-carousel__cta--mobile {
+      display: flex;
+      width: 100%;
+      margin-top: 28px;
+      min-height: 48px;
+      background: rgb(var(--color-foreground-rgb));
+      color: rgb(var(--color-background-rgb));
+      border-color: rgb(var(--color-foreground-rgb));
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ProductCarousel extends HTMLElement {
+    connectedCallback() {
+      this.tabs = Array.from(this.querySelectorAll('[role="tab"]'));
+      this.panels = Array.from(this.querySelectorAll('[data-carousel-panel]'));
+      this.ctas = Array.from(this.querySelectorAll('[data-carousel-cta]'));
+
+      this.tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          if (tab.disabled) return;
+          const index = Number(tab.dataset.tabIndex || 0);
+          this.activate(index);
+        });
+      });
+
+      const selectedTab = this.tabs.find((tab) => tab.getAttribute('aria-selected') === 'true');
+      if (selectedTab) {
+        requestAnimationFrame(() => this.scrollTabIntoView(selectedTab, 'auto'));
+      }
+    }
+
+    activate(index) {
+      const nextTab = this.tabs.find((tab) => Number(tab.dataset.tabIndex || 0) === index);
+      const nextPanel = this.panels[index];
+
+      if (!nextTab || !nextPanel) return;
+
+      this.tabs.forEach((tab) => {
+        const isActive = tab === nextTab;
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      this.panels.forEach((panel) => {
+        panel.hidden = panel !== nextPanel;
+      });
+
+      this.updateCtas(nextTab);
+      this.scrollTabIntoView(nextTab, 'smooth');
+
+      const slideshow = nextPanel.querySelector('slideshow-component');
+      if (slideshow && typeof slideshow.select === 'function') {
+        slideshow.select(0, undefined, { animate: false });
+      }
+    }
+
+    scrollTabIntoView(tab, behavior) {
+      tab.scrollIntoView({ behavior, block: 'nearest', inline: 'center' });
+    }
+
+    updateCtas(tab) {
+      const label = tab.dataset.tabButtonLabel || '';
+      const url = tab.dataset.tabUrl || '';
+
+      this.ctas.forEach((cta) => {
+        if (label) cta.textContent = label;
+
+        if (url) {
+          cta.href = url;
+          cta.removeAttribute('role');
+          cta.removeAttribute('aria-disabled');
+        } else {
+          cta.removeAttribute('href');
+          cta.setAttribute('role', 'link');
+          cta.setAttribute('aria-disabled', 'true');
+        }
+      });
+    }
+  }
+
+  if (!customElements.get('product-carousel')) {
+    customElements.define('product-carousel', ProductCarousel);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Product carousel",
+  "tag": "section",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "_product-carousel-tab"
+    }
+  ],
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Accessible heading",
+      "default": "Shop products"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Default button label",
+      "default": "All New"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Default button link"
+    },
+    {
+      "type": "text",
+      "id": "badge_label",
+      "label": "Badge label",
+      "default": "New"
+    },
+    {
+      "type": "select",
+      "id": "subtitle_source",
+      "label": "Subtitle source",
+      "default": "metafield",
+      "options": [
+        {
+          "value": "metafield",
+          "label": "Product subtitle metafield, then type"
+        },
+        {
+          "value": "type",
+          "label": "Product type"
+        },
+        {
+          "value": "vendor",
+          "label": "Vendor"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Use vendor as subtitle fallback",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show review rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Show variant swatches",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist icon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_label",
+      "label": "Add button label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "choose_options_label",
+      "label": "Choose options button label",
+      "default": "Select Shade"
+    },
+    {
+      "type": "text",
+      "id": "quick_view_label",
+      "label": "Quick view label",
+      "default": "View product"
+    },
+    {
+      "type": "checkbox",
+      "id": "transition_to_main_product",
+      "label": "Enable product image transition",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Maximum products per tab",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "products_visible_desktop",
+      "label": "Visible products on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 0.5,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "products_visible_mobile",
+      "label": "Visible products on mobile",
+      "default": "2",
+      "options": [
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating",
+      "label": "Fallback rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating_count",
+      "label": "Fallback rating count",
+      "min": 0,
+      "max": 400,
+      "step": 4,
+      "default": 256
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty collection text",
+      "default": "No products found in this collection."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product carousel",
+      "blocks": [
+        {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "New",
+            "collection": "new",
+            "button_label": "All New"
+          }
+        },
+        {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Bestsellers",
+            "collection": "bestsellers",
+            "button_label": "All Bestsellers"
+          }
+        },
+        {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Makeup",
+            "collection": "makeup",
+            "button_label": "All Makeup"
+          }
+        },
+        {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Skincare",
+            "collection": "skincare",
+            "button_label": "All Skincare"
+          }
+        },
+        {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Bundles",
+            "collection": "bundles",
+            "button_label": "All Bundles"
+          }
+        },
+        {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Accessories",
+            "collection": "accessories",
+            "button_label": "All Accessories"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
