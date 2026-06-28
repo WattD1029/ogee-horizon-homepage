@@ -1,0 +1,617 @@
+{% liquid
+  assign heading = section.settings.heading
+  assign card_count = section.blocks.size
+  assign show_arrows = false
+
+  if card_count > 1
+    if section.settings.show_arrows
+      assign show_arrows = true
+    endif
+  endif
+%}
+
+<section
+  class="social-proof-section"
+  style="
+    --social-proof-padding-top: {{ section.settings.padding_top }}px;
+    --social-proof-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --social-proof-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --social-proof-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --social-proof-card-gap: {{ section.settings.card_gap }}px;
+    --social-proof-cards-desktop: {{ section.settings.cards_visible_desktop }};
+    --social-proof-cards-mobile: {{ section.settings.cards_visible_mobile }};
+    --social-proof-background: {{ section.settings.background_color }};
+    --social-proof-text: {{ section.settings.text_color }};
+    --social-proof-rail: {{ section.settings.rail_color }};
+  "
+>
+  <social-proof-carousel class="social-proof">
+    <div class="social-proof__inner">
+      {% if heading != blank %}
+        <h2 class="social-proof__heading">{{ heading | escape }}</h2>
+      {% endif %}
+
+      <div
+        class="social-proof__scroller"
+        data-social-proof-scroller
+        tabindex="0"
+        aria-label="{{ heading | default: 'Social proof gallery' | escape }}"
+      >
+        {% for block in section.blocks %}
+          {% liquid
+            assign image = block.settings.image
+            assign image_alt = block.settings.alt_text
+            assign fallback_asset = 'social-proof-products.png'
+
+            if image_alt == blank and image != blank
+              assign image_alt = image.alt
+            endif
+
+            if image_alt == blank and block.settings.link != blank
+              assign image_alt = heading
+              if image_alt == blank
+                assign image_alt = 'Ogee social proof image'
+              endif
+            endif
+
+            case block.settings.fallback_image
+              when 'foundation'
+                assign fallback_asset = 'social-proof-foundation.png'
+              when 'brush'
+                assign fallback_asset = 'social-proof-brush.png'
+              when 'stick'
+                assign fallback_asset = 'social-proof-stick.png'
+            endcase
+          %}
+
+          {% if block.settings.link != blank %}
+            <a
+              class="social-proof__card"
+              href="{{ block.settings.link }}"
+              {{ block.shopify_attributes }}
+            >
+          {% else %}
+            <div
+              class="social-proof__card"
+              {{ block.shopify_attributes }}
+            >
+          {% endif %}
+            {% if image != blank %}
+              {{
+                image
+                | image_url: width: 960
+                | image_tag:
+                  widths: '240, 360, 480, 640, 800, 960',
+                  sizes: '(max-width: 749px) 55vw, 25vw',
+                  loading: 'lazy',
+                  alt: image_alt,
+                  class: 'social-proof__image'
+              }}
+            {% else %}
+              <img
+                src="{{ fallback_asset | asset_url }}"
+                alt="{{ image_alt | escape }}"
+                class="social-proof__image"
+                width="529"
+                height="944"
+                loading="lazy"
+              >
+            {% endif %}
+          {% if block.settings.link != blank %}
+            </a>
+          {% else %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if card_count > 0 %}
+        <div class="social-proof__navigation">
+          <div class="social-proof__progress" aria-hidden="true">
+            <span data-social-proof-progress></span>
+          </div>
+
+          {% if show_arrows %}
+            <div class="social-proof__arrows">
+              <button
+                type="button"
+                class="social-proof__arrow"
+                aria-label="Previous social proof image"
+                data-social-proof-prev
+              >
+                {{ 'icon-chevron-left.svg' | inline_asset_content }}
+              </button>
+              <button
+                type="button"
+                class="social-proof__arrow"
+                aria-label="Next social proof image"
+                data-social-proof-next
+              >
+                {{ 'icon-chevron-right.svg' | inline_asset_content }}
+              </button>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </social-proof-carousel>
+</section>
+
+{% stylesheet %}
+  .social-proof-section {
+    background: var(--social-proof-background);
+    color: var(--social-proof-text);
+    padding-block: var(--social-proof-padding-top-mobile) var(--social-proof-padding-bottom-mobile);
+    overflow: hidden;
+  }
+
+  .social-proof {
+    display: block;
+  }
+
+  .social-proof__inner {
+    width: 100%;
+    max-width: 1080px;
+    margin-inline: auto;
+    padding-inline: 15px;
+  }
+
+  .social-proof__heading {
+    margin: 0 0 27px;
+    color: var(--social-proof-text);
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.625rem, 7vw, 2rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-align: center;
+  }
+
+  .social-proof__scroller {
+    display: flex;
+    gap: var(--social-proof-card-gap);
+    margin-inline: -15px;
+    padding-inline: 15px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 15px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .social-proof__scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  .social-proof__scroller:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 6px;
+  }
+
+  .social-proof__card {
+    display: block;
+    flex: 0 0 calc(
+      (100% - (var(--social-proof-card-gap) * (var(--social-proof-cards-mobile) - 1))) /
+        var(--social-proof-cards-mobile)
+    );
+    aspect-ratio: 9 / 16;
+    min-width: 0;
+    overflow: hidden;
+    scroll-snap-align: start;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .social-proof__card:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 3px;
+  }
+
+  .social-proof__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .social-proof__navigation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .social-proof__progress {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--social-proof-rail) 20%, transparent);
+  }
+
+  .social-proof__progress span {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    display: block;
+    width: 100%;
+    background: var(--social-proof-rail);
+    transform-origin: left center;
+  }
+
+  .social-proof__arrows {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .social-proof-section {
+      padding-block: var(--social-proof-padding-top) var(--social-proof-padding-bottom);
+    }
+
+    .social-proof__inner {
+      padding-inline: 0;
+    }
+
+    .social-proof__heading {
+      margin-bottom: 28px;
+      font-size: 2rem;
+      text-align: left;
+    }
+
+    .social-proof__scroller {
+      margin-inline: 0;
+      padding-inline: 0;
+      scroll-padding-inline: 0;
+    }
+
+    .social-proof__card {
+      flex-basis: calc(
+        (100% - (var(--social-proof-card-gap) * (var(--social-proof-cards-desktop) - 1))) /
+          var(--social-proof-cards-desktop)
+      );
+    }
+
+    .social-proof__navigation {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
+      margin-top: 39px;
+    }
+
+    .social-proof__arrows {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .social-proof__arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      color: var(--social-proof-text);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .social-proof__arrow svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .social-proof__arrow[disabled] {
+      cursor: default;
+      opacity: 0.35;
+    }
+
+    .social-proof__arrow:focus-visible {
+      outline: 2px solid currentcolor;
+      outline-offset: -4px;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .social-proof__inner {
+      padding-inline: 24px;
+    }
+
+    .social-proof__card {
+      flex-basis: calc((100% - (var(--social-proof-card-gap) * 2)) / 3);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class SocialProofCarousel extends HTMLElement {
+    connectedCallback() {
+      this.scroller = this.querySelector('[data-social-proof-scroller]');
+      this.progress = this.querySelector('[data-social-proof-progress]');
+      this.previousButton = this.querySelector('[data-social-proof-prev]');
+      this.nextButton = this.querySelector('[data-social-proof-next]');
+      this.animationFrame = null;
+
+      if (!this.scroller) return;
+
+      this.handleScroll = () => {
+        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+        this.animationFrame = requestAnimationFrame(() => this.update());
+      };
+
+      this.handleResize = () => this.update();
+      this.handlePrevious = () => this.scrollByCard(-1);
+      this.handleNext = () => this.scrollByCard(1);
+
+      this.scroller.addEventListener('scroll', this.handleScroll, { passive: true });
+      window.addEventListener('resize', this.handleResize);
+      this.previousButton?.addEventListener('click', this.handlePrevious);
+      this.nextButton?.addEventListener('click', this.handleNext);
+
+      this.update();
+    }
+
+    disconnectedCallback() {
+      if (!this.scroller) return;
+
+      this.scroller.removeEventListener('scroll', this.handleScroll);
+      window.removeEventListener('resize', this.handleResize);
+      this.previousButton?.removeEventListener('click', this.handlePrevious);
+      this.nextButton?.removeEventListener('click', this.handleNext);
+
+      if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+    }
+
+    scrollByCard(direction) {
+      const card = this.scroller.querySelector('.social-proof__card');
+      if (!card) return;
+
+      const styles = window.getComputedStyle(this.scroller);
+      const gap = parseFloat(styles.columnGap || styles.gap || 0);
+      const distance = card.getBoundingClientRect().width + gap;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      this.scroller.scrollBy({
+        left: distance * direction,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      });
+    }
+
+    update() {
+      const maxScroll = Math.max(this.scroller.scrollWidth - this.scroller.clientWidth, 0);
+      const scrollLeft = this.scroller.scrollLeft;
+      const hasOverflow = maxScroll > 1;
+      const progress = hasOverflow ? ((scrollLeft + this.scroller.clientWidth) / this.scroller.scrollWidth) * 100 : 100;
+
+      if (this.progress) {
+        this.progress.style.width = `${Math.min(Math.max(progress, 0), 100)}%`;
+      }
+
+      this.previousButton?.toggleAttribute('disabled', scrollLeft <= 1);
+      this.nextButton?.toggleAttribute('disabled', scrollLeft >= maxScroll - 1);
+      this.toggleAttribute('data-overflowing', hasOverflow);
+    }
+  }
+
+  if (!customElements.get('social-proof-carousel')) {
+    customElements.define('social-proof-carousel', SocialProofCarousel);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Social proof",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "proof",
+      "name": "Proof image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "fallback_image",
+          "label": "Bundled fallback",
+          "options": [
+            {
+              "value": "products",
+              "label": "Product flat lay"
+            },
+            {
+              "value": "foundation",
+              "label": "Foundation"
+            },
+            {
+              "value": "brush",
+              "label": "Brush application"
+            },
+            {
+              "value": "stick",
+              "label": "Sculpting stick"
+            }
+          ],
+          "default": "products"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Beyond Clean Beauties"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "rail_color",
+      "label": "Progress rail",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "cards_visible_desktop",
+      "label": "Visible cards on desktop",
+      "min": 3,
+      "max": 5,
+      "step": 0.5,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "cards_visible_mobile",
+      "label": "Visible cards on mobile",
+      "options": [
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "1.8",
+          "label": "1.8"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1.8"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show desktop arrows",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Desktop padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "header",
+      "content": "Mobile padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social proof",
+      "category": "t:categories.storytelling",
+      "blocks": [
+        {
+          "type": "proof",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a textured rug."
+          }
+        },
+        {
+          "type": "proof",
+          "settings": {
+            "fallback_image": "foundation",
+            "alt_text": "A customer holding an Ogee complexion product."
+          }
+        },
+        {
+          "type": "proof",
+          "settings": {
+            "fallback_image": "brush",
+            "alt_text": "A customer applying Ogee makeup with a brush."
+          }
+        },
+        {
+          "type": "proof",
+          "settings": {
+            "fallback_image": "stick",
+            "alt_text": "An Ogee sculpting stick held in hand."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
