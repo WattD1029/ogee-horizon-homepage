@@ -84,8 +84,8 @@
         "navigation_color": "#333333"
       }
     },
-    "ogee_promotion_offer_banner": {
-      "type": "ogee-promotion-offer-banner",
+    "promotion_offer_banner": {
+      "type": "promotion-offer-banner",
       "settings": {
         "eyebrow": "THE CONTOUR COLLECTIONS",
         "heading": "Recognized With 5,000+ Five-Star Reviews.",
@@ -93,19 +93,17 @@
         "image": "",
         "image_width_desktop": 220,
         "image_width_mobile": 100,
-        "image_x_desktop": 110,
-        "image_y_desktop": 210,
         "button_label": "SHOP NOW",
         "product": "",
         "link": "",
         "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
         "open_in_new_tab": false,
-        "desktop_height": 420,
-        "mobile_height": 720,
-        "content_max_width": 900,
-        "background_color": "#ffffff",
+        "desktop_height": 220,
+        "mobile_height": 380,
+        "content_max_width": 660,
+        "background_color": "#fafafa",
         "text_color": "#000000",
-        "muted_text_color": "#4c4c4c",
+        "muted_text_color": "#404040",
         "button_background": "#000000",
         "button_color": "#ffffff"
       }
@@ -205,7 +203,7 @@
   },
   "order": [
     "ogee_hero_crystal_contour",
-    "ogee_promotion_offer_banner",
-    "product_list_fa6P9H"
+    "product_list_fa6P9H",
+    "promotion_offer_banner"
   ]
 }
