@@ -84,6 +84,98 @@
         "navigation_color": "#333333"
       }
     },
+    "product_carousel_homepage": {
+      "type": "product-carousel",
+      "blocks": {
+        "new": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "New",
+            "collection": "new",
+            "button_label": "All New"
+          },
+          "blocks": {}
+        },
+        "bestsellers": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Bestsellers",
+            "collection": "bestsellers",
+            "button_label": "All Bestsellers"
+          },
+          "blocks": {}
+        },
+        "makeup": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Makeup",
+            "collection": "makeup",
+            "button_label": "All Makeup"
+          },
+          "blocks": {}
+        },
+        "skincare": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Skincare",
+            "collection": "skincare",
+            "button_label": "All Skincare"
+          },
+          "blocks": {}
+        },
+        "bundles": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Bundles",
+            "collection": "bundles",
+            "button_label": "All Bundles"
+          },
+          "blocks": {}
+        },
+        "accessories": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Accessories",
+            "collection": "accessories",
+            "button_label": "All Accessories"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "new",
+        "bestsellers",
+        "makeup",
+        "skincare",
+        "bundles",
+        "accessories"
+      ],
+      "settings": {
+        "heading": "Shop products",
+        "button_label": "All New",
+        "button_link": "",
+        "badge_label": "New",
+        "subtitle_source": "metafield",
+        "show_vendor": false,
+        "show_reviews": true,
+        "show_swatches": true,
+        "show_wishlist": true,
+        "add_to_cart_label": "Add to cart",
+        "choose_options_label": "Select Shade",
+        "quick_view_label": "View product",
+        "transition_to_main_product": false,
+        "max_products": 12,
+        "products_visible_desktop": 4,
+        "products_visible_mobile": "2",
+        "card_gap": 8,
+        "fallback_rating": 5,
+        "fallback_rating_count": 256,
+        "empty_text": "No products found in this collection.",
+        "color_scheme": "scheme-1",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
     "product_list_fa6P9H": {
       "type": "product-list",
       "blocks": {
@@ -281,6 +373,7 @@
   },
   "order": [
     "ogee_hero_crystal_contour",
+    "product_carousel_homepage",
     "product_list_fa6P9H"
   ]
 }
