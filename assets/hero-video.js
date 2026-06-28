@@ -9,7 +9,7 @@ import { SlideshowSelectEvent } from '@theme/events';
  *
  * @extends {Component<Refs>}
  */
-class OgeeHeroVideoComponent extends Component {
+class HeroVideoComponent extends Component {
   #slide;
   #slideshow;
   #reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -160,6 +160,6 @@ class OgeeHeroVideoComponent extends Component {
   };
 }
 
-if (!customElements.get('ogee-hero-video-component')) {
-  customElements.define('ogee-hero-video-component', OgeeHeroVideoComponent);
+if (!customElements.get('hero-video-component')) {
+  customElements.define('hero-video-component', HeroVideoComponent);
 }

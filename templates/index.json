@@ -9,11 +9,11 @@
  */
 {
   "sections": {
-    "ogee_hero_crystal_contour": {
-      "type": "ogee-hero-slideshow",
+    "hero_crystal_contour": {
+      "type": "hero-slideshow",
       "blocks": {
         "crystal_contour_campaign": {
-          "type": "_ogee-hero-slide",
+          "type": "_hero-slide",
           "settings": {
             "media_layout": "full_bleed",
             "bundled_campaign": "crystal_contour",
@@ -37,15 +37,15 @@
           },
           "blocks": {}
         },
-        "ogee_hero_slide_fdVz6H": {
-          "type": "_ogee-hero-slide",
-          "name": "Ogee hero slide",
+        "hero_slide_fdVz6H": {
+          "type": "_hero-slide",
+          "name": "Hero slide",
           "settings": {
             "media_layout": "video",
             "video": "shopify://files/videos/ogee-video1.mp4",
             "bundled_campaign": "none",
             "custom_mobile_media": false,
-            "eyebrow": "Ogee hero product",
+            "eyebrow": "Hero product",
             "heading": "Award Winning Sculpting Stick For Ultimate Glow",
             "description": "Effortlessly enhance the natural contours of the face with three easy-to-apply, balmy sticks.",
             "button_label": "Shop now",
@@ -67,7 +67,7 @@
       },
       "block_order": [
         "crystal_contour_campaign",
-        "ogee_hero_slide_fdVz6H"
+        "hero_slide_fdVz6H"
       ],
       "settings": {
         "height_mode": "image-ratio",
@@ -372,7 +372,7 @@
     }
   },
   "order": [
-    "ogee_hero_crystal_contour",
+    "hero_crystal_contour",
     "product_carousel_homepage",
     "product_list_fa6P9H"
   ]
