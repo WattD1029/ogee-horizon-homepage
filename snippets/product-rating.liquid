@@ -1,12 +1,12 @@
 {% doc %}
-  Renders a compact product rating row for Ogee carousel cards.
+  Renders a compact product rating row for carousel cards.
 
   @param {object} product - Product to read review metafields from
   @param {number} [fallback_rating] - Rating to use for visual preview or fallback display
   @param {number} [fallback_count] - Rating count to use for visual preview or fallback display
 
   @example
-  {% render 'ogee-product-rating', product: product, fallback_rating: 5, fallback_count: 256 %}
+  {% render 'product-rating', product: product, fallback_rating: 5, fallback_count: 256 %}
 {% enddoc %}
 
 {% liquid
@@ -38,13 +38,13 @@
 
 {% if rating != blank and rating_count != blank %}
   <div
-    class="ogee-product-rating"
+    class="product-rating"
     aria-label="Rated {{ rating }} out of 5 stars"
   >
-    <span class="ogee-product-rating__stars" aria-hidden="true">
+    <span class="product-rating__stars" aria-hidden="true">
       {% for star in (1..5) %}
         <svg
-          class="ogee-product-rating__star{% if star <= filled_stars %} ogee-product-rating__star--filled{% endif %}"
+          class="product-rating__star{% if star <= filled_stars %} product-rating__star--filled{% endif %}"
           viewBox="0 0 32 32"
           focusable="false"
           aria-hidden="true"
@@ -53,6 +53,6 @@
         </svg>
       {% endfor %}
     </span>
-    <span class="ogee-product-rating__count">({{ rating_count }})</span>
+    <span class="product-rating__count">({{ rating_count }})</span>
   </div>
 {% endif %}

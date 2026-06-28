@@ -30,19 +30,19 @@
 %}
 
 <section
-  class="ogee-product-carousel color-{{ section.settings.color_scheme }}"
+  class="product-carousel color-{{ section.settings.color_scheme }}"
   style="
-    --ogee-product-carousel-padding-top: {{ section.settings.padding_top }}px;
-    --ogee-product-carousel-padding-bottom: {{ section.settings.padding_bottom }}px;
-    --ogee-product-carousel-card-gap: {{ section.settings.card_gap }}px;
-    --ogee-product-carousel-products-desktop: {{ section.settings.products_visible_desktop }};
-    --ogee-product-carousel-products-mobile: {{ section.settings.products_visible_mobile }};
+    --product-carousel-padding-top: {{ section.settings.padding_top }}px;
+    --product-carousel-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --product-carousel-card-gap: {{ section.settings.card_gap }}px;
+    --product-carousel-products-desktop: {{ section.settings.products_visible_desktop }};
+    --product-carousel-products-mobile: {{ section.settings.products_visible_mobile }};
   "
 >
-  <ogee-product-carousel class="ogee-product-carousel__inner">
-    <div class="ogee-product-carousel__header">
+  <product-carousel class="product-carousel__inner">
+    <div class="product-carousel__header">
       <div
-        class="ogee-product-carousel__tabs"
+        class="product-carousel__tabs"
         role="tablist"
         aria-label="{{ section.settings.heading | default: 'Product collections' | escape }}"
       >
@@ -111,10 +111,10 @@
 
             <button
               type="button"
-              class="ogee-product-carousel__tab"
-              id="OgeeProductCarouselTab-{{ section.id }}-{{ tab_block.id }}"
+              class="product-carousel__tab"
+              id="ProductCarouselTab-{{ section.id }}-{{ tab_block.id }}"
               role="tab"
-              aria-controls="OgeeProductCarouselPanel-{{ section.id }}-{{ tab_block.id }}"
+              aria-controls="ProductCarouselPanel-{{ section.id }}-{{ tab_block.id }}"
               aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
               data-tab-index="{{ forloop.index0 }}"
               data-tab-url="{{ tab_url }}"
@@ -128,10 +128,10 @@
           {% for tab_label in fallback_tabs %}
             <button
               type="button"
-              class="ogee-product-carousel__tab"
-              id="OgeeProductCarouselTab-{{ section.id }}-fallback-{{ forloop.index }}"
+              class="product-carousel__tab"
+              id="ProductCarouselTab-{{ section.id }}-fallback-{{ forloop.index }}"
               role="tab"
-              aria-controls="OgeeProductCarouselPanel-{{ section.id }}-fallback"
+              aria-controls="ProductCarouselPanel-{{ section.id }}-fallback"
               aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
               data-tab-index="0"
               data-tab-url="{{ section.settings.button_link }}"
@@ -148,7 +148,7 @@
 
       {% if active_cta_label != blank %}
         <a
-          class="ogee-product-carousel__cta ogee-product-carousel__cta--desktop"
+          class="product-carousel__cta product-carousel__cta--desktop"
           data-carousel-cta
           {% if active_cta_url != blank %}
             href="{{ active_cta_url }}"
@@ -162,7 +162,7 @@
       {% endif %}
     </div>
 
-    <div class="ogee-product-carousel__panels">
+    <div class="product-carousel__panels">
       {% if has_tabs %}
         {% for tab_block in section.blocks %}
           {% liquid
@@ -211,10 +211,10 @@
           %}
 
           <div
-            class="ogee-product-carousel__panel"
-            id="OgeeProductCarouselPanel-{{ section.id }}-{{ tab_block.id }}"
+            class="product-carousel__panel"
+            id="ProductCarouselPanel-{{ section.id }}-{{ tab_block.id }}"
             role="tabpanel"
-            aria-labelledby="OgeeProductCarouselTab-{{ section.id }}-{{ tab_block.id }}"
+            aria-labelledby="ProductCarouselTab-{{ section.id }}-{{ tab_block.id }}"
             data-carousel-panel
             {% if panel_hidden %}
               hidden
@@ -239,14 +239,14 @@
                   pagination_position: 'right',
                   icon_style: 'arrow',
                   shape: 'none',
-                  class: 'ogee-product-carousel__controls'
+                  class: 'product-carousel__controls'
                 %}
               {% endcapture %}
 
               {% capture slides %}
                 {% for product in tab_collection.products limit: product_limit %}
                   {% capture slide_children %}
-                    {% render 'ogee-product-carousel-card',
+                    {% render 'product-carousel-card',
                       product: product,
                       section_id: section.id,
                       card_id: tab_block.id | append: '-' | append: product.id,
@@ -269,7 +269,7 @@
                   {% render 'slideshow-slide',
                     slide_id: product.id,
                     index: forloop.index0,
-                    class: 'ogee-product-carousel__slide',
+                    class: 'product-carousel__slide',
                     children: slide_children
                   %}
                 {% endfor %}
@@ -277,7 +277,7 @@
 
               <h2 class="visually-hidden">{{ panel_label }}</h2>
               {% render 'slideshow',
-                class: 'ogee-product-carousel__slideshow',
+                class: 'product-carousel__slideshow',
                 controls: controls,
                 slides: slides,
                 slide_count: slide_count,
@@ -286,11 +286,11 @@
                 infinite: false
               %}
             {% elsif tab_collection != blank %}
-              <p class="ogee-product-carousel__empty">{{ section.settings.empty_text }}</p>
+              <p class="product-carousel__empty">{{ section.settings.empty_text }}</p>
             {% else %}
-              <div class="ogee-product-carousel__placeholder-grid" aria-label="{{ panel_label | escape }}">
+              <div class="product-carousel__placeholder-grid" aria-label="{{ panel_label | escape }}">
                 {% for placeholder_index in (1..4) %}
-                  {% render 'ogee-product-carousel-card',
+                  {% render 'product-carousel-card',
                     product: blank,
                     section_id: section.id,
                     card_id: tab_block.id | append: '-placeholder-' | append: placeholder_index,
@@ -307,15 +307,15 @@
         {% endfor %}
       {% else %}
         <div
-          class="ogee-product-carousel__panel"
-          id="OgeeProductCarouselPanel-{{ section.id }}-fallback"
+          class="product-carousel__panel"
+          id="ProductCarouselPanel-{{ section.id }}-fallback"
           role="tabpanel"
-          aria-labelledby="OgeeProductCarouselTab-{{ section.id }}-fallback-1"
+          aria-labelledby="ProductCarouselTab-{{ section.id }}-fallback-1"
           data-carousel-panel
         >
-          <div class="ogee-product-carousel__placeholder-grid">
+          <div class="product-carousel__placeholder-grid">
             {% for placeholder_index in (1..4) %}
-              {% render 'ogee-product-carousel-card',
+              {% render 'product-carousel-card',
                 product: blank,
                 section_id: section.id,
                 card_id: 'fallback-placeholder-' | append: placeholder_index,
@@ -333,7 +333,7 @@
 
     {% if active_cta_label != blank %}
       <a
-        class="ogee-product-carousel__cta ogee-product-carousel__cta--mobile"
+        class="product-carousel__cta product-carousel__cta--mobile"
         data-carousel-cta
         {% if active_cta_url != blank %}
           href="{{ active_cta_url }}"
@@ -345,17 +345,17 @@
         {{ active_cta_label }}
       </a>
     {% endif %}
-  </ogee-product-carousel>
+  </product-carousel>
 </section>
 
 {% stylesheet %}
-  .ogee-product-carousel {
-    padding-block: var(--ogee-product-carousel-padding-top) var(--ogee-product-carousel-padding-bottom);
+  .product-carousel {
+    padding-block: var(--product-carousel-padding-top) var(--product-carousel-padding-bottom);
     background: rgb(var(--color-background-rgb));
     color: rgb(var(--color-foreground-rgb));
   }
 
-  .ogee-product-carousel__inner {
+  .product-carousel__inner {
     display: block;
     width: 100%;
     max-width: var(--page-width);
@@ -363,7 +363,7 @@
     padding-inline: var(--page-margin);
   }
 
-  .ogee-product-carousel__header {
+  .product-carousel__header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -372,7 +372,7 @@
     border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
   }
 
-  .ogee-product-carousel__tabs {
+  .product-carousel__tabs {
     display: flex;
     align-items: flex-end;
     gap: 28px;
@@ -381,11 +381,11 @@
     scrollbar-width: none;
   }
 
-  .ogee-product-carousel__tabs::-webkit-scrollbar {
+  .product-carousel__tabs::-webkit-scrollbar {
     display: none;
   }
 
-  .ogee-product-carousel__tab {
+  .product-carousel__tab {
     position: relative;
     flex: 0 0 auto;
     padding: 0 0 17px;
@@ -400,7 +400,7 @@
     cursor: pointer;
   }
 
-  .ogee-product-carousel__tab::after {
+  .product-carousel__tab::after {
     content: '';
     position: absolute;
     left: 0;
@@ -411,19 +411,19 @@
     opacity: 0;
   }
 
-  .ogee-product-carousel__tab[aria-selected='true'] {
+  .product-carousel__tab[aria-selected='true'] {
     color: rgb(var(--color-foreground-rgb));
   }
 
-  .ogee-product-carousel__tab[aria-selected='true']::after {
+  .product-carousel__tab[aria-selected='true']::after {
     opacity: 1;
   }
 
-  .ogee-product-carousel__tab:disabled {
+  .product-carousel__tab:disabled {
     cursor: default;
   }
 
-  .ogee-product-carousel__cta {
+  .product-carousel__cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -441,42 +441,42 @@
     text-transform: uppercase;
   }
 
-  .ogee-product-carousel__cta[aria-disabled='true'] {
+  .product-carousel__cta[aria-disabled='true'] {
     pointer-events: none;
     opacity: 0.55;
   }
 
-  .ogee-product-carousel__panels {
+  .product-carousel__panels {
     min-width: 0;
   }
 
-  .ogee-product-carousel__panel[hidden] {
+  .product-carousel__panel[hidden] {
     display: none;
   }
 
-  .ogee-product-carousel__slideshow {
+  .product-carousel__slideshow {
     --slideshow-slide-width: calc(
-      (100% - (var(--ogee-product-carousel-card-gap) * (var(--ogee-product-carousel-products-desktop) - 1))) /
-        var(--ogee-product-carousel-products-desktop)
+      (100% - (var(--product-carousel-card-gap) * (var(--product-carousel-products-desktop) - 1))) /
+        var(--product-carousel-products-desktop)
     );
     display: block;
   }
 
-  .ogee-product-carousel__slideshow slideshow-slides {
-    gap: var(--ogee-product-carousel-card-gap);
+  .product-carousel__slideshow slideshow-slides {
+    gap: var(--product-carousel-card-gap);
     scrollbar-width: none;
   }
 
-  .ogee-product-carousel__slideshow slideshow-slides::-webkit-scrollbar {
+  .product-carousel__slideshow slideshow-slides::-webkit-scrollbar {
     display: none;
   }
 
-  .ogee-product-carousel__slide {
+  .product-carousel__slide {
     flex: 0 0 var(--slideshow-slide-width);
     scroll-snap-align: start;
   }
 
-  .ogee-product-carousel__controls {
+  .product-carousel__controls {
     position: static;
     display: flex;
     justify-content: flex-end;
@@ -485,118 +485,118 @@
     color: rgb(var(--color-foreground-rgb));
   }
 
-  .ogee-product-carousel__controls .slideshow-controls__counter {
+  .product-carousel__controls .slideshow-controls__counter {
     display: none;
   }
 
-  .ogee-product-carousel__controls .slideshow-controls__arrows {
+  .product-carousel__controls .slideshow-controls__arrows {
     gap: 0;
   }
 
-  .ogee-product-carousel__controls .slideshow-control {
+  .product-carousel__controls .slideshow-control {
     width: 48px;
     height: 48px;
     color: rgb(var(--color-foreground-rgb));
   }
 
-  .ogee-product-carousel__placeholder-grid {
+  .product-carousel__placeholder-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--ogee-product-carousel-card-gap);
+    gap: var(--product-carousel-card-gap);
   }
 
-  .ogee-product-carousel__empty {
+  .product-carousel__empty {
     margin: 36px 0;
     color: rgb(var(--color-foreground-rgb) / 0.64);
     font-size: 14px;
   }
 
-  .ogee-product-carousel__cta--mobile {
+  .product-carousel__cta--mobile {
     display: none;
   }
 
   @media screen and (max-width: 989px) {
-    .ogee-product-carousel__slideshow {
+    .product-carousel__slideshow {
       --slideshow-slide-width: calc(
-        (100% - (var(--ogee-product-carousel-card-gap) * 2)) /
+        (100% - (var(--product-carousel-card-gap) * 2)) /
           3
       );
     }
 
-    .ogee-product-carousel__placeholder-grid {
+    .product-carousel__placeholder-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
   @media screen and (max-width: 749px) {
-    .ogee-product-carousel {
-      padding-block: min(var(--ogee-product-carousel-padding-top), 40px)
-        min(var(--ogee-product-carousel-padding-bottom), 44px);
+    .product-carousel {
+      padding-block: min(var(--product-carousel-padding-top), 40px)
+        min(var(--product-carousel-padding-bottom), 44px);
     }
 
-    .ogee-product-carousel__inner {
+    .product-carousel__inner {
       padding-inline: 16px;
     }
 
-    .ogee-product-carousel__header {
+    .product-carousel__header {
       display: block;
       margin-bottom: 22px;
       border-bottom: 0;
     }
 
-    .ogee-product-carousel__tabs {
+    .product-carousel__tabs {
       gap: 24px;
       padding-bottom: 1px;
       border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
     }
 
-    .ogee-product-carousel__tab {
+    .product-carousel__tab {
       padding-bottom: 15px;
       font-size: 11px;
     }
 
-    .ogee-product-carousel__cta--desktop,
-    .ogee-product-carousel__controls {
+    .product-carousel__cta--desktop,
+    .product-carousel__controls {
       display: none;
     }
 
-    .ogee-product-carousel__slideshow {
+    .product-carousel__slideshow {
       --slideshow-slide-width: calc(
-        (100% - (var(--ogee-product-carousel-card-gap) * (var(--ogee-product-carousel-products-mobile) - 1))) /
-          var(--ogee-product-carousel-products-mobile)
+        (100% - (var(--product-carousel-card-gap) * (var(--product-carousel-products-mobile) - 1))) /
+          var(--product-carousel-products-mobile)
       );
     }
 
-    .ogee-product-carousel__slideshow slideshow-slides {
+    .product-carousel__slideshow slideshow-slides {
       align-items: stretch;
     }
 
-    .ogee-product-carousel__slide {
+    .product-carousel__slide {
       display: flex;
     }
 
-    .ogee-product-carousel__slide > product-card {
+    .product-carousel__slide > product-card {
       width: 100%;
     }
 
-    .ogee-product-carousel__placeholder-grid {
+    .product-carousel__placeholder-grid {
       display: flex;
-      gap: var(--ogee-product-carousel-card-gap);
+      gap: var(--product-carousel-card-gap);
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
     }
 
-    .ogee-product-carousel__placeholder-grid::-webkit-scrollbar {
+    .product-carousel__placeholder-grid::-webkit-scrollbar {
       display: none;
     }
 
-    .ogee-product-carousel__placeholder-grid > * {
+    .product-carousel__placeholder-grid > * {
       flex: 0 0 var(--slideshow-slide-width);
       scroll-snap-align: start;
     }
 
-    .ogee-product-carousel__cta--mobile {
+    .product-carousel__cta--mobile {
       display: flex;
       width: 100%;
       margin-top: 28px;
@@ -609,7 +609,7 @@
 {% endstylesheet %}
 
 {% javascript %}
-  class OgeeProductCarousel extends HTMLElement {
+  class ProductCarousel extends HTMLElement {
     connectedCallback() {
       this.tabs = Array.from(this.querySelectorAll('[role="tab"]'));
       this.panels = Array.from(this.querySelectorAll('[data-carousel-panel]'));
@@ -667,19 +667,19 @@
     }
   }
 
-  if (!customElements.get('ogee-product-carousel')) {
-    customElements.define('ogee-product-carousel', OgeeProductCarousel);
+  if (!customElements.get('product-carousel')) {
+    customElements.define('product-carousel', ProductCarousel);
   }
 {% endjavascript %}
 
 {% schema %}
 {
-  "name": "Ogee product carousel",
+  "name": "Product carousel",
   "tag": "section",
   "class": "section-wrapper",
   "blocks": [
     {
-      "type": "_ogee-product-carousel-tab"
+      "type": "_product-carousel-tab"
     }
   ],
   "max_blocks": 6,
@@ -872,10 +872,10 @@
   ],
   "presets": [
     {
-      "name": "Ogee product carousel",
+      "name": "Product carousel",
       "blocks": [
         {
-          "type": "_ogee-product-carousel-tab",
+          "type": "_product-carousel-tab",
           "settings": {
             "label": "New",
             "collection": "new",
@@ -883,7 +883,7 @@
           }
         },
         {
-          "type": "_ogee-product-carousel-tab",
+          "type": "_product-carousel-tab",
           "settings": {
             "label": "Bestsellers",
             "collection": "bestsellers",
@@ -891,7 +891,7 @@
           }
         },
         {
-          "type": "_ogee-product-carousel-tab",
+          "type": "_product-carousel-tab",
           "settings": {
             "label": "Makeup",
             "collection": "makeup",
@@ -899,7 +899,7 @@
           }
         },
         {
-          "type": "_ogee-product-carousel-tab",
+          "type": "_product-carousel-tab",
           "settings": {
             "label": "Skincare",
             "collection": "skincare",
@@ -907,7 +907,7 @@
           }
         },
         {
-          "type": "_ogee-product-carousel-tab",
+          "type": "_product-carousel-tab",
           "settings": {
             "label": "Bundles",
             "collection": "bundles",
@@ -915,7 +915,7 @@
           }
         },
         {
-          "type": "_ogee-product-carousel-tab",
+          "type": "_product-carousel-tab",
           "settings": {
             "label": "Accessories",
             "collection": "accessories",
