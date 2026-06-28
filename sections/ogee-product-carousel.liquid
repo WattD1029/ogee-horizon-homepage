@@ -6,17 +6,25 @@
   endif
 
   assign fallback_tabs = 'New,Bestsellers,Makeup,Skincare,Bundles,Accessories' | split: ','
+  assign fallback_collection_handles = 'new,bestsellers,makeup,skincare,bundles,accessories' | split: ','
+  assign fallback_button_labels = 'All New,All Bestsellers,All Makeup,All Skincare,All Bundles,All Accessories' | split: ','
   assign active_cta_label = section.settings.button_label
   assign active_cta_url = section.settings.button_link
   if has_tabs
     assign first_block = section.blocks | first
+    assign first_fallback_collection_handle = fallback_collection_handles | first
+    assign first_fallback_collection = collections[first_fallback_collection_handle]
     if first_block.settings.button_label != blank
       assign active_cta_label = first_block.settings.button_label
+    elsif active_cta_label == blank
+      assign active_cta_label = fallback_button_labels | first
     endif
     if first_block.settings.button_link != blank
       assign active_cta_url = first_block.settings.button_link
     elsif first_block.settings.collection != blank
       assign active_cta_url = first_block.settings.collection.url
+    elsif first_fallback_collection != blank
+      assign active_cta_url = first_fallback_collection.url
     endif
   endif
 %}
@@ -41,10 +49,43 @@
         {% if has_tabs %}
           {% for tab_block in section.blocks %}
             {% liquid
+              assign fallback_tab_label = ''
+              assign fallback_collection_handle = ''
+              assign fallback_button_label = ''
+              case forloop.index0
+                when 0
+                  assign fallback_tab_label = 'New'
+                  assign fallback_collection_handle = 'new'
+                  assign fallback_button_label = 'All New'
+                when 1
+                  assign fallback_tab_label = 'Bestsellers'
+                  assign fallback_collection_handle = 'bestsellers'
+                  assign fallback_button_label = 'All Bestsellers'
+                when 2
+                  assign fallback_tab_label = 'Makeup'
+                  assign fallback_collection_handle = 'makeup'
+                  assign fallback_button_label = 'All Makeup'
+                when 3
+                  assign fallback_tab_label = 'Skincare'
+                  assign fallback_collection_handle = 'skincare'
+                  assign fallback_button_label = 'All Skincare'
+                when 4
+                  assign fallback_tab_label = 'Bundles'
+                  assign fallback_collection_handle = 'bundles'
+                  assign fallback_button_label = 'All Bundles'
+                when 5
+                  assign fallback_tab_label = 'Accessories'
+                  assign fallback_collection_handle = 'accessories'
+                  assign fallback_button_label = 'All Accessories'
+              endcase
+              assign fallback_tab_collection = collections[fallback_collection_handle]
+
               assign tab_label = tab_block.settings.label
               if tab_label == blank
                 if tab_block.settings.collection != blank
                   assign tab_label = tab_block.settings.collection.title
+                elsif fallback_tab_label != blank
+                  assign tab_label = fallback_tab_label
                 else
                   assign tab_label = 'Tab ' | append: forloop.index
                 endif
@@ -54,7 +95,17 @@
               if tab_url == blank
                 if tab_block.settings.collection != blank
                   assign tab_url = tab_block.settings.collection.url
+                elsif fallback_tab_collection != blank
+                  assign tab_url = fallback_tab_collection.url
                 endif
+              endif
+
+              assign tab_button_label = tab_block.settings.button_label
+              if tab_button_label == blank
+                assign tab_button_label = fallback_button_label
+              endif
+              if tab_button_label == blank
+                assign tab_button_label = section.settings.button_label
               endif
             %}
 
@@ -67,7 +118,7 @@
               aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
               data-tab-index="{{ forloop.index0 }}"
               data-tab-url="{{ tab_url }}"
-              data-tab-button-label="{{ tab_block.settings.button_label | default: section.settings.button_label | escape }}"
+              data-tab-button-label="{{ tab_button_label | escape }}"
               {{ tab_block.shopify_attributes }}
             >
               {{ tab_label }}
@@ -116,11 +167,47 @@
         {% for tab_block in section.blocks %}
           {% liquid
             assign tab_collection = tab_block.settings.collection
+            assign fallback_tab_label = ''
+            assign fallback_collection_handle = ''
+            case forloop.index0
+              when 0
+                assign fallback_tab_label = 'New'
+                assign fallback_collection_handle = 'new'
+              when 1
+                assign fallback_tab_label = 'Bestsellers'
+                assign fallback_collection_handle = 'bestsellers'
+              when 2
+                assign fallback_tab_label = 'Makeup'
+                assign fallback_collection_handle = 'makeup'
+              when 3
+                assign fallback_tab_label = 'Skincare'
+                assign fallback_collection_handle = 'skincare'
+              when 4
+                assign fallback_tab_label = 'Bundles'
+                assign fallback_collection_handle = 'bundles'
+              when 5
+                assign fallback_tab_label = 'Accessories'
+                assign fallback_collection_handle = 'accessories'
+            endcase
+            if tab_collection == blank
+              if fallback_collection_handle != blank
+                assign tab_collection = collections[fallback_collection_handle]
+              endif
+            endif
             assign panel_hidden = true
             if forloop.index0 == active_tab_index
               assign panel_hidden = false
             endif
-            assign panel_label = tab_block.settings.label | default: tab_collection.title | default: 'Product carousel'
+            assign panel_label = tab_block.settings.label
+            if panel_label == blank
+              assign panel_label = tab_collection.title
+            endif
+            if panel_label == blank
+              assign panel_label = fallback_tab_label
+            endif
+            if panel_label == blank
+              assign panel_label = 'Product carousel'
+            endif
           %}
 
           <div
@@ -791,6 +878,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "New",
+            "collection": "new",
             "button_label": "All New"
           }
         },
@@ -798,6 +886,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Bestsellers",
+            "collection": "bestsellers",
             "button_label": "All Bestsellers"
           }
         },
@@ -805,6 +894,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Makeup",
+            "collection": "makeup",
             "button_label": "All Makeup"
           }
         },
@@ -812,6 +902,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Skincare",
+            "collection": "skincare",
             "button_label": "All Skincare"
           }
         },
@@ -819,6 +910,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Bundles",
+            "collection": "bundles",
             "button_label": "All Bundles"
           }
         },
@@ -826,6 +918,7 @@
           "type": "_ogee-product-carousel-tab",
           "settings": {
             "label": "Accessories",
+            "collection": "accessories",
             "button_label": "All Accessories"
           }
         }
