@@ -159,12 +159,14 @@
   .social-proof__heading {
     margin: 0 0 27px;
     color: var(--social-proof-text);
-    font-family: var(--font-heading--family);
-    font-size: clamp(1.625rem, 7vw, 2rem);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 26px;
+    font-style: normal;
     font-weight: 300;
-    line-height: 1.1;
+    line-height: 1.2;
     letter-spacing: 0;
     text-align: center;
+    text-wrap: pretty;
   }
 
   .social-proof__scroller {
@@ -172,12 +174,13 @@
     gap: var(--social-proof-card-gap);
     margin-inline: -15px;
     padding-inline: 15px;
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: hidden;
     overscroll-behavior-inline: contain;
     scroll-padding-inline: 15px;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
+    touch-action: pan-x;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -335,6 +338,9 @@
       this.previousButton = this.querySelector('[data-social-proof-prev]');
       this.nextButton = this.querySelector('[data-social-proof-next]');
       this.animationFrame = null;
+      this.isDragging = false;
+      this.dragStartX = 0;
+      this.dragStartScrollLeft = 0;
 
       if (!this.scroller) return;
 
@@ -346,11 +352,19 @@
       this.handleResize = () => this.update();
       this.handlePrevious = () => this.scrollByCard(-1);
       this.handleNext = () => this.scrollByCard(1);
+      this.handlePointerDown = (event) => this.startDrag(event);
+      this.handlePointerMove = (event) => this.drag(event);
+      this.handlePointerUp = () => this.stopDrag();
 
       this.scroller.addEventListener('scroll', this.handleScroll, { passive: true });
       window.addEventListener('resize', this.handleResize);
       this.previousButton?.addEventListener('click', this.handlePrevious);
       this.nextButton?.addEventListener('click', this.handleNext);
+      this.scroller.addEventListener('pointerdown', this.handlePointerDown);
+      this.scroller.addEventListener('pointermove', this.handlePointerMove);
+      this.scroller.addEventListener('pointerup', this.handlePointerUp);
+      this.scroller.addEventListener('pointercancel', this.handlePointerUp);
+      this.scroller.addEventListener('pointerleave', this.handlePointerUp);
 
       this.update();
     }
@@ -362,8 +376,34 @@
       window.removeEventListener('resize', this.handleResize);
       this.previousButton?.removeEventListener('click', this.handlePrevious);
       this.nextButton?.removeEventListener('click', this.handleNext);
+      this.scroller.removeEventListener('pointerdown', this.handlePointerDown);
+      this.scroller.removeEventListener('pointermove', this.handlePointerMove);
+      this.scroller.removeEventListener('pointerup', this.handlePointerUp);
+      this.scroller.removeEventListener('pointercancel', this.handlePointerUp);
+      this.scroller.removeEventListener('pointerleave', this.handlePointerUp);
 
       if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+    }
+
+    startDrag(event) {
+      if (event.pointerType !== 'mouse') return;
+      if (event.button !== 0) return;
+
+      this.isDragging = true;
+      this.dragStartX = event.clientX;
+      this.dragStartScrollLeft = this.scroller.scrollLeft;
+      this.scroller.setPointerCapture(event.pointerId);
+    }
+
+    drag(event) {
+      if (!this.isDragging) return;
+
+      event.preventDefault();
+      this.scroller.scrollLeft = this.dragStartScrollLeft - (event.clientX - this.dragStartX);
+    }
+
+    stopDrag() {
+      this.isDragging = false;
     }
 
     scrollByCard(direction) {
