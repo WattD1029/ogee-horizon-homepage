@@ -5,11 +5,13 @@
   assign poster_image = section.settings.poster_image
   assign poster_image_mobile = section.settings.poster_image_mobile
   assign badge_image = section.settings.badge_image
+  assign badge_asset = section.settings.badge_asset | default: 'nsf-badge.png'
   assign badge_alt = section.settings.badge_alt
   assign loading = 'lazy'
   assign fetch_priority = 'auto'
   assign content_heading_tag = 'p'
   assign has_theme_video = false
+  assign has_badge = false
 
   if video_source == 'theme_asset'
     if theme_video_asset != blank
@@ -29,6 +31,12 @@
 
   if badge_alt == blank
     assign badge_alt = badge_image.alt
+  endif
+
+  if badge_image != blank
+    assign has_badge = true
+  elsif badge_asset != blank
+    assign has_badge = true
   endif
 
   if section.index <= 3
@@ -53,6 +61,7 @@
     --story-split-mobile-media-height: {{ section.settings.mobile_media_height }}px;
     --story-split-background: {{ section.settings.background_color }};
     --story-split-copy-color: {{ section.settings.copy_color }};
+    --story-split-text-color: {{ section.settings.text_color }};
     --story-split-media-title-color: {{ section.settings.media_title_color }};
     --story-split-button-background: {{ section.settings.button_background }};
     --story-split-button-color: {{ section.settings.button_color }};
@@ -147,18 +156,29 @@
             <p class="story-split__text">{{ section.settings.text | escape }}</p>
           {% endif %}
 
-          {% if badge_image != blank %}
+          {% if has_badge %}
             <div class="story-split__badge">
-              {{
-                badge_image
-                | image_url: width: 160
-                | image_tag:
-                  widths: '70, 80, 140, 160',
-                  sizes: '(min-width: 750px) 80px, 70px',
-                  loading: loading,
-                  alt: badge_alt,
-                  class: 'story-split__badge-image'
-              }}
+              {% if badge_image != blank %}
+                {{
+                  badge_image
+                  | image_url: width: 160
+                  | image_tag:
+                    widths: '70, 80, 140, 160',
+                    sizes: '(min-width: 750px) 80px, 70px',
+                    loading: loading,
+                    alt: badge_alt,
+                    class: 'story-split__badge-image'
+                }}
+              {% else %}
+                <img
+                  src="{{ badge_asset | asset_url }}"
+                  width="160"
+                  height="160"
+                  loading="{{ loading }}"
+                  alt="{{ badge_alt | escape }}"
+                  class="story-split__badge-image"
+                >
+              {% endif %}
             </div>
           {% endif %}
         </div>
@@ -336,8 +356,8 @@
 
   .story-split__text {
     max-width: 500px;
-    color: var(--story-split-copy-color);
-    font-family: 'Helvetica Neue', var(--font-body--family);
+    color: var(--story-split-text-color);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 1rem;
     font-style: normal;
     font-weight: 300;
@@ -620,6 +640,12 @@
     },
     {
       "type": "text",
+      "id": "badge_asset",
+      "label": "Theme badge asset filename",
+      "default": "nsf-badge.png"
+    },
+    {
+      "type": "text",
       "id": "badge_alt",
       "label": "Certification badge alt text",
       "default": "NSF Certified"
@@ -693,8 +719,14 @@
     {
       "type": "color",
       "id": "copy_color",
-      "label": "Copy",
+      "label": "Heading",
       "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#333333"
     },
     {
       "type": "color",
