@@ -13,7 +13,7 @@
       "type": "hero-slideshow",
       "blocks": {
         "crystal_contour_campaign": {
-          "type": "_hero-slide",
+          "type": "hero_slide",
           "settings": {
             "media_layout": "full_bleed",
             "bundled_campaign": "crystal_contour",
@@ -34,11 +34,10 @@
             "cta_y_mobile": 56,
             "cta_width_mobile": 25,
             "cta_height_mobile": 10
-          },
-          "blocks": {}
+          }
         },
         "hero_slide_fdVz6H": {
-          "type": "_hero-slide",
+          "type": "hero_slide",
           "name": "Hero slide",
           "settings": {
             "media_layout": "video",
@@ -61,8 +60,7 @@
             "cta_y_mobile": 56,
             "cta_width_mobile": 25,
             "cta_height_mobile": 10
-          },
-          "blocks": {}
+          }
         }
       },
       "block_order": [
