@@ -492,22 +492,44 @@
 
 {% javascript %}
   (() => {
-    const storySplitVideos = document.querySelectorAll('.story-split__video');
+    const videoSelector = '.story-split__video';
 
-    storySplitVideos.forEach((video) => {
-      const enableAudio = () => {
-        video.defaultMuted = false;
-        video.muted = false;
-        video.removeAttribute('muted');
+    const enableAudio = (video) => {
+      video.defaultMuted = false;
+      video.muted = false;
+      video.removeAttribute('muted');
 
-        if (video.volume === 0) {
-          video.volume = 1;
-        }
-      };
+      if (video.volume === 0) {
+        video.volume = 1;
+      }
+    };
 
-      enableAudio();
-      video.addEventListener('pointerdown', enableAudio, { once: true });
-      video.addEventListener('play', enableAudio, { once: true });
+    const bindVideo = (video) => {
+      if (video.dataset.storySplitAudioReady === 'true') return;
+
+      video.dataset.storySplitAudioReady = 'true';
+      enableAudio(video);
+
+      video.addEventListener('loadedmetadata', () => enableAudio(video));
+      video.addEventListener('pointerdown', () => enableAudio(video));
+      video.addEventListener('touchstart', () => enableAudio(video), { passive: true });
+      video.addEventListener('click', () => enableAudio(video));
+      video.addEventListener('play', () => enableAudio(video));
+      video.addEventListener('playing', () => enableAudio(video));
+    };
+
+    const initStorySplitVideos = (root = document) => {
+      root.querySelectorAll(videoSelector).forEach(bindVideo);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initStorySplitVideos(), { once: true });
+    } else {
+      initStorySplitVideos();
+    }
+
+    document.addEventListener('shopify:section:load', (event) => {
+      initStorySplitVideos(event.target);
     });
   })();
 {% endjavascript %}
