@@ -84,28 +84,35 @@
         "navigation_color": "#333333"
       }
     },
-    "promotion_offer_banner": {
-      "type": "promotion-offer-banner",
+    "story_split_homepage": {
+      "type": "story-split",
       "settings": {
-        "eyebrow": "THE CONTOUR COLLECTIONS",
-        "heading": "Recognized With 5,000+ Five-Star Reviews.",
-        "subheading": "Three-Step Glow Routine",
-        "image": "",
-        "image_width_desktop": 220,
-        "image_width_mobile": 100,
-        "button_label": "SHOP NOW",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
-        "open_in_new_tab": false,
-        "desktop_height": 220,
-        "mobile_height": 380,
-        "content_max_width": 660,
+        "video_source": "theme_asset",
+        "video": "",
+        "theme_video_asset": "ogee-storefront-explanation.mp4",
+        "video_label": "Ogee brand story video",
+        "poster_image": "",
+        "poster_image_mobile": "",
+        "media_title": "",
+        "heading": "OGEE Is Where Certified Organic Skincare Meets High Performance. No Compromises.",
+        "text": "We adhere to the most stringent standards in clean beauty through our renowned NSF certification.",
+        "badge_image": "",
+        "badge_asset": "nsf-badge.png",
+        "badge_alt": "NSF Certified",
+        "story_button_label": "Our Story",
+        "story_button_link": "/pages/our-story",
+        "ingredients_button_label": "Ingredients",
+        "ingredients_button_link": "/pages/ingredients",
+        "desktop_height": 600,
+        "mobile_media_height": 390,
+        "color_scheme": "scheme-1",
         "background_color": "#fafafa",
-        "text_color": "#000000",
-        "muted_text_color": "#404040",
+        "copy_color": "#000000",
+        "text_color": "#333333",
+        "media_title_color": "#ffffff",
         "button_background": "#000000",
-        "button_color": "#ffffff"
+        "button_color": "#ffffff",
+        "overlay_color": "#00000000"
       }
     },
     "product_carousel_homepage": {
@@ -203,7 +210,7 @@
   },
   "order": [
     "hero_crystal_contour",
-    "product_carousel_homepage",
-    "promotion_offer_banner"
+    "story_split_homepage",
+    "product_carousel_homepage"
   ]
 }
