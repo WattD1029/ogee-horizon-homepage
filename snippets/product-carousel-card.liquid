@@ -1,5 +1,5 @@
 {% doc %}
-  Renders a product card tailored to the Ogee homepage product carousel.
+  Renders a product card tailored to the homepage product carousel.
 
   @param {object} product - Product to render
   @param {string} section_id - Parent section ID, used by product form components
@@ -54,13 +54,26 @@
 
   assign product_has_swatches = false
   assign swatch_label = ''
+  assign swatch_option_position = 0
   if product != blank
     if show_swatches
       for product_option in product.options_with_values
         assign swatch_count = product_option.values | map: 'swatch' | compact | size
+        assign option_name = product_option.name | downcase
+        assign option_is_shade = false
+        if swatch_count > 0
+          assign option_is_shade = true
+        elsif option_name contains 'shade'
+          assign option_is_shade = true
+        elsif option_name contains 'color'
+          assign option_is_shade = true
+        elsif option_name contains 'colour'
+          assign option_is_shade = true
+        endif
         if product_option.values.size > 1
-          if swatch_count > 0
+          if option_is_shade
             assign product_has_swatches = true
+            assign swatch_option_position = product_option.position
             if swatch_label == blank
               assign swatch_label = product_option.selected_value
               if swatch_label == blank
@@ -68,20 +81,30 @@
                 assign swatch_label = first_swatch_value.name
               endif
             endif
+            break
           endif
         endif
       endfor
     endif
   endif
 
+  assign desktop_shade_select = false
+  if product_has_swatches
+    if product.options.size == 1
+      assign desktop_shade_select = true
+    endif
+  endif
+
   assign quick_add_button = 'choose'
-  if product.variants_count == 1
-    assign quick_add_button = 'add'
-  elsif product.options.size == 1
-    if product.selected_variant
+  if product_has_swatches
+    assign quick_add_button = 'choose'
+  else
+    if product.variants_count == 1
       assign quick_add_button = 'add'
-    elsif product_has_swatches
-      assign quick_add_button = 'add'
+    elsif product.options.size == 1
+      if product.selected_variant
+        assign quick_add_button = 'add'
+      endif
     endif
   endif
 
@@ -119,7 +142,7 @@
 %}
 
 <product-card
-  class="product-carousel-card"
+  class="product-carousel-card{% if product_has_swatches %} product-carousel-card--has-shades{% endif %}{% if desktop_shade_select %} product-carousel-card--desktop-shade-select{% endif %}"
   data-product-id="{{ product.id }}"
   data-card-id="{{ product_card_id }}"
   {% if transition_to_main_product and product != blank %}
@@ -253,12 +276,93 @@
     {% endif %}
 
     {% if product_has_swatches %}
-      <product-swatches class="product-carousel-card__swatches">
-        {% render 'variant-swatches', product_resource: product, has_option_selected: true %}
-      </product-swatches>
-      {% if swatch_label != blank %}
-        <p class="product-carousel-card__swatch-label">{{ swatch_label }}</p>
-      {% endif %}
+      <product-carousel-shades class="product-carousel-card__swatches">
+        <button
+          type="button"
+          class="product-carousel-card__shade-scroll product-carousel-card__shade-scroll--previous"
+          aria-label="{{ 'accessibility.previous' | t }}"
+          data-shade-scroll="previous"
+        >
+          <svg viewBox="0 0 10 10" focusable="false" aria-hidden="true">
+            <path d="M6.4 1.2 2.8 5l3.6 3.8" fill="none" stroke="currentColor" stroke-width="1.1"></path>
+          </svg>
+        </button>
+        <div class="product-carousel-card__shade-list" data-shade-list>
+          {% for product_option in product.options_with_values %}
+            {% if product_option.position == swatch_option_position %}
+              {% liquid
+                assign swatch_option_key = 'option' | append: swatch_option_position
+              %}
+              {% for product_option_value in product_option.values %}
+                {% liquid
+                  assign shade_variant = product_option_value.variant
+                  assign featured_media = shade_variant.featured_media
+                  case forloop.index
+                    when 1
+                      assign shade_fallback = '#f3d8cb'
+                    when 2
+                      assign shade_fallback = '#e8e1d8'
+                    when 3
+                      assign shade_fallback = '#f6e7d8'
+                    when 4
+                      assign shade_fallback = '#e4ccb6'
+                    when 5
+                      assign shade_fallback = '#d1a884'
+                    when 6
+                      assign shade_fallback = '#b97b50'
+                    when 7
+                      assign shade_fallback = '#93562d'
+                    when 8
+                      assign shade_fallback = '#b8a092'
+                    else
+                      assign shade_fallback = '#d7b89f'
+                  endcase
+                  if featured_media == blank
+                    for variant_item in product.variants
+                      if variant_item[swatch_option_key] == product_option_value.name
+                        if variant_item.featured_media
+                          assign featured_media = variant_item.featured_media
+                          assign shade_variant = variant_item
+                          break
+                        endif
+                      endif
+                    endfor
+                  endif
+                %}
+                <button
+                  type="button"
+                  class="product-carousel-card__shade-option"
+                  aria-label="{{ product_option_value.name | escape }}"
+                  aria-pressed="{% if product_option_value.name == swatch_label %}true{% else %}false{% endif %}"
+                  data-shade-option
+                  data-shade-label="{{ product_option_value.name | escape }}"
+                  data-shade-media-id="{{ featured_media.id }}"
+                  data-shade-variant-id="{{ shade_variant.id }}"
+                  data-shade-available="{{ shade_variant.available }}"
+                  style="--product-carousel-shade-fallback: {{ shade_fallback }};"
+                >
+                  {% render 'swatch',
+                    swatch: product_option_value.swatch,
+                    variant_image: featured_media
+                  %}
+                </button>
+              {% endfor %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <button
+          type="button"
+          class="product-carousel-card__shade-scroll product-carousel-card__shade-scroll--next"
+          aria-label="{{ 'accessibility.next' | t }}"
+          data-shade-scroll="next"
+        >
+          <svg viewBox="0 0 10 10" focusable="false" aria-hidden="true">
+            <path d="M3.6 1.2 7.2 5 3.6 8.8" fill="none" stroke="currentColor" stroke-width="1.1"></path>
+          </svg>
+        </button>
+      </product-carousel-shades>
+      <p class="product-carousel-card__swatch-label" data-shade-label-text>{{ swatch_label }}</p>
     {% endif %}
   </div>
 
@@ -497,12 +601,87 @@
   .product-carousel-card__swatches {
     position: relative;
     z-index: 2;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    --variant-picker-swatch-width: 18px;
+    --variant-picker-swatch-height: 18px;
+    --variant-picker-swatch-radius: 999px;
   }
 
-  .product-carousel-card__swatches variant-swatches,
-  .product-carousel-card__swatches .variant-swatches {
-    justify-content: flex-start;
+  .product-carousel-card__shade-list {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 1px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .product-carousel-card__shade-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-carousel-card__shade-scroll,
+  .product-carousel-card__shade-option {
+    flex: 0 0 auto;
+    padding: 0;
+    color: rgb(var(--color-foreground-rgb));
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .product-carousel-card__shade-scroll {
+    display: grid;
+    place-items: center;
+    width: 12px;
+    height: 22px;
+  }
+
+  .product-carousel-card__shade-scroll svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .product-carousel-card__shade-option {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 999px;
+    scroll-snap-align: start;
+  }
+
+  .product-carousel-card__shade-option:focus-visible {
+    outline: 0;
+  }
+
+  .product-carousel-card__shade-option .swatch {
+    --swatch-width: 16px;
+    --swatch-height: 16px;
+    pointer-events: none;
+    width: 16px;
+    height: 16px;
+    border-color: rgb(var(--color-foreground-rgb) / 0.24);
+  }
+
+  .product-carousel-card__shade-option:hover .swatch,
+  .product-carousel-card__shade-option:focus-visible .swatch {
+    border-color: rgb(var(--color-foreground-rgb));
+  }
+
+  .product-carousel-card__shade-option .swatch--unavailable {
+    background: var(--product-carousel-shade-fallback);
+    border-style: solid;
   }
 
   .product-carousel-card__swatch-label {
@@ -592,6 +771,20 @@
       height: 60px;
     }
 
+    .product-carousel-card--desktop-shade-select [data-quick-add-button='choose'] add-to-cart-component {
+      display: block;
+    }
+
+    .product-carousel-card--desktop-shade-select [data-quick-add-button='choose'] .product-carousel-card__button--add {
+      display: inline-flex;
+    }
+
+    .product-carousel-card--desktop-shade-select
+      [data-quick-add-button='choose']
+      .product-carousel-card__button--choose {
+      display: none;
+    }
+
     .product-carousel-card__quick-view {
       display: grid;
       place-items: center;
@@ -665,3 +858,102 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  class ProductCarouselShades extends HTMLElement {
+    connectedCallback() {
+      if (this.initialized) return;
+      this.initialized = true;
+
+      this.buttons = Array.from(this.querySelectorAll('[data-shade-option]'));
+      this.list = this.querySelector('[data-shade-list]');
+      this.label = this.parentElement?.querySelector('[data-shade-label-text]');
+      this.card = this.closest('product-card');
+      this.formVariantInput = this.card?.querySelector('product-form-component input[ref="variantId"]');
+      this.addToCartButton = this.card?.querySelector('[ref="addToCartButton"]');
+      this.selectedButton =
+        this.buttons.find((button) => button.getAttribute('aria-pressed') === 'true') || this.buttons[0];
+
+      this.setSelectedVariant(this.selectedButton);
+
+      this.buttons.forEach((button) => {
+        button.addEventListener('click', () => this.select(button));
+        button.addEventListener('pointerenter', () => this.preview(button));
+        button.addEventListener('focus', () => this.preview(button));
+      });
+
+      this.addEventListener('pointerleave', () => this.preview(this.selectedButton));
+      this.addEventListener('focusout', (event) => {
+        if (event.relatedTarget instanceof Node && this.contains(event.relatedTarget)) return;
+        this.preview(this.selectedButton);
+      });
+
+      this.querySelectorAll('[data-shade-scroll]').forEach((button) => {
+        button.addEventListener('click', () => this.scroll(button.dataset.shadeScroll));
+      });
+    }
+
+    select(button) {
+      this.selectedButton = button;
+      this.buttons.forEach((shadeButton) => {
+        shadeButton.setAttribute('aria-pressed', shadeButton === button ? 'true' : 'false');
+      });
+      this.setSelectedVariant(button);
+      this.preview(button);
+    }
+
+    setSelectedVariant(button) {
+      if (!button) return;
+
+      const variantId = button.dataset.shadeVariantId;
+      const isAvailable = button.dataset.shadeAvailable === 'true';
+
+      if (this.formVariantInput && variantId) {
+        this.formVariantInput.value = variantId;
+        this.formVariantInput.disabled = !isAvailable;
+      }
+
+      if (this.addToCartButton) {
+        this.addToCartButton.disabled = !variantId || !isAvailable;
+      }
+    }
+
+    preview(button) {
+      if (!button) return;
+
+      if (this.label) {
+        this.label.textContent = button.dataset.shadeLabel || '';
+      }
+
+      const mediaId = button.dataset.shadeMediaId;
+      const card = this.card;
+      if (!card) return;
+
+      if (!mediaId) {
+        if (typeof card.resetVariant === 'function') card.resetVariant();
+        return;
+      }
+
+      if (typeof card.previewVariant !== 'function') return;
+
+      card.previewVariant(mediaId);
+    }
+
+    scroll(direction) {
+      if (!this.list) return;
+      const multiplier = direction === 'previous' ? -1 : 1;
+      const firstButton = this.buttons[0];
+      const styles = window.getComputedStyle(this.list);
+      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+      const step = ((firstButton && firstButton.offsetWidth) || 22) + gap;
+      this.list.scrollBy({
+        left: multiplier * step * 4,
+        behavior: 'smooth',
+      });
+    }
+  }
+
+  if (!customElements.get('product-carousel-shades')) {
+    customElements.define('product-carousel-shades', ProductCarouselShades);
+  }
+{% endjavascript %}
