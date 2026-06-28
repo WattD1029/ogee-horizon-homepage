@@ -112,7 +112,7 @@
       "type": "quiz-cards",
       "blocks": {
         "perfect_shade": {
-          "type": "_quiz-card",
+          "type": "quiz_card",
           "settings": {
             "image": "",
             "mobile_image": "",
@@ -126,11 +126,10 @@
             "button_label": "START QUIZ",
             "link": "",
             "open_in_new_tab": false
-          },
-          "blocks": {}
+          }
         },
         "skincare_routine": {
-          "type": "_quiz-card",
+          "type": "quiz_card",
           "settings": {
             "image": "",
             "mobile_image": "",
@@ -144,8 +143,7 @@
             "button_label": "START QUIZ",
             "link": "",
             "open_in_new_tab": false
-          },
-          "blocks": {}
+          }
         }
       },
       "block_order": [

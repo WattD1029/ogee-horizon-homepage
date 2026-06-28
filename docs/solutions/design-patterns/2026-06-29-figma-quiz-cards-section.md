@@ -1,5 +1,5 @@
 ---
-title: Build Figma Quiz Cards as Editable Shopify Theme Blocks
+title: Build Figma Quiz Cards as Editable Shopify Section Blocks
 category: design-patterns
 date: 2026-06-29
 type: knowledge
@@ -12,7 +12,7 @@ tags:
   - responsive-images
 ---
 
-# Build Figma Quiz Cards as Editable Shopify Theme Blocks
+# Build Figma Quiz Cards as Editable Shopify Section Blocks
 
 ## Problem
 
@@ -64,10 +64,9 @@ should define critical box sizing locally for fixed-format UI.
 
 ## Solution
 
-Create a dedicated section and theme block:
+Create a dedicated section with local section blocks:
 
 - `sections/quiz-cards.liquid`
-- `blocks/_quiz-card.liquid`
 
 The section owns:
 
@@ -79,7 +78,7 @@ The section owns:
 - Shared text, overlay, and button colors.
 - A visually hidden accessible section heading.
 
-The block owns:
+Each local section block owns:
 
 - Desktop and mobile `image_picker` settings.
 - A bundled fallback image selector for the supplied design assets.
@@ -89,9 +88,9 @@ The block owns:
 - Decorative media rendering with live HTML copy.
 - Disabled visual CTA state when no link is configured.
 
-Use `content_for 'blocks'` so merchants can manage two targeted `_quiz-card`
-blocks in the section. Render background images decoratively and keep all
-message and CTA text in HTML.
+Use local `quiz_card` blocks in the section schema so uploads do not depend on a
+separate theme block file resolving during deployment. Render background images
+decoratively and keep all message and CTA text in HTML.
 
 Convert supplied photographic PNGs to optimized JPEGs before committing them as
 theme assets:
@@ -116,8 +115,8 @@ The block-level fallback selector makes supplied design-review assets available
 immediately while avoiding temporary external URLs. Optimized JPEGs reduce page
 weight and are more appropriate for photographic bundled fallbacks than PNG.
 
-Separating section-level layout from block-level content mirrors Horizon's
-theme-block architecture and keeps future reuse straightforward. Local
+Separating section-level layout from block-level content keeps the editor
+contract straightforward while avoiding cross-file upload dependencies. Local
 `box-sizing` on the CTA and content wrapper protects the fixed card layout in
 static previews, Shopify previews, and any context where global CSS loads in a
 different order.
@@ -143,20 +142,21 @@ different order.
 - [Figma art-directed hero slideshow](2026-06-13-figma-art-directed-hero-slideshow.md)
 - [Figma announcement strip](2026-06-15-figma-announcement-strip-on-horizon-primitives.md)
 - [Quiz cards section](../../../sections/quiz-cards.liquid)
-- [Quiz card block](../../../blocks/_quiz-card.liquid)
 
 ## Reusable Insight
 
-For Figma-driven homepage cards, use theme blocks for editable content and treat
-local imagery as optimized bundled fallbacks. The design review can use assets
-immediately, while production can later swap to Shopify-hosted media and real
-links without changing the component contract.
+For Figma-driven homepage cards, use local section blocks when the design is
+specific to one section and upload compatibility matters. Treat local imagery as
+optimized bundled fallbacks so design review can use assets immediately, while
+production can later swap to Shopify-hosted media and real links without
+changing the component contract.
 
 ## Compound Summary
 
 The Ogee quiz section was implemented as a targeted two-card section with
-editable `_quiz-card` blocks. The supplied images were converted from large PNGs
-to lightweight JPEG bundled fallbacks, while image pickers remain available for
-production media. Desktop and mobile geometry were verified with Playwright
-screenshots against the Figma dimensions, and review tightened performance and
-box-model behavior before documenting the pattern.
+editable `quiz_card` section blocks. The supplied images were converted from
+large PNGs to lightweight JPEG bundled fallbacks, while image pickers remain
+available for production media. Desktop and mobile geometry were verified with
+Playwright screenshots against the Figma dimensions, and review tightened
+performance, upload compatibility, and box-model behavior before documenting the
+pattern.
