@@ -1,0 +1,213 @@
+{% capture cards %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+<div
+  class="quiz-cards-section"
+  style="
+    --quiz-cards-max-width: {{ section.settings.max_width }}px;
+    --quiz-cards-gap: {{ section.settings.gap }}px;
+    --quiz-cards-desktop-height: {{ section.settings.desktop_height }}px;
+    --quiz-cards-mobile-height: {{ section.settings.mobile_height }}px;
+    --quiz-cards-padding-top: {{ section.settings.padding_top }}px;
+    --quiz-cards-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --quiz-cards-mobile-gutter: {{ section.settings.mobile_gutter }}px;
+    --quiz-cards-text-color: {{ section.settings.text_color }};
+    --quiz-cards-overlay-color: {{ section.settings.overlay_color }};
+    --quiz-cards-button-color: {{ section.settings.button_color }};
+    --quiz-cards-button-border: {{ section.settings.button_border_color }};
+  "
+>
+  <h2 class="visually-hidden">{{ section.settings.accessibility_heading | escape }}</h2>
+
+  <div class="quiz-cards-section__inner">
+    <div class="quiz-cards-section__grid">
+      {{ cards }}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .quiz-cards-section {
+    padding-block-start: var(--quiz-cards-padding-top);
+    padding-block-end: var(--quiz-cards-padding-bottom);
+  }
+
+  .quiz-cards-section__inner {
+    width: min(100% - 30px, var(--quiz-cards-max-width));
+    margin-inline: auto;
+  }
+
+  .quiz-cards-section__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--quiz-cards-gap);
+  }
+
+  @media screen and (max-width: 749px) {
+    .quiz-cards-section__inner {
+      width: min(100% - calc(var(--quiz-cards-mobile-gutter) * 2), var(--quiz-cards-max-width));
+    }
+
+    .quiz-cards-section__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Quiz cards",
+  "tag": "section",
+  "class": "quiz-cards-wrapper",
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "type": "_quiz-card"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "accessibility_heading",
+      "label": "Accessibility heading",
+      "default": "Find your personalized Ogee quiz"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1080
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop card height",
+      "min": 320,
+      "max": 560,
+      "step": 10,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile card height",
+      "min": 280,
+      "max": 520,
+      "step": 10,
+      "unit": "px",
+      "default": 360
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mobile_gutter",
+      "label": "Mobile side margin",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay",
+      "alpha": true,
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quiz cards",
+      "category": "Banners",
+      "blocks": {
+        "perfect_shade": {
+          "type": "_quiz-card",
+          "settings": {
+            "bundled_image": "perfect_shade",
+            "time_label": "2 MINS",
+            "heading": "Find Your Perfect Shade",
+            "description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
+            "button_label": "START QUIZ"
+          }
+        },
+        "skincare_routine": {
+          "type": "_quiz-card",
+          "settings": {
+            "bundled_image": "skincare_routine",
+            "time_label": "2 MINS",
+            "heading": "Find Your Skincare Routine",
+            "description": "Discover the perfect skincare routine to nourish, hydrate, and illuminate your complexion.",
+            "button_label": "START QUIZ"
+          }
+        }
+      },
+      "block_order": ["perfect_shade", "skincare_routine"]
+    }
+  ]
+}
+{% endschema %}
