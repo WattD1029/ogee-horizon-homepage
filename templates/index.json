@@ -84,28 +84,50 @@
         "navigation_color": "#333333"
       }
     },
-    "promotion_offer_banner": {
-      "type": "promotion-offer-banner",
+    "promotion_blocks_homepage": {
+      "type": "promotion-blocks",
+      "blocks": {
+        "gift_with_purchase": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "gift",
+            "title": "Get free Gift with purchase of $150+",
+            "body": "You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!",
+            "button_label": "Shop now",
+            "link": "",
+            "open_in_new_tab": false
+          },
+          "blocks": {}
+        },
+        "try_before_you_buy": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "calendar",
+            "title": "Try Before You Buy",
+            "body": "Choose up to 6 items. Try for 14 days. Only Pay For what you keep.",
+            "button_label": "Try Before You Buy",
+            "link": "",
+            "open_in_new_tab": false
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "gift_with_purchase",
+        "try_before_you_buy"
+      ],
       "settings": {
-        "eyebrow": "THE CONTOUR COLLECTIONS",
-        "heading": "Recognized With 5,000+ Five-Star Reviews.",
-        "subheading": "Three-Step Glow Routine",
-        "image": "",
-        "image_width_desktop": 220,
-        "image_width_mobile": 100,
-        "button_label": "SHOP NOW",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
-        "open_in_new_tab": false,
-        "desktop_height": 220,
-        "mobile_height": 380,
-        "content_max_width": 660,
-        "background_color": "#fafafa",
-        "text_color": "#000000",
-        "muted_text_color": "#404040",
-        "button_background": "#000000",
-        "button_color": "#ffffff"
+        "heading": "Promotions",
+        "section_width": "full-width",
+        "color_scheme": "scheme-1",
+        "card_background": "#faf8f3",
+        "text_color": "#333333",
+        "button_color": "#000000",
+        "progress_color": "#333333",
+        "desktop_gap": 8,
+        "mobile_gap": 16,
+        "padding_top": 0,
+        "padding_bottom": 96
       }
     },
     "product_carousel_homepage": {
@@ -203,7 +225,8 @@
   },
   "order": [
     "hero_crystal_contour",
+    "promotion_blocks_homepage",
     "product_carousel_homepage",
-    "promotion_offer_banner"
+    "product_list_fa6P9H"
   ]
 }
