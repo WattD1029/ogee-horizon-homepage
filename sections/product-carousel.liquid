@@ -545,12 +545,23 @@
     }
 
     .product-carousel__tabs {
+      display: flex;
       gap: 24px;
+      max-width: 100%;
+      margin-inline: -16px;
+      padding-inline: 16px;
       padding-bottom: 1px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-padding-inline: 16px;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
       border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
     }
 
     .product-carousel__tab {
+      white-space: nowrap;
+      scroll-snap-align: start;
       padding-bottom: 15px;
       font-size: 11px;
     }
@@ -640,6 +651,7 @@
       });
 
       this.updateCtas(nextTab);
+      nextTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
       const slideshow = nextPanel.querySelector('slideshow-component');
       if (slideshow && typeof slideshow.select === 'function') {
