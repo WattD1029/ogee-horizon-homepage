@@ -84,6 +84,30 @@
         "navigation_color": "#333333"
       }
     },
+    "promotion_offer_banner": {
+      "type": "promotion-offer-banner",
+      "settings": {
+        "eyebrow": "THE CONTOUR COLLECTIONS",
+        "heading": "Recognized With 5,000+ Five-Star Reviews.",
+        "subheading": "Three-Step Glow Routine",
+        "image": "",
+        "image_width_desktop": 220,
+        "image_width_mobile": 100,
+        "button_label": "SHOP NOW",
+        "product": "",
+        "link": "",
+        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
+        "open_in_new_tab": false,
+        "desktop_height": 220,
+        "mobile_height": 380,
+        "content_max_width": 660,
+        "background_color": "#fafafa",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "button_background": "#000000",
+        "button_color": "#ffffff"
+      }
+    },
     "product_carousel_homepage": {
       "type": "product-carousel",
       "blocks": {
@@ -179,6 +203,7 @@
   },
   "order": [
     "hero_crystal_contour",
-    "product_carousel_homepage"
+    "product_carousel_homepage",
+    "promotion_offer_banner"
   ]
 }
