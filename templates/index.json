@@ -84,6 +84,52 @@
         "navigation_color": "#333333"
       }
     },
+    "promotion_blocks_homepage": {
+      "type": "promotion-blocks",
+      "blocks": {
+        "gift_with_purchase": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "gift",
+            "title": "Get free Gift with purchase of $150+",
+            "body": "You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!",
+            "button_label": "Shop now",
+            "link": "",
+            "open_in_new_tab": false
+          },
+          "blocks": {}
+        },
+        "try_before_you_buy": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "calendar",
+            "title": "Try Before You Buy",
+            "body": "Choose up to 6 items. Try for 14 days. Only Pay For what you keep.",
+            "button_label": "Try Before You Buy",
+            "link": "",
+            "open_in_new_tab": false
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "gift_with_purchase",
+        "try_before_you_buy"
+      ],
+      "settings": {
+        "heading": "Promotions",
+        "section_width": "full-width",
+        "color_scheme": "scheme-1",
+        "card_background": "#faf8f3",
+        "text_color": "#333333",
+        "button_color": "#000000",
+        "progress_color": "#333333",
+        "desktop_gap": 8,
+        "mobile_gap": 16,
+        "padding_top": 0,
+        "padding_bottom": 96
+      }
+    },
     "product_carousel_homepage": {
       "type": "product-carousel",
       "blocks": {
@@ -373,6 +419,7 @@
   },
   "order": [
     "hero_crystal_contour",
+    "promotion_blocks_homepage",
     "product_carousel_homepage",
     "product_list_fa6P9H"
   ]
