@@ -1,0 +1,690 @@
+{% liquid
+  assign story_video = section.settings.video
+  assign video_source = section.settings.video_source | default: 'uploaded'
+  assign theme_video_asset = section.settings.theme_video_asset
+  assign poster_image = section.settings.poster_image
+  assign poster_image_mobile = section.settings.poster_image_mobile
+  assign badge_image = section.settings.badge_image
+  assign badge_alt = section.settings.badge_alt
+  assign loading = 'lazy'
+  assign fetch_priority = 'auto'
+  assign content_heading_tag = 'p'
+  assign has_theme_video = false
+
+  if video_source == 'theme_asset'
+    if theme_video_asset != blank
+      assign has_theme_video = true
+    endif
+  endif
+
+  if poster_image == blank
+    if video_source == 'uploaded'
+      assign poster_image = story_video.preview_image
+    endif
+  endif
+
+  if poster_image == blank
+    assign poster_image = poster_image_mobile
+  endif
+
+  if badge_alt == blank
+    assign badge_alt = badge_image.alt
+  endif
+
+  if section.index <= 3
+    assign loading = 'eager'
+  endif
+
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+
+  if section.settings.media_title == blank
+    assign content_heading_tag = 'h2'
+  endif
+%}
+
+<section
+  id="StorySplit-{{ section.id }}"
+  class="story-split color-{{ section.settings.color_scheme }}"
+  data-testid="story-split"
+  style="
+    --story-split-desktop-height: {{ section.settings.desktop_height }}px;
+    --story-split-mobile-media-height: {{ section.settings.mobile_media_height }}px;
+    --story-split-background: {{ section.settings.background_color }};
+    --story-split-copy-color: {{ section.settings.copy_color }};
+    --story-split-media-title-color: {{ section.settings.media_title_color }};
+    --story-split-button-background: {{ section.settings.button_background }};
+    --story-split-button-color: {{ section.settings.button_color }};
+    --story-split-overlay-color: {{ section.settings.overlay_color }};
+  "
+>
+  <div class="story-split__inner">
+    <div class="story-split__media-panel">
+      <div class="story-split__media-background">
+        {% if story_video != blank and video_source == 'uploaded' %}
+          {{
+            story_video
+            | video_tag:
+              image_size: '2500x',
+              autoplay: false,
+              loop: true,
+              muted: false,
+              controls: true,
+              playsinline: true,
+              preload: 'metadata',
+              class: 'story-split__video',
+              aria-label: section.settings.video_label
+          }}
+        {% elsif has_theme_video %}
+          <video
+            class="story-split__video"
+            controls
+            loop
+            playsinline
+            preload="metadata"
+            aria-label="{{ section.settings.video_label | escape }}"
+            {% if poster_image != blank %}
+              poster="{{ poster_image | image_url: width: 2560 }}"
+            {% endif %}
+          >
+            <source src="{{ theme_video_asset | asset_url }}" type="video/mp4">
+          </video>
+        {% else %}
+          <div
+            class="story-split__poster"
+            {% if poster_image == blank %}
+              data-placeholder
+            {% endif %}
+          >
+          {% if poster_image != blank %}
+            <picture>
+              {% if poster_image_mobile != blank %}
+                <source
+                  media="(max-width: 749px)"
+                  srcset="
+                    {{ poster_image_mobile | image_url: width: 390 }} 390w,
+                    {{ poster_image_mobile | image_url: width: 585 }} 585w,
+                    {{ poster_image_mobile | image_url: width: 780 }} 780w,
+                    {{ poster_image_mobile | image_url: width: 1170 }} 1170w
+                  "
+                  sizes="100vw"
+                  width="{{ poster_image_mobile.width }}"
+                  height="{{ poster_image_mobile.height }}"
+                >
+              {% endif %}
+              {{
+                poster_image
+                | image_url: width: 2560
+                | image_tag:
+                  widths: '750, 1100, 1500, 2000, 2560',
+                  sizes: '(min-width: 750px) 50vw, 100vw',
+                  loading: loading,
+                  fetchpriority: fetch_priority,
+                  alt: '',
+                  class: 'story-split__poster-image'
+              }}
+            </picture>
+          {% else %}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'story-split__poster-image placeholder-svg' }}
+          {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if section.settings.media_title != blank %}
+        <h2 class="story-split__media-title">{{ section.settings.media_title | escape }}</h2>
+      {% endif %}
+    </div>
+
+    <div class="story-split__content-panel">
+      <div class="story-split__content">
+        {% if section.settings.heading != blank %}
+          <{{ content_heading_tag }} class="story-split__heading">{{ section.settings.heading | escape }}</{{ content_heading_tag }}>
+        {% endif %}
+
+        <div class="story-split__support">
+          {% if section.settings.text != blank %}
+            <p class="story-split__text">{{ section.settings.text | escape }}</p>
+          {% endif %}
+
+          {% if badge_image != blank %}
+            <div class="story-split__badge">
+              {{
+                badge_image
+                | image_url: width: 160
+                | image_tag:
+                  widths: '70, 80, 140, 160',
+                  sizes: '(min-width: 750px) 80px, 70px',
+                  loading: loading,
+                  alt: badge_alt,
+                  class: 'story-split__badge-image'
+              }}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if section.settings.story_button_label != blank or section.settings.ingredients_button_label != blank %}
+          <div class="story-split__actions">
+            {% if section.settings.story_button_label != blank %}
+              <a
+                class="story-split__button"
+                {% if section.settings.story_button_link != blank %}
+                  href="{{ section.settings.story_button_link }}"
+                {% else %}
+                  role="link"
+                  aria-disabled="true"
+                {% endif %}
+              >
+                {{ section.settings.story_button_label | escape }}
+              </a>
+            {% endif %}
+
+            {% if section.settings.ingredients_button_label != blank %}
+              <a
+                class="story-split__button"
+                {% if section.settings.ingredients_button_link != blank %}
+                  href="{{ section.settings.ingredients_button_link }}"
+                {% else %}
+                  role="link"
+                  aria-disabled="true"
+                {% endif %}
+              >
+                {{ section.settings.ingredients_button_label | escape }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .story-split {
+    background: var(--story-split-background);
+    color: var(--story-split-copy-color);
+  }
+
+  .story-split__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: 100%;
+    min-height: var(--story-split-desktop-height);
+  }
+
+  .story-split__media-panel,
+  .story-split__content-panel {
+    min-height: var(--story-split-desktop-height);
+  }
+
+  .story-split__media-panel {
+    position: relative;
+    order: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 80px;
+    isolation: isolate;
+  }
+
+  .story-split__media-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .story-split__media-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--story-split-overlay-color);
+    pointer-events: none;
+  }
+
+  .story-split__video,
+  .story-split__poster,
+  .story-split__poster picture,
+  .story-split__poster-image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .story-split__video,
+  .story-split__poster-image {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .story-split__video {
+    z-index: 1;
+  }
+
+  .story-split__poster {
+    z-index: 1;
+  }
+
+  .story-split__poster[data-placeholder] {
+    background: rgb(var(--color-background-rgb));
+  }
+
+  .story-split__media-title {
+    position: relative;
+    z-index: 3;
+    max-width: 100%;
+    margin: 0;
+    color: var(--story-split-media-title-color);
+    font-family: 'Chronicle Display', 'Chronicle Display Light', var(--font-heading--family);
+    font-size: 3rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  .story-split__content-panel {
+    order: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px;
+    background: var(--story-split-background);
+  }
+
+  .story-split__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+  }
+
+  .story-split__heading,
+  .story-split__text {
+    margin: 0;
+  }
+
+  .story-split__heading {
+    color: var(--story-split-copy-color);
+    font-family: 'Chronicle Display', 'Chronicle Display Light', var(--font-heading--family);
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: capitalize;
+    text-wrap: balance;
+  }
+
+  .story-split__support {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .story-split__text {
+    max-width: 500px;
+    color: var(--story-split-copy-color);
+    font-family: 'Helvetica Neue', var(--font-body--family);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .story-split__badge {
+    flex: 0 0 auto;
+    width: 80px;
+    height: 80px;
+  }
+
+  .story-split__badge-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .story-split__actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .story-split__button {
+    display: inline-flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    min-height: var(--minimum-touch-target);
+    padding: 0 32px;
+    color: var(--story-split-button-color);
+    background: var(--story-split-button-background);
+    border-radius: 0;
+    font-family: 'Helvetica Neue', var(--font-body--family);
+    font-size: 0.8125rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .story-split__button[aria-disabled='true'] {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  .story-split__button:focus-visible {
+    outline: 2px solid var(--story-split-button-background);
+    outline-offset: 3px;
+  }
+
+  @media screen and (max-width: 1099px) {
+    .story-split__inner {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .story-split__media-panel {
+      order: 1;
+      min-height: var(--story-split-mobile-media-height);
+      height: var(--story-split-mobile-media-height);
+      padding: 80px;
+    }
+
+    .story-split__content-panel {
+      order: 2;
+      min-height: 300px;
+      padding: 48px 40px;
+    }
+
+    .story-split__content {
+      max-width: 700px;
+    }
+
+    .story-split__button {
+      min-width: 0;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .story-split__inner {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .story-split__media-panel {
+      order: 1;
+      min-height: var(--story-split-mobile-media-height);
+      height: var(--story-split-mobile-media-height);
+      padding: 80px;
+    }
+
+    .story-split__content-panel {
+      order: 2;
+      min-height: 300px;
+      padding: 32px 24px;
+    }
+
+    .story-split__media-title {
+      font-size: 2rem;
+    }
+
+    .story-split__content {
+      align-items: flex-start;
+      gap: 24px;
+      max-width: 700px;
+      text-align: left;
+    }
+
+    .story-split__heading {
+      width: 100%;
+      font-size: 1.625rem;
+    }
+
+    .story-split__support {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 16px;
+      max-width: 500px;
+    }
+
+    .story-split__text {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .story-split__badge {
+      width: 70px;
+      height: 70px;
+    }
+
+    .story-split__actions {
+      gap: 10px;
+    }
+
+    .story-split__button {
+      min-width: 0;
+      padding-inline: 12px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Story split",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "select",
+      "id": "video_source",
+      "label": "Video source",
+      "options": [
+        {
+          "value": "uploaded",
+          "label": "Shopify video"
+        },
+        {
+          "value": "theme_asset",
+          "label": "Theme asset"
+        }
+      ],
+      "default": "theme_asset"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "visible_if": "{{ section.settings.video_source == 'uploaded' }}"
+    },
+    {
+      "type": "text",
+      "id": "theme_video_asset",
+      "label": "Theme asset filename",
+      "default": "ogee-storefront-explanation.mp4",
+      "visible_if": "{{ section.settings.video_source == 'theme_asset' }}"
+    },
+    {
+      "type": "text",
+      "id": "video_label",
+      "label": "Video accessible label",
+      "default": "Ogee brand story video"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image",
+      "label": "Desktop poster image"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image_mobile",
+      "label": "Mobile poster image"
+    },
+    {
+      "type": "text",
+      "id": "media_title",
+      "label": "Media title",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "OGEE is where certified organic skincare meets high performance. no compromises."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "We adhere to the most stringent standards in clean beauty through our renowned NSF certification."
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_image",
+      "label": "Certification badge"
+    },
+    {
+      "type": "text",
+      "id": "badge_alt",
+      "label": "Certification badge alt text",
+      "default": "NSF Certified"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "story_button_label",
+      "label": "Story button label",
+      "default": "Our Story"
+    },
+    {
+      "type": "url",
+      "id": "story_button_link",
+      "label": "Story button link"
+    },
+    {
+      "type": "text",
+      "id": "ingredients_button_label",
+      "label": "Ingredients button label",
+      "default": "Ingredients"
+    },
+    {
+      "type": "url",
+      "id": "ingredients_button_link",
+      "label": "Ingredients button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "min": 320,
+      "max": 720,
+      "step": 10,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "mobile_media_height",
+      "label": "Mobile media height",
+      "min": 280,
+      "max": 520,
+      "step": 10,
+      "unit": "px",
+      "default": 390
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "copy_color",
+      "label": "Copy",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "media_title_color",
+      "label": "Media title",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Media overlay",
+      "alpha": true,
+      "default": "#00000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Story split",
+      "category": "Storytelling"
+    }
+  ]
+}
+{% endschema %}
