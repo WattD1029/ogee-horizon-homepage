@@ -1,6 +1,8 @@
 {% liquid
   assign section_settings = section.settings
   assign heading_id = 'ResultProofHeading-' | append: section.id
+  assign display_font = section_settings.display_font
+  assign display_font_light = display_font | font_modify: 'weight', '300' | default: display_font
   assign has_comparison = false
   assign has_custom_composite = false
   assign loading = 'lazy'
@@ -25,6 +27,14 @@
   endif
 %}
 
+{% if display_font_light != blank %}
+  {% unless display_font_light.system? %}
+    {% style %}
+      {{ display_font_light | font_face: font_display: 'swap' }}
+    {% endstyle %}
+  {% endunless %}
+{% endif %}
+
 {% if has_comparison %}
   <script
     src="{{ 'comparison-slider.js' | asset_url }}"
@@ -46,6 +56,9 @@
     --result-proof-content-width: {{ section_settings.desktop_content_width }}px;
     --result-proof-padding-top: {{ section_settings.padding_top }}px;
     --result-proof-padding-bottom: {{ section_settings.padding_bottom }}px;
+    --result-proof-display-font-family: {{ display_font_light.family }}, {{ display_font_light.fallback_families }};
+    --result-proof-display-font-style: {{ display_font_light.style }};
+    --result-proof-display-font-weight: {{ display_font_light.weight }};
   "
 >
   <div class="result-proof__inner">
@@ -398,11 +411,13 @@
 
   .result-proof__heading {
     color: var(--result-proof-text);
-    font-family: 'Chronicle Display', 'Chronicle Display Light', Didot, 'Bodoni 72', 'Bodoni MT', 'Times New Roman', serif;
+    font-family: var(--result-proof-display-font-family);
     font-size: 40px;
-    font-weight: 300;
+    font-style: var(--result-proof-display-font-style);
+    font-weight: var(--result-proof-display-font-weight);
     line-height: 1.2;
     letter-spacing: 0;
+    font-synthesis: none;
     text-transform: capitalize;
   }
 
@@ -431,10 +446,12 @@
 
   .result-proof__stat-value {
     color: var(--result-proof-text);
-    font-family: 'Chronicle Display', 'Chronicle Display Light', Didot, 'Bodoni 72', 'Bodoni MT', 'Times New Roman', serif;
+    font-family: var(--result-proof-display-font-family);
     font-size: 24px;
-    font-weight: 300;
+    font-style: var(--result-proof-display-font-style);
+    font-weight: var(--result-proof-display-font-weight);
     line-height: 1.5;
+    font-synthesis: none;
   }
 
   .result-proof__stat-bar {
@@ -607,6 +624,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "Formulated For Results"
+    },
+    {
+      "type": "font_picker",
+      "id": "display_font",
+      "label": "Display font",
+      "default": "cormorant_garamond_n3"
     },
     {
       "type": "textarea",
