@@ -1,19 +1,40 @@
 {% liquid
   assign section_settings = section.settings
   assign heading_id = 'ResultProofHeading-' | append: section.id
+  assign has_before_image = false
+  assign has_after_image = false
   assign has_comparison = false
   assign has_custom_composite = false
+  assign has_fallback_comparison = false
+  assign renders_comparison = false
   assign loading = 'lazy'
   assign fetch_priority = 'low'
 
   if section_settings.before_image != blank
-    if section_settings.after_image != blank
+    assign has_before_image = true
+  endif
+
+  if section_settings.after_image != blank
+    assign has_after_image = true
+  endif
+
+  if has_before_image
+    if has_after_image
       assign has_comparison = true
     endif
   endif
 
   if section_settings.composite_image != blank
     assign has_custom_composite = true
+  endif
+
+  if has_comparison
+    assign renders_comparison = true
+  else
+    unless has_custom_composite
+      assign has_fallback_comparison = true
+      assign renders_comparison = true
+    endunless
   endif
 
   if section.index <= 3
@@ -25,7 +46,7 @@
   endif
 %}
 
-{% if has_comparison %}
+{% if renders_comparison %}
   <script
     src="{{ 'comparison-slider.js' | asset_url }}"
     type="module"
@@ -51,49 +72,76 @@
   <div class="result-proof__inner">
     <div class="result-proof__lead">
       <div class="result-proof__media">
-        {% if has_comparison %}
-          <comparison-slider-component class="result-proof-comparison">
+        {% if renders_comparison %}
+          <comparison-slider-component class="result-proof-comparison{% if has_fallback_comparison %} result-proof-comparison--fallback{% endif %}">
             <div
               class="result-proof-comparison__media"
               ref="mediaWrapper"
               data-orientation="horizontal"
             >
               <div class="result-proof-comparison__layer result-proof-comparison__layer--before">
-                {{
-                  section_settings.before_image
-                  | image_url: width: 1600
-                  | image_tag:
-                    widths: '360, 540, 720, 960, 1200, 1600',
-                    sizes: '(min-width: 990px) 480px, calc(100vw - 30px)',
-                    loading: loading,
-                    fetchpriority: fetch_priority,
-                    alt: section_settings.before_image.alt,
-                    class: 'result-proof-comparison__image'
-                }}
+                {% if has_comparison %}
+                  {{
+                    section_settings.before_image
+                    | image_url: width: 1600
+                    | image_tag:
+                      widths: '360, 540, 720, 960, 1200, 1600',
+                      sizes: '(min-width: 990px) 480px, calc(100vw - 30px)',
+                      loading: loading,
+                      fetchpriority: fetch_priority,
+                      alt: section_settings.before_image.alt,
+                      class: 'result-proof-comparison__image'
+                  }}
+                {% else %}
+                  <img
+                    src="{{ 'result-proof-week-1.png' | asset_url }}"
+                    alt="{{ section_settings.before_label | escape }} skin result"
+                    class="result-proof-comparison__image"
+                    width="1254"
+                    height="1254"
+                    loading="{{ loading }}"
+                    fetchpriority="{{ fetch_priority }}"
+                  >
+                {% endif %}
               </div>
               <div class="result-proof-comparison__layer result-proof-comparison__layer--after">
-                {{
-                  section_settings.after_image
-                  | image_url: width: 1600
-                  | image_tag:
-                    widths: '360, 540, 720, 960, 1200, 1600',
-                    sizes: '(min-width: 990px) 480px, calc(100vw - 30px)',
-                    loading: loading,
-                    fetchpriority: fetch_priority,
-                    alt: section_settings.after_image.alt,
-                    class: 'result-proof-comparison__image',
-                    ref: 'afterImage'
-                }}
+                {% if has_comparison %}
+                  {{
+                    section_settings.after_image
+                    | image_url: width: 1600
+                    | image_tag:
+                      widths: '360, 540, 720, 960, 1200, 1600',
+                      sizes: '(min-width: 990px) 480px, calc(100vw - 30px)',
+                      loading: loading,
+                      fetchpriority: fetch_priority,
+                      alt: section_settings.after_image.alt,
+                      class: 'result-proof-comparison__image',
+                      ref: 'afterImage'
+                  }}
+                {% else %}
+                  <img
+                    src="{{ 'result-proof-week-12.png' | asset_url }}"
+                    alt="{{ section_settings.after_label | escape }} skin result"
+                    class="result-proof-comparison__image"
+                    width="1254"
+                    height="1254"
+                    loading="{{ loading }}"
+                    fetchpriority="{{ fetch_priority }}"
+                    ref="afterImage"
+                  >
+                {% endif %}
               </div>
-              {% if section_settings.before_label != blank %}
-                <span class="result-proof-comparison__tag result-proof-comparison__tag--before">
-                  {{ section_settings.before_label | escape }}
-                </span>
-              {% endif %}
-              {% if section_settings.after_label != blank %}
-                <span class="result-proof-comparison__tag result-proof-comparison__tag--after">
-                  {{ section_settings.after_label | escape }}
-                </span>
+              {% if has_comparison %}
+                {% if section_settings.before_label != blank %}
+                  <span class="result-proof-comparison__tag result-proof-comparison__tag--before">
+                    {{ section_settings.before_label | escape }}
+                  </span>
+                {% endif %}
+                {% if section_settings.after_label != blank %}
+                  <span class="result-proof-comparison__tag result-proof-comparison__tag--after">
+                    {{ section_settings.after_label | escape }}
+                  </span>
+                {% endif %}
               {% endif %}
               <span class="result-proof-comparison__line" aria-hidden="true"></span>
               <span class="result-proof-comparison__handle" aria-hidden="true">
@@ -243,6 +291,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top center;
   }
 
   .result-proof-comparison__media {
@@ -314,8 +363,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     color: #111111;
     background: #ffffff;
     border-radius: 50%;
@@ -326,8 +375,8 @@
 
   .result-proof-comparison__handle-icon {
     display: block;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     transform: rotate(90deg);
   }
 
@@ -350,14 +399,14 @@
   }
 
   .result-proof-comparison__range::-webkit-slider-thumb {
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     appearance: none;
   }
 
   .result-proof-comparison__range::-moz-range-thumb {
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     border: 0;
     background: transparent;
   }
@@ -575,8 +624,8 @@
     }
 
     .result-proof-comparison__handle {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
     }
 
     .result-proof__testimonial {
