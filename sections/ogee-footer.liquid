@@ -307,10 +307,10 @@
 
   .ogee-footer__newsletter-inner {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(26rem, 37.5rem);
+    grid-template-columns: minmax(0, 34.7rem) minmax(0, 40rem);
     align-items: center;
-    gap: 5rem;
-    max-width: 75rem;
+    gap: 5.25rem;
+    max-width: 80rem;
     margin-inline: auto;
     padding: 1.25rem 0 1.5rem;
   }
@@ -322,8 +322,8 @@
   }
 
   .ogee-footer__newsletter-heading {
-    font-family: var(--font-heading--family);
-    font-size: 2rem;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 2.125rem;
     font-weight: 400;
     line-height: 1.05;
   }
@@ -331,6 +331,7 @@
   .ogee-footer__newsletter-text {
     margin-block-start: 0.4rem;
     font-size: 0.875rem;
+    font-weight: 400;
     line-height: 1.3;
   }
 
@@ -346,19 +347,29 @@
     border-block-end: 1px solid currentcolor;
   }
 
-  .ogee-footer__newsletter-input {
+  .ogee-footer .ogee-footer__newsletter-input[type='email'] {
+    appearance: none;
     min-width: 0;
     width: 100%;
     border: 0;
     border-radius: 0;
     background: transparent;
+    background-color: transparent;
+    box-shadow: none;
     color: currentcolor;
     font: inherit;
     font-size: 0.875rem;
     padding: 0.75rem 1rem 0.75rem 0;
   }
 
-  .ogee-footer__newsletter-input::placeholder {
+  .ogee-footer .ogee-footer__newsletter-input[type='email']:hover,
+  .ogee-footer .ogee-footer__newsletter-input[type='email']:focus {
+    background: transparent;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .ogee-footer .ogee-footer__newsletter-input[type='email']::placeholder {
     color: currentcolor;
     opacity: 0.75;
   }
@@ -382,9 +393,10 @@
     background: transparent;
     color: currentcolor;
     cursor: pointer;
-    font: inherit;
+    font-family: var(--font-body--family);
     font-size: 0.875rem;
     font-weight: 700;
+    line-height: 1;
     padding: 0;
     text-transform: uppercase;
   }
@@ -524,7 +536,7 @@
       grid-template-columns: minmax(0, 1fr) auto;
     }
 
-    .ogee-footer__newsletter-input {
+    .ogee-footer .ogee-footer__newsletter-input[type='email'] {
       font-size: 1rem;
       padding-block: 0.8rem;
     }
