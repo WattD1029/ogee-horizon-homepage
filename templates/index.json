@@ -123,7 +123,8 @@
           "settings": {
             "label": "New",
             "collection": "new",
-            "button_label": "All New"
+            "button_label": "All New",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -132,7 +133,8 @@
           "settings": {
             "label": "Bestsellers",
             "collection": "bestsellers",
-            "button_label": "All Bestsellers"
+            "button_label": "All Bestsellers",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -141,7 +143,8 @@
           "settings": {
             "label": "Makeup",
             "collection": "makeup",
-            "button_label": "All Makeup"
+            "button_label": "All Makeup",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -150,7 +153,8 @@
           "settings": {
             "label": "Skincare",
             "collection": "skincare",
-            "button_label": "All Skincare"
+            "button_label": "All Skincare",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -159,7 +163,8 @@
           "settings": {
             "label": "Bundles",
             "collection": "bundles",
-            "button_label": "All Bundles"
+            "button_label": "All Bundles",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -168,7 +173,8 @@
           "settings": {
             "label": "Accessories",
             "collection": "accessories",
-            "button_label": "All Accessories"
+            "button_label": "All Accessories",
+            "button_link": ""
           },
           "blocks": {}
         }
@@ -197,6 +203,7 @@
         "transition_to_main_product": false,
         "max_products": 12,
         "products_visible_desktop": 4,
+        "desktop_content_width": 1080,
         "products_visible_mobile": "2",
         "card_gap": 8,
         "fallback_rating": 5,
@@ -205,6 +212,30 @@
         "color_scheme": "scheme-1",
         "padding_top": 56,
         "padding_bottom": 56
+      }
+    },
+    "promotion_offer_banner": {
+      "type": "promotion-offer-banner",
+      "settings": {
+        "eyebrow": "THE CONTOUR COLLECTIONS",
+        "heading": "Recognized With 5,000+ Five-Star Reviews.",
+        "subheading": "Three-Step Glow Routine",
+        "image_width_desktop": 220,
+        "image_width_mobile": 100,
+        "desktop_height": 220,
+        "mobile_height": 380,
+        "content_max_width": 660,
+        "desktop_content_width": 1080,
+        "button_label": "SHOP NOW",
+        "product": "",
+        "link": "",
+        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
+        "open_in_new_tab": false,
+        "background_color": "#fafafa",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "button_background": "#000000",
+        "button_color": "#ffffff"
       }
     }
   },
