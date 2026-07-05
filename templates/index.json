@@ -84,52 +84,6 @@
         "navigation_color": "#333333"
       }
     },
-    "promotion_blocks_homepage": {
-      "type": "promotion-blocks",
-      "blocks": {
-        "gift_with_purchase": {
-          "type": "_promotion-block",
-          "settings": {
-            "icon": "gift",
-            "title": "Get free Gift with purchase of $150+",
-            "body": "You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!",
-            "button_label": "Shop now",
-            "link": "",
-            "open_in_new_tab": false
-          },
-          "blocks": {}
-        },
-        "try_before_you_buy": {
-          "type": "_promotion-block",
-          "settings": {
-            "icon": "calendar",
-            "title": "Try Before You Buy",
-            "body": "Choose up to 6 items. Try for 14 days. Only Pay For what you keep.",
-            "button_label": "Try Before You Buy",
-            "link": "",
-            "open_in_new_tab": false
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "gift_with_purchase",
-        "try_before_you_buy"
-      ],
-      "settings": {
-        "heading": "Promotions",
-        "section_width": "full-width",
-        "color_scheme": "scheme-1",
-        "card_background": "#faf8f3",
-        "text_color": "#333333",
-        "button_color": "#000000",
-        "progress_color": "#333333",
-        "desktop_gap": 8,
-        "mobile_gap": 16,
-        "padding_top": 0,
-        "padding_bottom": 96
-      }
-    },
     "product_carousel_homepage": {
       "type": "product-carousel",
       "blocks": {
@@ -138,7 +92,8 @@
           "settings": {
             "label": "New",
             "collection": "new",
-            "button_label": "All New"
+            "button_label": "All New",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -147,7 +102,8 @@
           "settings": {
             "label": "Bestsellers",
             "collection": "bestsellers",
-            "button_label": "All Bestsellers"
+            "button_label": "All Bestsellers",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -156,7 +112,8 @@
           "settings": {
             "label": "Makeup",
             "collection": "makeup",
-            "button_label": "All Makeup"
+            "button_label": "All Makeup",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -165,7 +122,8 @@
           "settings": {
             "label": "Skincare",
             "collection": "skincare",
-            "button_label": "All Skincare"
+            "button_label": "All Skincare",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -174,7 +132,8 @@
           "settings": {
             "label": "Bundles",
             "collection": "bundles",
-            "button_label": "All Bundles"
+            "button_label": "All Bundles",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -183,7 +142,8 @@
           "settings": {
             "label": "Accessories",
             "collection": "accessories",
-            "button_label": "All Accessories"
+            "button_label": "All Accessories",
+            "button_link": ""
           },
           "blocks": {}
         }
@@ -212,6 +172,7 @@
         "transition_to_main_product": false,
         "max_products": 12,
         "products_visible_desktop": 4,
+        "desktop_content_width": 1080,
         "products_visible_mobile": "2",
         "card_gap": 8,
         "fallback_rating": 5,
@@ -221,12 +182,83 @@
         "padding_top": 56,
         "padding_bottom": 56
       }
+    },
+    "promotion_offer_banner": {
+      "type": "promotion-offer-banner",
+      "settings": {
+        "eyebrow": "THE CONTOUR COLLECTIONS",
+        "heading": "Recognized With 5,000+ Five-Star Reviews.",
+        "subheading": "Three-Step Glow Routine",
+        "image_width_desktop": 220,
+        "image_width_mobile": 100,
+        "desktop_height": 220,
+        "mobile_height": 380,
+        "content_max_width": 660,
+        "desktop_content_width": 1080,
+        "button_label": "SHOP NOW",
+        "product": "",
+        "link": "",
+        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
+        "open_in_new_tab": false,
+        "background_color": "#fafafa",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "button_background": "#000000",
+        "button_color": "#ffffff"
+      }
+    },
+    "promotion_blocks_aeNeAi": {
+      "type": "promotion-blocks",
+      "blocks": {
+        "promotion_block_rNpVV9": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "gift",
+            "title": "Get free Gift with purchase of $150+",
+            "body": "You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!",
+            "button_label": "Shop now",
+            "link": "",
+            "open_in_new_tab": false
+          },
+          "blocks": {}
+        },
+        "promotion_block_4JdzUi": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "calendar",
+            "title": "Try Before You Buy",
+            "body": "Choose up to 6 items. Try for 14 days. Only Pay For what you keep.",
+            "button_label": "Try Before You Buy",
+            "link": "",
+            "open_in_new_tab": false
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "promotion_block_rNpVV9",
+        "promotion_block_4JdzUi"
+      ],
+      "name": "Promotion blocks",
+      "settings": {
+        "heading": "Promotions",
+        "section_width": "full-width",
+        "color_scheme": "",
+        "card_background": "#faf8f3",
+        "text_color": "#333333",
+        "button_color": "#000000",
+        "progress_color": "#333333",
+        "desktop_gap": 8,
+        "mobile_gap": 16,
+        "padding_top": 0,
+        "padding_bottom": 96
+      }
     }
   },
   "order": [
     "hero_crystal_contour",
-    "promotion_blocks_homepage",
     "product_carousel_homepage",
-    "product_list_fa6P9H"
+    "promotion_offer_banner",
+    "promotion_blocks_aeNeAi"
   ]
 }
