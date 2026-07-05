@@ -1,0 +1,345 @@
+{% doc %}
+  Renders one press mention for the Featured in carousel section.
+{% enddoc %}
+
+{% liquid
+  assign block_index = section.blocks | find_index: 'id', block.id
+  assign slide_image = block.settings.image
+  assign bundled_image = block.settings.bundled_image
+  assign bundled_image_asset = ''
+
+  case bundled_image
+    when 'vogue'
+      assign bundled_image_asset = 'featured-in-vogue-press.png'
+    when 'saatva'
+      assign bundled_image_asset = 'featured-in-saatva-press.png'
+  endcase
+
+  assign logo_style = block.settings.logo_style | default: 'vogue'
+%}
+
+{% capture press_image %}
+  {% if slide_image != blank %}
+    {{
+      slide_image
+      | image_url: width: 900
+      | image_tag:
+        widths: '320, 480, 640, 900',
+        sizes: '(min-width: 750px) 320px, 0px',
+        loading: 'lazy',
+        alt: slide_image.alt,
+        class: 'featured-in-slide__image'
+    }}
+  {% elsif bundled_image_asset != blank %}
+    <img
+      src="{{ bundled_image_asset | asset_url }}"
+      alt=""
+      class="featured-in-slide__image"
+      width="800"
+      height="634"
+      loading="lazy"
+    >
+  {% else %}
+    {{ 'lifestyle-1' | placeholder_svg_tag: 'featured-in-slide__image placeholder-svg' }}
+  {% endif %}
+{% endcapture %}
+
+{% capture children %}
+  <div class="featured-in-slide">
+    <div class="featured-in-slide__image-panel" aria-hidden="true">
+      {{ press_image }}
+    </div>
+
+    <div class="featured-in-slide__content-panel">
+      <div class="featured-in-slide__content">
+        {% if section.settings.eyebrow != blank %}
+          <p class="featured-in-slide__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {% endif %}
+
+        {% if block.settings.logo_text != blank %}
+          <div class="featured-in-slide__logo featured-in-slide__logo--{{ logo_style }}">
+            <span>{{ block.settings.logo_text | escape }}</span>
+            {% if block.settings.logo_subtext != blank %}
+              <small>{{ block.settings.logo_subtext | escape }}</small>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if block.settings.quote != blank %}
+          <div class="featured-in-slide__quote">
+            {{ block.settings.quote }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endcapture %}
+
+{% render 'slideshow-slide',
+  index: block_index,
+  class: 'featured-in-carousel__slide',
+  children: children,
+  attributes: block.shopify_attributes,
+  slide_id: block.id
+%}
+
+{% stylesheet %}
+  .featured-in-carousel__slide {
+    width: 100%;
+  }
+
+  .featured-in-slide {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    background: var(--featured-in-panel-background);
+  }
+
+  .featured-in-slide__image-panel {
+    display: none;
+  }
+
+  .featured-in-slide__content-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    height: 100%;
+    padding: 32px 24px;
+    background: var(--featured-in-panel-background);
+  }
+
+  .featured-in-slide__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+  }
+
+  .featured-in-slide__eyebrow {
+    width: 100%;
+    margin: 0 0 10px;
+    color: var(--featured-in-muted-color);
+    font-family: 'Helvetica Neue', Arial, var(--font-body--family);
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .featured-in-slide__logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    min-height: 60px;
+    margin-bottom: 24px;
+    color: var(--featured-in-text-color);
+    line-height: 1;
+    text-align: center;
+  }
+
+  .featured-in-slide__logo span {
+    display: block;
+  }
+
+  .featured-in-slide__logo small {
+    display: block;
+    margin-top: 2px;
+    font-family: 'Helvetica Neue', Arial, var(--font-body--family);
+    font-size: 0.4375rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .featured-in-slide__logo--vogue span {
+    font-family: Didot, 'Bodoni 72', 'Times New Roman', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+  }
+
+  .featured-in-slide__logo--saatva span {
+    font-family: 'Helvetica Neue', Arial, var(--font-body--family);
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.8;
+  }
+
+  .featured-in-slide__logo--text span {
+    font-family: 'Helvetica Neue', Arial, var(--font-body--family);
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  .featured-in-slide__quote {
+    width: 100%;
+    min-height: 96px;
+    margin: 0;
+    color: var(--featured-in-text-color);
+    font-family: 'Helvetica Neue', Arial, var(--font-body--family);
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-align: center;
+  }
+
+  .featured-in-slide__quote p {
+    margin: 0;
+  }
+
+  .featured-in-slide__quote u {
+    text-underline-offset: 0.12em;
+    text-decoration-thickness: 1px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .featured-in-slide {
+      grid-template-columns: 29.63% minmax(0, 1fr);
+    }
+
+    .featured-in-slide__image-panel {
+      display: block;
+      position: relative;
+      min-width: 0;
+      height: 100%;
+      overflow: hidden;
+      background: var(--featured-in-panel-background);
+    }
+
+    .featured-in-slide__image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .featured-in-slide__content-panel {
+      padding: 24px 48px;
+    }
+
+    .featured-in-slide__content {
+      transform: translateY(-24px);
+    }
+
+    .featured-in-slide__eyebrow {
+      margin-top: 24px;
+    }
+
+    .featured-in-slide__logo {
+      width: 160px;
+      min-height: 80px;
+      margin-bottom: 24px;
+    }
+
+    .featured-in-slide__logo--vogue span {
+      font-size: 4.25rem;
+    }
+
+    .featured-in-slide__logo--saatva span {
+      font-size: 2.1875rem;
+    }
+
+    .featured-in-slide__logo small {
+      font-size: 0.5rem;
+    }
+
+    .featured-in-slide__quote {
+      min-height: 108px;
+      font-family: 'Chronicle Display', var(--font-heading--family);
+      font-size: 1.5rem;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Press slide",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "select",
+      "id": "bundled_image",
+      "label": "Bundled image fallback",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "vogue",
+          "label": "Vogue product sticks"
+        },
+        {
+          "value": "saatva",
+          "label": "Saatva model cream"
+        }
+      ],
+      "default": "vogue"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Publication logo text",
+      "default": "VOGUE"
+    },
+    {
+      "type": "text",
+      "id": "logo_subtext",
+      "label": "Publication subtext"
+    },
+    {
+      "type": "select",
+      "id": "logo_style",
+      "label": "Logo style",
+      "options": [
+        {
+          "value": "vogue",
+          "label": "Vogue"
+        },
+        {
+          "value": "saatva",
+          "label": "Saatva"
+        },
+        {
+          "value": "text",
+          "label": "Text"
+        }
+      ],
+      "default": "vogue"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "quote",
+      "label": "Quote",
+      "default": "\"Ogee's <u>Sculpted Face Stick</u> is crafted with the brand's silky-smooth activated botanical primer, creating a smooth base for your products.\""
+    }
+  ],
+  "presets": [
+    {
+      "name": "Press slide"
+    }
+  ]
+}
+{% endschema %}

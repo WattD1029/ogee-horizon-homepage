@@ -199,11 +199,63 @@
         "padding_top": 56,
         "padding_bottom": 56
       }
+    },
+    "featured_in_carousel": {
+      "type": "featured-in-carousel",
+      "blocks": {
+        "vogue": {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "image": "",
+            "bundled_image": "vogue",
+            "logo_text": "VOGUE",
+            "logo_subtext": "",
+            "logo_style": "vogue",
+            "quote": "\"Ogee's <u>Sculpted Face Stick</u> is crafted with the brand's silky-smooth activated botanical primer, creating a smooth base for your products.\""
+          },
+          "blocks": {}
+        },
+        "saatva": {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "image": "",
+            "bundled_image": "saatva",
+            "logo_text": "saatva",
+            "logo_subtext": "Smarter luxury sleep",
+            "logo_style": "saatva",
+            "quote": "\"Ogee's Ogee Hydraganics Indigo Dream Renewal Cream is The Best Overnight Beauty Treatments to Improve Your Skin and Hair While You Sleep.\""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "vogue",
+        "saatva"
+      ],
+      "settings": {
+        "accessible_heading": "Featured in press",
+        "eyebrow": "Featured In",
+        "button_label": "All Press",
+        "button_link": "/pages/press",
+        "empty_text": "Add press slides to this section.",
+        "content_width": 1080,
+        "color_scheme": "scheme-1",
+        "panel_background": "#FAFAFA",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "button_background": "#000000",
+        "button_color": "#FFFFFF",
+        "padding_top": 96,
+        "padding_bottom": 96,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
+      }
     }
   },
   "order": [
     "hero_crystal_contour",
     "product_carousel_homepage",
-    "promotion_offer_banner"
+    "promotion_offer_banner",
+    "featured_in_carousel"
   ]
 }
