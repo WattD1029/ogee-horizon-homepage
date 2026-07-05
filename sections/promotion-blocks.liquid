@@ -1,0 +1,315 @@
+{% if section.blocks.size > 1 %}
+  {% capture controls %}
+    {% render 'slideshow-controls',
+      style: 'dots',
+      item_count: section.blocks.size,
+      show_arrows: false,
+      arrows_on_media: false,
+      controls_on_media: false,
+      pagination_position: 'center',
+      icon_style: 'none',
+      class: 'promotion-blocks__controls'
+    %}
+  {% endcapture %}
+{% endif %}
+
+{% capture slides %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+<section
+  class="promotion-blocks promotion-blocks--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+  style="
+    --promotion-blocks-padding-top: {{ section.settings.padding_top }}px;
+    --promotion-blocks-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --promotion-blocks-gap: {{ section.settings.desktop_gap }}px;
+    --promotion-blocks-mobile-gap: {{ section.settings.mobile_gap }}px;
+    --promotion-blocks-card-background: {{ section.settings.card_background }};
+    --promotion-blocks-text-color: {{ section.settings.text_color }};
+    --promotion-blocks-icon-color: {{ section.settings.text_color }};
+    --promotion-blocks-button-color: {{ section.settings.button_color }};
+    --promotion-blocks-progress-color: {{ section.settings.progress_color }};
+  "
+>
+  <div class="promotion-blocks__inner">
+    <h2 class="visually-hidden">{{ section.settings.heading | escape }}</h2>
+
+    {% if section.blocks.size > 0 %}
+      {% render 'slideshow',
+        class: 'promotion-blocks__slideshow',
+        controls: controls,
+        show_arrows: false,
+        autoplay: false,
+        infinite: false,
+        slides: slides,
+        slide_count: section.blocks.size
+      %}
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .promotion-blocks {
+    padding-block: var(--promotion-blocks-padding-top) var(--promotion-blocks-padding-bottom);
+    background: rgb(var(--color-background-rgb));
+    color: var(--promotion-blocks-text-color);
+  }
+
+  .promotion-blocks__inner {
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .promotion-blocks--full-width .promotion-blocks__inner {
+    max-width: 1080px;
+  }
+
+  .promotion-blocks--page-width .promotion-blocks__inner {
+    max-width: var(--page-width);
+    padding-inline: var(--page-margin);
+  }
+
+  .promotion-blocks__slideshow {
+    --promotion-blocks-slide-width: calc((100% - var(--promotion-blocks-gap)) / 2);
+    display: block;
+    width: 100%;
+  }
+
+  .promotion-blocks__slideshow slideshow-container {
+    background: transparent;
+  }
+
+  .promotion-blocks__slideshow slideshow-slides {
+    align-items: stretch;
+    gap: var(--promotion-blocks-gap);
+    scrollbar-width: none;
+  }
+
+  .promotion-blocks__slideshow slideshow-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .promotion-blocks__slideshow slideshow-slide:only-child {
+    --promotion-blocks-slide-width: 100%;
+  }
+
+  .promotion-blocks__controls {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .promotion-blocks {
+      padding-block: min(var(--promotion-blocks-padding-top), 40px)
+        min(var(--promotion-blocks-padding-bottom), 40px);
+    }
+
+    .promotion-blocks--page-width .promotion-blocks__inner {
+      padding-inline: 0;
+    }
+
+    .promotion-blocks__slideshow {
+      --promotion-blocks-slide-width: 250px;
+    }
+
+    .promotion-blocks__slideshow slideshow-slides {
+      gap: var(--promotion-blocks-mobile-gap);
+      padding-inline: 15px;
+      scroll-padding-inline-start: 15px;
+    }
+
+    .promotion-blocks__slideshow slideshow-slide:only-child {
+      --promotion-blocks-slide-width: calc(100vw - 30px);
+    }
+
+    .promotion-blocks slideshow-controls.promotion-blocks__controls {
+      display: flex;
+      width: calc(100% - 30px);
+      min-height: var(--minimum-touch-target);
+      margin: 16px 15px 0;
+      color: var(--promotion-blocks-progress-color);
+      mix-blend-mode: normal;
+    }
+
+    .promotion-blocks__controls .slideshow-controls__dots {
+      display: flex;
+      width: 100%;
+      gap: 0;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    .promotion-blocks__controls .slideshow-controls__dots li {
+      display: flex;
+      flex: 1 1 0;
+    }
+
+    .promotion-blocks__controls .slideshow-controls__dots button {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: 100%;
+      height: var(--minimum-touch-target);
+      margin: 0;
+      color: var(--promotion-blocks-progress-color);
+      border-radius: 0;
+      font-size: 0;
+      opacity: 1;
+    }
+
+    .promotion-blocks__controls .slideshow-controls__dots button::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 1px;
+      border-radius: 0;
+      background: color-mix(in srgb, currentColor 20%, transparent);
+      box-shadow: none;
+    }
+
+    .promotion-blocks__controls .slideshow-controls__dots button[aria-selected='true']::after {
+      background: currentColor;
+    }
+
+    .promotion-blocks__controls .slideshow-controls__dots button:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -6px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Promotion blocks",
+  "tag": "section",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "_promotion-block"
+    }
+  ],
+  "max_blocks": 6,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Accessible heading",
+      "default": "Promotions"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "full-width",
+          "label": "Full width"
+        },
+        {
+          "value": "page-width",
+          "label": "Page width"
+        }
+      ],
+      "default": "full-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#faf8f3"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text and icon",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button border and text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Mobile progress",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "label": "Desktop gap",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Mobile gap",
+      "min": 8,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promotion blocks",
+      "blocks": {
+        "gift_with_purchase": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "gift",
+            "title": "Get free Gift with purchase of $150+",
+            "body": "You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!",
+            "button_label": "Shop now"
+          }
+        },
+        "try_before_you_buy": {
+          "type": "_promotion-block",
+          "settings": {
+            "icon": "calendar",
+            "title": "Try Before You Buy",
+            "body": "Choose up to 6 items. Try for 14 days. Only Pay For what you keep.",
+            "button_label": "Try Before You Buy"
+          }
+        }
+      },
+      "block_order": ["gift_with_purchase", "try_before_you_buy"]
+    }
+  ]
+}
+{% endschema %}

@@ -47,6 +47,7 @@
     --promotion-offer-desktop-height: {{ section_settings.desktop_height }}px;
     --promotion-offer-mobile-height: {{ section_settings.mobile_height }}px;
     --promotion-offer-content-max-width: {{ section_settings.content_max_width }}px;
+    --promotion-offer-banner-content-width: {{ section_settings.desktop_content_width | default: 1080 }}px;
     --promotion-offer-image-width-desktop: {{ section_settings.image_width_desktop }}px;
     --promotion-offer-image-width-mobile: {{ section_settings.image_width_mobile }}px;
   "
@@ -110,6 +111,9 @@
 
 {% stylesheet %}
   .promotion-offer-banner-shell {
+    --page-content-width: var(--promotion-offer-banner-content-width);
+    --page-width: calc(var(--page-content-width) + (var(--page-margin) * 2));
+
     padding-block-end: 96px;
   }
 
@@ -417,6 +421,16 @@
       "step": 10,
       "unit": "px",
       "default": 660
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1080
     },
     {
       "type": "header",

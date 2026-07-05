@@ -317,16 +317,24 @@
                     else
                       assign shade_fallback = '#d7b89f'
                   endcase
-                  if featured_media == blank
-                    for variant_item in product.variants
-                      if variant_item[swatch_option_key] == product_option_value.name
+                  for variant_item in product.variants
+                    if variant_item[swatch_option_key] == product_option_value.name
+                      if shade_variant == blank
+                        assign shade_variant = variant_item
+                      endif
+                      if featured_media == blank
                         if variant_item.featured_media
                           assign featured_media = variant_item.featured_media
-                          assign shade_variant = variant_item
-                          break
                         endif
                       endif
-                    endfor
+                      if featured_media
+                        break
+                      endif
+                    endif
+                  endfor
+                  assign shade_metafield_color = shade_variant.metafields.custom.shade_hex.value
+                  if shade_metafield_color != blank
+                    assign shade_fallback = shade_metafield_color
                   endif
                 %}
                 <button
@@ -343,7 +351,8 @@
                 >
                   {% render 'swatch',
                     swatch: product_option_value.swatch,
-                    variant_image: featured_media
+                    variant_image: featured_media,
+                    color_override: shade_metafield_color
                   %}
                 </button>
               {% endfor %}
