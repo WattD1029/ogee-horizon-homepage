@@ -1,0 +1,567 @@
+<section
+  class="collection-card-section color-{{ section.settings.color_scheme }}"
+  style="
+    --collection-card-section-padding-top: {{ section.settings.padding_top }}px;
+    --collection-card-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --collection-card-section-content-width: {{ section.settings.desktop_content_width }}px;
+    --collection-card-section-card-height: {{ section.settings.desktop_card_height }}px;
+    --collection-card-section-mobile-card-width: {{ section.settings.mobile_card_width }}px;
+    --collection-card-section-mobile-card-height: {{ section.settings.mobile_card_height }}px;
+    --collection-card-section-gap: {{ section.settings.card_gap }}px;
+  "
+>
+  <div class="collection-card-section__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="visually-hidden">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    <collection-card-section-scroll class="collection-card-section__scroller">
+      <div class="collection-card-section__track" data-collection-card-track>
+        {% for card_block in section.blocks limit: 4 %}
+          {% liquid
+            assign card_collection = card_block.settings.collection
+            assign card_title = card_block.settings.title
+            assign fallback_title = ''
+
+            case forloop.index0
+              when 0
+                assign fallback_title = 'Makeup'
+              when 1
+                assign fallback_title = 'Skincare'
+              when 2
+                assign fallback_title = 'Bundles'
+              when 3
+                assign fallback_title = 'Accessories'
+            endcase
+
+            if card_title == blank and card_collection != blank
+              assign card_title = card_collection.title
+            endif
+
+            if card_title == blank
+              assign card_title = fallback_title
+            endif
+
+            assign card_description = card_block.settings.description
+            assign card_button_label = card_block.settings.button_label | default: section.settings.button_label
+            assign card_url = card_block.settings.link
+            assign bundled_image = card_block.settings.bundled_image | default: 'auto'
+            assign bundled_image_key = bundled_image
+
+            if card_url == blank and card_collection != blank
+              assign card_url = card_collection.url
+            endif
+
+            assign card_image = card_block.settings.image
+            if bundled_image_key == 'auto'
+              assign bundled_image_key = fallback_title | handleize
+            endif
+
+            assign card_asset_image = ''
+            unless bundled_image_key == 'none'
+              case bundled_image_key
+                when 'makeup'
+                  assign card_asset_image = 'collection-card-makeup.png'
+                when 'skincare'
+                  assign card_asset_image = 'collection-card-skincare.png'
+                when 'bundles'
+                  assign card_asset_image = 'collection-card-bundles.png'
+                when 'accessories'
+                  assign card_asset_image = 'collection-card-accessories.png'
+              endcase
+            endunless
+
+            if card_image == blank and card_asset_image == blank and card_collection != blank
+              assign card_image = card_collection.image
+            endif
+            if card_image == blank and card_asset_image == blank and card_collection != blank
+              assign card_image = card_collection.products.first.featured_image
+            endif
+
+            assign image_position = card_block.settings.image_position | default: 'center center'
+            assign placeholder_variant = forloop.index0 | modulo: 4 | plus: 1
+            assign placeholder_name = 'collection-apparel-' | append: placeholder_variant
+            assign widths = '300, 528, 600, 900, 1200'
+            assign sizes = '(min-width: 750px) 264px, 300px'
+          %}
+
+          {% capture card_aria_label %}
+            {{ card_button_label }}{% if card_title != blank %}: {{ card_title }}{% endif %}
+          {% endcapture %}
+
+          <article
+            class="collection-card-section__card"
+            style="--collection-card-image-position: {{ image_position }};"
+            {{ card_block.shopify_attributes }}
+          >
+            {% if card_url != blank %}
+              <a
+                class="collection-card-section__surface"
+                href="{{ card_url }}"
+                aria-label="{{ card_aria_label | strip | escape }}"
+              >
+            {% else %}
+              <div class="collection-card-section__surface">
+            {% endif %}
+              <div class="collection-card-section__media">
+                {% if card_image != blank %}
+                  {{
+                    card_image
+                    | image_url: width: 1200
+                    | image_tag:
+                      widths: widths,
+                      sizes: sizes,
+                      loading: 'lazy',
+                      class: 'collection-card-section__image',
+                      alt: card_title
+                  }}
+                {% elsif card_asset_image != blank %}
+                  <img
+                    src="{{ card_asset_image | asset_url }}"
+                    alt="{{ card_title | escape }}"
+                    class="collection-card-section__image"
+                    width="528"
+                    height="660"
+                    loading="lazy"
+                  >
+                {% else %}
+                  {{ placeholder_name | placeholder_svg_tag: 'collection-card-section__image collection-card-section__placeholder' }}
+                {% endif %}
+              </div>
+
+              <div class="collection-card-section__content">
+                {% if card_title != blank %}
+                  <h3 class="collection-card-section__title">{{ card_title | escape }}</h3>
+                {% endif %}
+                {% if card_description != blank %}
+                  <p class="collection-card-section__description">{{ card_description | escape }}</p>
+                {% endif %}
+                {% if card_button_label != blank %}
+                  <span class="collection-card-section__button">{{ card_button_label | escape }}</span>
+                {% endif %}
+              </div>
+            {% if card_url != blank %}
+              </a>
+            {% else %}
+              </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+
+      <div class="collection-card-section__progress" aria-hidden="true">
+        <span class="collection-card-section__progress-thumb" data-collection-card-thumb></span>
+      </div>
+    </collection-card-section-scroll>
+  </div>
+</section>
+
+{% stylesheet %}
+  .collection-card-section {
+    padding-block: var(--collection-card-section-padding-top) var(--collection-card-section-padding-bottom);
+    background: rgb(var(--color-background-rgb));
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .collection-card-section__inner {
+    width: 100%;
+    max-width: calc(var(--collection-card-section-content-width) + (var(--page-margin) * 2));
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .collection-card-section__scroller {
+    display: block;
+  }
+
+  .collection-card-section__track {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--collection-card-section-gap);
+  }
+
+  .collection-card-section__card {
+    position: relative;
+    min-width: 0;
+    height: var(--collection-card-section-card-height);
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.08);
+  }
+
+  .collection-card-section__surface {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .collection-card-section__surface::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(0 0 0 / 0) 34%, rgb(0 0 0 / 0.66) 100%);
+    z-index: 1;
+  }
+
+  .collection-card-section__media,
+  .collection-card-section__image {
+    width: 100%;
+    height: 100%;
+  }
+
+  .collection-card-section__image {
+    display: block;
+    object-fit: cover;
+    object-position: var(--collection-card-image-position);
+  }
+
+  .collection-card-section__placeholder {
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .collection-card-section__content {
+    position: absolute;
+    inset-inline: 18px;
+    bottom: 24px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .collection-card-section__title,
+  .collection-card-section__description {
+    margin: 0;
+    color: inherit;
+  }
+
+  .collection-card-section__title {
+    font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .collection-card-section__description {
+    max-width: 220px;
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .collection-card-section__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 102px;
+    min-height: 30px;
+    margin-top: 8px;
+    padding-inline: 14px;
+    border: 1px solid currentColor;
+    color: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .collection-card-section__progress {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 1099px) {
+    .collection-card-section__track {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .collection-card-section {
+      padding-block: min(var(--collection-card-section-padding-top), 48px)
+        min(var(--collection-card-section-padding-bottom), 48px);
+    }
+
+    .collection-card-section__inner {
+      max-width: none;
+      padding-inline: 0;
+    }
+
+    .collection-card-section__track {
+      display: flex;
+      gap: var(--collection-card-section-gap);
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-inline: contain;
+      padding-inline: 24px;
+      scroll-padding-inline: 24px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      touch-action: pan-x;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .collection-card-section__track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .collection-card-section__card {
+      flex: 0 0 var(--collection-card-section-mobile-card-width);
+      width: var(--collection-card-section-mobile-card-width);
+      height: var(--collection-card-section-mobile-card-height);
+      scroll-snap-align: start;
+    }
+
+    .collection-card-section__content {
+      inset-inline: 18px;
+      bottom: 24px;
+      gap: 8px;
+    }
+
+    .collection-card-section__title {
+      font-size: 20px;
+    }
+
+    .collection-card-section__description {
+      max-width: 250px;
+      font-size: 12px;
+    }
+
+    .collection-card-section__button {
+      min-height: 30px;
+      margin-top: 8px;
+    }
+
+    .collection-card-section__progress {
+      display: block;
+      height: 1px;
+      margin: 24px 24px 0;
+      overflow: hidden;
+      background: rgb(var(--color-foreground-rgb) / 0.18);
+    }
+
+    .collection-card-section__progress-thumb {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: rgb(var(--color-foreground-rgb));
+      transform: translateX(0);
+      transform-origin: left center;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class CollectionCardSectionScroll extends HTMLElement {
+    connectedCallback() {
+      this.track = this.querySelector('[data-collection-card-track]');
+      this.thumb = this.querySelector('[data-collection-card-thumb]');
+
+      if (!this.track || !this.thumb) return;
+
+      this.updateProgress = this.updateProgress.bind(this);
+      this.track.addEventListener('scroll', this.updateProgress, { passive: true });
+
+      if ('ResizeObserver' in window) {
+        this.resizeObserver = new ResizeObserver(this.updateProgress);
+        this.resizeObserver.observe(this.track);
+      }
+
+      requestAnimationFrame(this.updateProgress);
+    }
+
+    disconnectedCallback() {
+      if (this.track) {
+        this.track.removeEventListener('scroll', this.updateProgress);
+      }
+
+      if (this.resizeObserver) {
+        this.resizeObserver.disconnect();
+      }
+    }
+
+    updateProgress() {
+      const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+      const progress = this.thumb.parentElement;
+
+      if (maxScroll <= 0) {
+        progress.hidden = true;
+        return;
+      }
+
+      progress.hidden = false;
+
+      const thumbWidth = Math.max(18, (this.track.clientWidth / this.track.scrollWidth) * 100);
+      const travel = 100 - thumbWidth;
+      const left = (this.track.scrollLeft / maxScroll) * travel;
+
+      this.thumb.style.width = `${thumbWidth}%`;
+      this.thumb.style.marginInlineStart = `${left}%`;
+    }
+  }
+
+  if (!customElements.get('collection-card-section-scroll')) {
+    customElements.define('collection-card-section-scroll', CollectionCardSectionScroll);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Collection card section",
+  "tag": "section",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "_collection-card-section-card"
+    }
+  ],
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Accessible heading",
+      "default": "Shop by collection"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Default button label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1080
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_height",
+      "label": "Desktop card height",
+      "min": 260,
+      "max": 520,
+      "step": 10,
+      "unit": "px",
+      "default": 330
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Mobile card width",
+      "min": 220,
+      "max": 340,
+      "step": 10,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_height",
+      "label": "Mobile card height",
+      "min": 280,
+      "max": 460,
+      "step": 5,
+      "unit": "px",
+      "default": 375
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection card section",
+      "blocks": [
+        {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "makeup",
+            "title": "Makeup",
+            "bundled_image": "makeup",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          }
+        },
+        {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "skincare",
+            "title": "Skincare",
+            "bundled_image": "skincare",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          }
+        },
+        {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "bundles",
+            "title": "Bundles",
+            "bundled_image": "bundles",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          }
+        },
+        {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "accessories",
+            "title": "Accessories",
+            "bundled_image": "accessories",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
