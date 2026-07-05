@@ -42,7 +42,7 @@
               assign card_title = fallback_title
             endif
 
-            assign card_description = card_block.settings.description
+            assign card_description = card_block.settings.description | default: 'Lorem Ipsum Lorem Ipsum Lorem Ipsum'
             assign card_button_label = card_block.settings.button_label | default: section.settings.button_label
             assign card_url = card_block.settings.link
             assign bundled_image = card_block.settings.bundled_image | default: 'auto'
@@ -130,12 +130,14 @@
               </div>
 
               <div class="collection-card-section__content">
-                {% if card_title != blank %}
-                  <h3 class="collection-card-section__title">{{ card_title | escape }}</h3>
-                {% endif %}
-                {% if card_description != blank %}
-                  <p class="collection-card-section__description">{{ card_description | escape }}</p>
-                {% endif %}
+                <div class="collection-card-section__copy">
+                  {% if card_title != blank %}
+                    <h3 class="collection-card-section__title">{{ card_title | escape }}</h3>
+                  {% endif %}
+                  {% if card_description != blank %}
+                    <p class="collection-card-section__description">{{ card_description | escape }}</p>
+                  {% endif %}
+                </div>
                 {% if card_button_label != blank %}
                   <span class="collection-card-section__button">{{ card_button_label | escape }}</span>
                 {% endif %}
@@ -224,14 +226,22 @@
 
   .collection-card-section__content {
     position: absolute;
-    inset-inline: 18px;
+    inset-inline: 24px;
     bottom: 24px;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 16px;
     text-align: center;
+  }
+
+  .collection-card-section__copy {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
   }
 
   .collection-card-section__title,
@@ -323,9 +333,9 @@
     }
 
     .collection-card-section__content {
-      inset-inline: 18px;
+      inset-inline: 24px;
       bottom: 24px;
-      gap: 8px;
+      gap: 16px;
     }
 
     .collection-card-section__title {
