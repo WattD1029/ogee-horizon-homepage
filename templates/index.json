@@ -84,6 +84,37 @@
         "navigation_color": "#333333"
       }
     },
+    "story_split_homepage": {
+      "type": "story-split",
+      "settings": {
+        "video_source": "theme_asset",
+        "video": "",
+        "theme_video_asset": "ogee-storefront-explanation.mp4",
+        "video_label": "Ogee brand story video",
+        "poster_image": "",
+        "poster_image_mobile": "",
+        "media_title": "",
+        "heading": "OGEE Is Where Certified Organic Skincare Meets High Performance. No Compromises.",
+        "text": "We adhere to the most stringent standards in clean beauty through our renowned NSF certification.",
+        "badge_image": "",
+        "badge_asset": "nsf-badge.png",
+        "badge_alt": "NSF Certified",
+        "story_button_label": "Our Story",
+        "story_button_link": "/pages/our-story",
+        "ingredients_button_label": "Ingredients",
+        "ingredients_button_link": "/pages/ingredients",
+        "desktop_height": 600,
+        "mobile_media_height": 390,
+        "color_scheme": "scheme-1",
+        "background_color": "#fafafa",
+        "copy_color": "#000000",
+        "text_color": "#333333",
+        "media_title_color": "#ffffff",
+        "button_background": "#000000",
+        "button_color": "#ffffff",
+        "overlay_color": "#00000000"
+      }
+    },
     "product_carousel_homepage": {
       "type": "product-carousel",
       "blocks": {
@@ -210,7 +241,7 @@
   },
   "order": [
     "hero_crystal_contour",
-    "product_carousel_homepage",
-    "promotion_offer_banner"
+    "story_split_homepage",
+    "product_carousel_homepage"
   ]
 }
