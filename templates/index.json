@@ -13,7 +13,7 @@
       "type": "hero-slideshow",
       "blocks": {
         "crystal_contour_campaign": {
-          "type": "_hero-slide",
+          "type": "hero_slide",
           "settings": {
             "media_layout": "full_bleed",
             "bundled_campaign": "crystal_contour",
@@ -34,11 +34,10 @@
             "cta_y_mobile": 56,
             "cta_width_mobile": 25,
             "cta_height_mobile": 10
-          },
-          "blocks": {}
+          }
         },
         "hero_slide_fdVz6H": {
-          "type": "_hero-slide",
+          "type": "hero_slide",
           "name": "Hero slide",
           "settings": {
             "media_layout": "video",
@@ -61,8 +60,7 @@
             "cta_y_mobile": 56,
             "cta_width_mobile": 25,
             "cta_height_mobile": 10
-          },
-          "blocks": {}
+          }
         }
       },
       "block_order": [
@@ -108,6 +106,63 @@
         "button_color": "#ffffff"
       }
     },
+    "quiz_cards_homepage": {
+      "type": "quiz-cards",
+      "blocks": {
+        "perfect_shade": {
+          "type": "quiz_card",
+          "settings": {
+            "image": "",
+            "mobile_image": "",
+            "bundled_image": "perfect_shade",
+            "image_position_desktop": "center center",
+            "image_position_mobile": "center center",
+            "overlay_strength": 58,
+            "time_label": "2 MINS",
+            "heading": "Find Your Perfect Shade",
+            "description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
+            "button_label": "START QUIZ",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "skincare_routine": {
+          "type": "quiz_card",
+          "settings": {
+            "image": "",
+            "mobile_image": "",
+            "bundled_image": "skincare_routine",
+            "image_position_desktop": "center center",
+            "image_position_mobile": "center center",
+            "overlay_strength": 58,
+            "time_label": "2 MINS",
+            "heading": "Find Your Skincare Routine",
+            "description": "Discover the perfect skincare routine to nourish, hydrate, and illuminate your complexion.",
+            "button_label": "START QUIZ",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "perfect_shade",
+        "skincare_routine"
+      ],
+      "settings": {
+        "accessibility_heading": "Find your personalized Ogee quiz",
+        "max_width": 1080,
+        "desktop_height": 400,
+        "mobile_height": 360,
+        "gap": 8,
+        "mobile_gutter": 15,
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "text_color": "#ffffff",
+        "overlay_color": "#000000",
+        "button_color": "#ffffff",
+        "button_border_color": "#ffffff"
+      }
+    },
     "product_carousel_homepage": {
       "type": "product-carousel",
       "blocks": {
@@ -116,7 +171,8 @@
           "settings": {
             "label": "New",
             "collection": "new",
-            "button_label": "All New"
+            "button_label": "All New",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -125,7 +181,8 @@
           "settings": {
             "label": "Bestsellers",
             "collection": "bestsellers",
-            "button_label": "All Bestsellers"
+            "button_label": "All Bestsellers",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -134,7 +191,8 @@
           "settings": {
             "label": "Makeup",
             "collection": "makeup",
-            "button_label": "All Makeup"
+            "button_label": "All Makeup",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -143,7 +201,8 @@
           "settings": {
             "label": "Skincare",
             "collection": "skincare",
-            "button_label": "All Skincare"
+            "button_label": "All Skincare",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -152,7 +211,8 @@
           "settings": {
             "label": "Bundles",
             "collection": "bundles",
-            "button_label": "All Bundles"
+            "button_label": "All Bundles",
+            "button_link": ""
           },
           "blocks": {}
         },
@@ -161,7 +221,8 @@
           "settings": {
             "label": "Accessories",
             "collection": "accessories",
-            "button_label": "All Accessories"
+            "button_label": "All Accessories",
+            "button_link": ""
           },
           "blocks": {}
         }
@@ -190,6 +251,7 @@
         "transition_to_main_product": false,
         "max_products": 12,
         "products_visible_desktop": 4,
+        "desktop_content_width": 1080,
         "products_visible_mobile": "2",
         "card_gap": 8,
         "fallback_rating": 5,
@@ -268,6 +330,7 @@
   },
   "order": [
     "hero_crystal_contour",
+    "quiz_cards_homepage",
     "product_carousel_homepage",
     "social_proof_homepage",
     "promotion_offer_banner"
