@@ -262,28 +262,69 @@
         "padding_bottom": 56
       }
     },
-    "promotion_offer_banner": {
-      "type": "promotion-offer-banner",
+    "social_proof_homepage": {
+      "type": "social-proof",
+      "blocks": {
+        "products": {
+          "type": "proof",
+          "settings": {
+            "image": "",
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a textured rug.",
+            "link": ""
+          },
+          "blocks": {}
+        },
+        "foundation": {
+          "type": "proof",
+          "settings": {
+            "image": "",
+            "fallback_image": "foundation",
+            "alt_text": "A customer holding an Ogee complexion product.",
+            "link": ""
+          },
+          "blocks": {}
+        },
+        "brush": {
+          "type": "proof",
+          "settings": {
+            "image": "",
+            "fallback_image": "brush",
+            "alt_text": "A customer applying Ogee makeup with a brush.",
+            "link": ""
+          },
+          "blocks": {}
+        },
+        "stick": {
+          "type": "proof",
+          "settings": {
+            "image": "",
+            "fallback_image": "stick",
+            "alt_text": "An Ogee sculpting stick held in hand.",
+            "link": ""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "products",
+        "foundation",
+        "brush",
+        "stick"
+      ],
       "settings": {
-        "eyebrow": "THE CONTOUR COLLECTIONS",
-        "heading": "Recognized With 5,000+ Five-Star Reviews.",
-        "subheading": "Three-Step Glow Routine",
-        "image_width_desktop": 220,
-        "image_width_mobile": 100,
-        "desktop_height": 220,
-        "mobile_height": 380,
-        "content_max_width": 660,
-        "desktop_content_width": 1080,
-        "button_label": "SHOP NOW",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
-        "open_in_new_tab": false,
-        "background_color": "#fafafa",
+        "heading": "Beyond Clean Beauties",
+        "background_color": "#ffffff",
         "text_color": "#000000",
-        "muted_text_color": "#404040",
-        "button_background": "#000000",
-        "button_color": "#ffffff"
+        "rail_color": "#000000",
+        "cards_visible_desktop": 4,
+        "cards_visible_mobile": "1.8",
+        "card_gap": 8,
+        "show_arrows": true,
+        "padding_top": 52,
+        "padding_bottom": 88,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 32
       }
     }
   },
@@ -291,6 +332,7 @@
     "hero_crystal_contour",
     "quiz_cards_homepage",
     "product_carousel_homepage",
+    "social_proof_homepage",
     "promotion_offer_banner"
   ]
 }
