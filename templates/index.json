@@ -465,6 +465,62 @@
         "padding_top": 48,
         "padding_bottom": 48
       }
+    },
+    "result_proof_UtBz6c": {
+      "type": "result-proof",
+      "blocks": {
+        "stat_AfzVnq": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        },
+        "stat_qdiELe": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        },
+        "stat_bVKeQE": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        }
+      },
+      "block_order": [
+        "stat_AfzVnq",
+        "stat_qdiELe",
+        "stat_bVKeQE"
+      ],
+      "name": "Result proof",
+      "settings": {
+        "eyebrow": "\"Natural is too gentle\" ?",
+        "heading": "Formulated For Results",
+        "description": "Certified by NSF Organic and powered by botanical actives, our formulas are clinically tested to deliver visible results--not just feel good on the skin.",
+        "quote": "\"It's rare to find a product that feels like skincare but performs like pro makeup. OGEE nailed it.\"",
+        "attribution": "- Amy Boyd, Age 32",
+        "stats_label": "Clinical results",
+        "composite_alt": "Before and after skin result from week 1 to week 12",
+        "before_label": "Week 1",
+        "after_label": "Week 12",
+        "slider_label": "Compare week 1 and week 12 results",
+        "desktop_content_width": 1080,
+        "padding_top": 96,
+        "padding_bottom": 48,
+        "background_color": "#fafafa",
+        "text_color": "#333333",
+        "muted_text_color": "#404040",
+        "rule_color": "#333333",
+        "accent_soft_color": "#f9f1dd",
+        "accent_color": "#f0dcab"
+      }
     }
   },
   "order": [
@@ -475,6 +531,7 @@
     "story_split_jL7AGm",
     "quiz_cards_homepage",
     "social_proof_homepage",
+    "result_proof_UtBz6c",
     "collection_card_section_CkHhCQ"
   ]
 }
