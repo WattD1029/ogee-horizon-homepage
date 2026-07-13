@@ -30,12 +30,13 @@
 %}
 
 <section
-  class="product-carousel color-{{ section.settings.color_scheme }}"
+  class="product-carousel product-carousel--navigation-{{ section.settings.navigation_style | default: 'tabs' }} product-carousel--desktop-{{ section.settings.desktop_width_mode | default: 'page' }} color-{{ section.settings.color_scheme }}"
   style="
     --product-carousel-padding-top: {{ section.settings.padding_top }}px;
     --product-carousel-padding-bottom: {{ section.settings.padding_bottom }}px;
     --product-carousel-card-gap: {{ section.settings.card_gap }}px;
     --product-carousel-content-width: {{ section.settings.desktop_content_width | default: 1080 }}px;
+    --product-carousel-desktop-side-padding: {{ section.settings.desktop_side_padding | default: 40 }}px;
     --product-carousel-products-desktop: {{ section.settings.products_visible_desktop }};
     --product-carousel-products-mobile: {{ section.settings.products_visible_mobile }};
   "
@@ -364,6 +365,11 @@
     padding-inline: var(--page-margin);
   }
 
+  .product-carousel--desktop-full-bleed .product-carousel__inner {
+    max-width: none;
+    padding-inline: var(--product-carousel-desktop-side-padding);
+  }
+
   .product-carousel__header {
     display: flex;
     align-items: flex-end;
@@ -445,6 +451,26 @@
   .product-carousel__cta[aria-disabled='true'] {
     pointer-events: none;
     opacity: 0.55;
+  }
+
+  .product-carousel--navigation-link .product-carousel__header {
+    justify-content: flex-end;
+    margin-bottom: 62px;
+    border-bottom: 0;
+  }
+
+  .product-carousel--navigation-link .product-carousel__tabs {
+    display: none;
+  }
+
+  .product-carousel--navigation-link .product-carousel__cta {
+    min-width: 0;
+    min-height: auto;
+    padding: 0;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    background: transparent;
+    border: 0;
+    font-weight: 700;
   }
 
   .product-carousel__panels {
@@ -539,6 +565,10 @@
       padding-inline: 16px;
     }
 
+    .product-carousel--desktop-full-bleed .product-carousel__inner {
+      padding-inline: 16px;
+    }
+
     .product-carousel__header {
       display: block;
       margin-inline: -16px;
@@ -623,6 +653,21 @@
       background: rgb(var(--color-foreground-rgb));
       color: rgb(var(--color-background-rgb));
       border-color: rgb(var(--color-foreground-rgb));
+    }
+
+    .product-carousel--navigation-link .product-carousel__header {
+      display: flex;
+      justify-content: flex-end;
+      margin-inline: 0;
+      margin-bottom: 22px;
+    }
+
+    .product-carousel--navigation-link .product-carousel__cta--desktop {
+      display: inline-flex;
+    }
+
+    .product-carousel--navigation-link .product-carousel__cta--mobile {
+      display: none;
     }
   }
 {% endstylesheet %}
@@ -731,6 +776,22 @@
       "label": "Default button link"
     },
     {
+      "type": "select",
+      "id": "navigation_style",
+      "label": "Navigation style",
+      "default": "tabs",
+      "options": [
+        {
+          "value": "tabs",
+          "label": "Tabs and button"
+        },
+        {
+          "value": "link",
+          "label": "Link only"
+        }
+      ]
+    },
+    {
       "type": "text",
       "id": "badge_label",
       "label": "Badge label",
@@ -827,10 +888,36 @@
       "id": "desktop_content_width",
       "label": "Desktop content width",
       "min": 960,
-      "max": 1440,
+      "max": 2400,
       "step": 20,
       "unit": "px",
       "default": 1080
+    },
+    {
+      "type": "select",
+      "id": "desktop_width_mode",
+      "label": "Desktop width mode",
+      "default": "page",
+      "options": [
+        {
+          "value": "page",
+          "label": "Page width"
+        },
+        {
+          "value": "full-bleed",
+          "label": "Full bleed"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "label": "Desktop side padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
     },
     {
       "type": "select",
