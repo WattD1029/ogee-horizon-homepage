@@ -1,0 +1,108 @@
+{% doc %}
+  Stores the settings for one card in the collection card section.
+{% enddoc %}
+
+{% schema %}
+{
+  "name": "Collection card",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image override"
+    },
+    {
+      "type": "select",
+      "id": "bundled_image",
+      "label": "Bundled image",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "makeup",
+          "label": "Makeup"
+        },
+        {
+          "value": "skincare",
+          "label": "Skincare"
+        },
+        {
+          "value": "bundles",
+          "label": "Bundles"
+        },
+        {
+          "value": "accessories",
+          "label": "Accessories"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "center center",
+          "label": "Center"
+        },
+        {
+          "value": "center top",
+          "label": "Top"
+        },
+        {
+          "value": "center bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "left center",
+          "label": "Left"
+        },
+        {
+          "value": "right center",
+          "label": "Right"
+        }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description",
+      "default": "Lorem Ipsum Lorem Ipsum Lorem Ipsum"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection card"
+    }
+  ]
+}
+{% endschema %}
