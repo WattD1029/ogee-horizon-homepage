@@ -82,30 +82,6 @@
         "navigation_color": "#333333"
       }
     },
-    "promotion_offer_banner": {
-      "type": "promotion-offer-banner",
-      "settings": {
-        "eyebrow": "Subscribe and Save Up to 10%",
-        "heading": "Glow Naturally. Replenish Regularly. Save Effortlessly.",
-        "subheading": "Unlock exclusive subscriber discounts",
-        "button_label": "Learn More",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
-        "open_in_new_tab": false,
-        "desktop_height": 220,
-        "mobile_height": 259,
-        "content_max_width": 848,
-        "mobile_content_width": 342,
-        "desktop_content_width": 1080,
-        "background_color": "#faf8f3",
-        "text_color": "#000000",
-        "muted_text_color": "#404040",
-        "subheading_color": "#333333",
-        "button_background": "#000000",
-        "button_color": "#ffffff"
-      }
-    },
     "product_carousel_homepage": {
       "type": "product-carousel",
       "blocks": {
@@ -205,55 +181,28 @@
         "padding_bottom": 56
       }
     },
-    "featured_in_carousel": {
-      "type": "featured-in-carousel",
-      "blocks": {
-        "vogue": {
-          "type": "_featured-in-press-slide",
-          "settings": {
-            "image": "",
-            "bundled_image": "vogue",
-            "logo_text": "VOGUE",
-            "logo_subtext": "",
-            "logo_style": "vogue",
-            "quote": "\"Ogee's <u>Sculpted Face Stick</u> is crafted with the brand's silky-smooth activated botanical primer, creating a smooth base for your products.\""
-          },
-          "blocks": {}
-        },
-        "saatva": {
-          "type": "_featured-in-press-slide",
-          "settings": {
-            "image": "",
-            "bundled_image": "saatva",
-            "logo_text": "saatva",
-            "logo_subtext": "Smarter luxury sleep",
-            "logo_style": "saatva",
-            "quote": "\"Ogee's Ogee Hydraganics Indigo Dream Renewal Cream is The Best Overnight Beauty Treatments to Improve Your Skin and Hair While You Sleep.\""
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "vogue",
-        "saatva"
-      ],
+    "promotion_offer_banner": {
+      "type": "promotion-offer-banner",
       "settings": {
-        "accessible_heading": "Featured in press",
-        "eyebrow": "Featured In",
-        "button_label": "All Press",
-        "button_link": "/pages/press",
-        "empty_text": "Add press slides to this section.",
-        "content_width": 1080,
-        "color_scheme": "scheme-1",
-        "panel_background": "#FAFAFA",
+        "eyebrow": "THE CONTOUR COLLECTIONS",
+        "heading": "Recognized With 5,000+ Five-Star Reviews.",
+        "subheading": "Three-Step Glow Routine",
+        "image_width_desktop": 220,
+        "image_width_mobile": 100,
+        "desktop_height": 220,
+        "mobile_height": 380,
+        "content_max_width": 660,
+        "desktop_content_width": 1080,
+        "button_label": "SHOP NOW",
+        "product": "",
+        "link": "",
+        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
+        "open_in_new_tab": false,
+        "background_color": "#fafafa",
         "text_color": "#000000",
         "muted_text_color": "#404040",
         "button_background": "#000000",
-        "button_color": "#FFFFFF",
-        "padding_top": 96,
-        "padding_bottom": 96,
-        "padding_top_mobile": 48,
-        "padding_bottom_mobile": 48
+        "button_color": "#ffffff"
       }
     },
     "promotion_blocks_QVGxNb": {
@@ -516,68 +465,16 @@
         "padding_top": 48,
         "padding_bottom": 48
       }
-    },
-    "result_proof_UtBz6c": {
-      "type": "result-proof",
-      "blocks": {
-        "stat_AfzVnq": {
-          "type": "stat",
-          "settings": {
-            "value": "92%",
-            "caption": "said OGEE performed as well or better than non-organic contour products",
-            "progress": 92
-          }
-        },
-        "stat_qdiELe": {
-          "type": "stat",
-          "settings": {
-            "value": "92%",
-            "caption": "said OGEE performed as well or better than non-organic contour products",
-            "progress": 92
-          }
-        },
-        "stat_bVKeQE": {
-          "type": "stat",
-          "settings": {
-            "value": "92%",
-            "caption": "said OGEE performed as well or better than non-organic contour products",
-            "progress": 92
-          }
-        }
-      },
-      "block_order": [
-        "stat_AfzVnq",
-        "stat_qdiELe",
-        "stat_bVKeQE"
-      ],
-      "name": "Result proof",
-      "settings": {
-        "eyebrow": "\"Natural is too gentle\" ?",
-        "heading": "Formulated For Results",
-        "description": "Certified by NSF Organic and powered by botanical actives, our formulas are clinically tested to deliver visible results--not just feel good on the skin.",
-        "quote": "\"It's rare to find a product that feels like skincare but performs like pro makeup. OGEE nailed it.\"",
-        "attribution": "- Amy Boyd, Age 32",
-        "stats_label": "Clinical results",
-        "composite_alt": "Before and after skin result from week 1 to week 12",
-        "before_label": "Week 1",
-        "after_label": "Week 12",
-        "slider_label": "Compare week 1 and week 12 results",
-        "desktop_content_width": 1080,
-        "padding_top": 96,
-        "padding_bottom": 48,
-        "background_color": "#fafafa",
-        "text_color": "#333333",
-        "muted_text_color": "#404040",
-        "rule_color": "#333333",
-        "accent_soft_color": "#f9f1dd",
-        "accent_color": "#f0dcab"
-      }
     }
   },
   "order": [
     "hero_crystal_contour",
     "product_carousel_homepage",
     "promotion_offer_banner",
-    "featured_in_carousel"
+    "promotion_blocks_QVGxNb",
+    "story_split_jL7AGm",
+    "quiz_cards_homepage",
+    "social_proof_homepage",
+    "collection_card_section_CkHhCQ"
   ]
 }
