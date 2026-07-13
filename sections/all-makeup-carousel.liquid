@@ -1,0 +1,872 @@
+{% liquid
+  assign carousel_collection = section.settings.collection
+  if carousel_collection == blank
+    assign carousel_collection = collections.makeup
+  endif
+
+  assign cta_label = section.settings.button_label
+  assign cta_url = section.settings.button_link
+  if cta_url == blank and carousel_collection != blank
+    assign cta_url = carousel_collection.url
+  endif
+
+  assign product_limit = section.settings.max_products
+  assign slide_count = 4
+  if carousel_collection != blank
+    assign slide_count = carousel_collection.products_count
+    if slide_count > product_limit
+      assign slide_count = product_limit
+    endif
+  endif
+%}
+
+<section
+  class="all-makeup-carousel"
+  style="
+    --all-makeup-carousel-background: {{ section.settings.background_color }};
+    --all-makeup-carousel-text: {{ section.settings.text_color }};
+    --all-makeup-carousel-muted: {{ section.settings.muted_text_color }};
+    --all-makeup-carousel-image-background: {{ section.settings.image_background_color }};
+    --all-makeup-carousel-button-background: {{ section.settings.button_background }};
+    --all-makeup-carousel-button-text: {{ section.settings.button_text_color }};
+    --all-makeup-carousel-padding-top: {{ section.settings.padding_top }}px;
+    --all-makeup-carousel-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --all-makeup-carousel-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --all-makeup-carousel-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --all-makeup-carousel-content-width: {{ section.settings.desktop_content_width }}px;
+    --all-makeup-carousel-desktop-gutter: {{ section.settings.desktop_gutter }}px;
+    --all-makeup-carousel-mobile-gutter: {{ section.settings.mobile_gutter }}px;
+    --all-makeup-carousel-card-gap: {{ section.settings.card_gap }}px;
+    --all-makeup-carousel-card-gap-mobile: {{ section.settings.card_gap_mobile }}px;
+    --all-makeup-carousel-products-desktop: {{ section.settings.products_visible_desktop }};
+    --all-makeup-carousel-products-mobile: {{ section.settings.products_visible_mobile }};
+  "
+>
+  <all-makeup-carousel class="all-makeup-carousel__inner">
+    <div class="all-makeup-carousel__header">
+      {% if section.settings.heading != blank %}
+        <h2 class="all-makeup-carousel__heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      {% if cta_label != blank %}
+        <a
+          class="all-makeup-carousel__link all-makeup-carousel__link--desktop"
+          data-all-makeup-link
+          {% if cta_url != blank %}
+            href="{{ cta_url }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+          {% endif %}
+        >
+          {{ cta_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="all-makeup-carousel__viewport">
+      {% if carousel_collection != blank and carousel_collection.products_count > 0 %}
+        {% capture controls %}
+          {% render 'slideshow-controls',
+            style: 'counter',
+            item_count: slide_count,
+            show_arrows: true,
+            arrows_on_media: false,
+            controls_on_media: false,
+            pagination_position: 'right',
+            icon_style: 'chevron',
+            shape: 'none',
+            class: 'all-makeup-carousel__controls'
+          %}
+        {% endcapture %}
+
+        {% capture slides %}
+          {% for product in carousel_collection.products limit: product_limit %}
+            {% capture slide_children %}
+              {% render 'product-carousel-card',
+                product: product,
+                section_id: section.id,
+                card_id: 'all-makeup-' | append: product.id,
+                badge_label: section.settings.badge_label,
+                badge_limit: section.settings.badge_count,
+                card_index: forloop.index,
+                subtitle_source: section.settings.subtitle_source,
+                show_vendor: section.settings.show_vendor,
+                show_reviews: section.settings.show_reviews,
+                show_swatches: section.settings.show_swatches,
+                show_wishlist: section.settings.show_wishlist,
+                fallback_rating: section.settings.fallback_rating,
+                fallback_rating_count: section.settings.fallback_rating_count,
+                add_to_cart_label: section.settings.add_to_cart_label,
+                choose_options_label: section.settings.choose_options_label,
+                quick_view_label: section.settings.quick_view_label,
+                transition_to_main_product: section.settings.transition_to_main_product,
+                loading: 'lazy'
+              %}
+            {% endcapture %}
+
+            {% render 'slideshow-slide',
+              slide_id: product.id,
+              index: forloop.index0,
+              class: 'all-makeup-carousel__slide',
+              children: slide_children
+            %}
+          {% endfor %}
+        {% endcapture %}
+
+        {% render 'slideshow',
+          class: 'all-makeup-carousel__slideshow',
+          controls: controls,
+          slides: slides,
+          slide_count: slide_count,
+          show_arrows: false,
+          autoplay: false,
+          infinite: false
+        %}
+      {% elsif carousel_collection != blank %}
+        <p class="all-makeup-carousel__empty">{{ section.settings.empty_text }}</p>
+      {% else %}
+        <div class="all-makeup-carousel__placeholder-grid" aria-label="{{ section.settings.heading | escape }}">
+          {% for placeholder_index in (1..4) %}
+            {% render 'product-carousel-card',
+              product: blank,
+              section_id: section.id,
+              card_id: 'all-makeup-placeholder-' | append: placeholder_index,
+              badge_label: section.settings.badge_label,
+              badge_limit: section.settings.badge_count,
+              card_index: forloop.index,
+              show_reviews: section.settings.show_reviews,
+              show_wishlist: section.settings.show_wishlist,
+              fallback_rating: section.settings.fallback_rating,
+              fallback_rating_count: section.settings.fallback_rating_count
+            %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if cta_label != blank %}
+      <a
+        class="all-makeup-carousel__link all-makeup-carousel__link--mobile"
+        data-all-makeup-link
+        {% if cta_url != blank %}
+          href="{{ cta_url }}"
+        {% else %}
+          role="link"
+          aria-disabled="true"
+        {% endif %}
+      >
+        {{ cta_label }}
+      </a>
+    {% endif %}
+  </all-makeup-carousel>
+</section>
+
+{% stylesheet %}
+  .all-makeup-carousel {
+    padding-block: var(--all-makeup-carousel-padding-top) var(--all-makeup-carousel-padding-bottom);
+    overflow: hidden;
+    background: var(--all-makeup-carousel-background);
+    color: var(--all-makeup-carousel-text);
+  }
+
+  .all-makeup-carousel__inner {
+    display: block;
+    max-width: var(--all-makeup-carousel-content-width);
+    margin-inline: auto;
+  }
+
+  .all-makeup-carousel__header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 24px;
+    min-height: 42px;
+    margin-bottom: 20px;
+    padding-inline: var(--all-makeup-carousel-desktop-gutter);
+  }
+
+  .all-makeup-carousel__heading {
+    flex: 1 1 auto;
+    margin: 0;
+    color: var(--all-makeup-carousel-text);
+    font-family: "Chronicle Display", Georgia, "Times New Roman", var(--font-heading--family), serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  .all-makeup-carousel__link {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 152px;
+    min-height: 32px;
+    padding: 0 28px;
+    color: var(--all-makeup-carousel-text);
+    border: 1px solid currentColor;
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-sizing: border-box;
+  }
+
+  .all-makeup-carousel__link[aria-disabled='true'] {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  .all-makeup-carousel__viewport {
+    min-width: 0;
+    padding-inline: var(--all-makeup-carousel-desktop-gutter);
+  }
+
+  .all-makeup-carousel__slideshow {
+    --slideshow-slide-width: calc(
+      (100% - (var(--all-makeup-carousel-card-gap) * (var(--all-makeup-carousel-products-desktop) - 1))) /
+        var(--all-makeup-carousel-products-desktop)
+    );
+    display: block;
+    background: transparent;
+  }
+
+  .all-makeup-carousel__slideshow slideshow-container,
+  .all-makeup-carousel__slideshow slideshow-slides,
+  .all-makeup-carousel__slideshow slideshow-slide {
+    background: transparent;
+    background-color: transparent;
+  }
+
+  .all-makeup-carousel__slideshow slideshow-slides {
+    gap: var(--all-makeup-carousel-card-gap);
+    scrollbar-width: none;
+  }
+
+  .all-makeup-carousel__slideshow slideshow-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .all-makeup-carousel__slide {
+    flex: 0 0 var(--slideshow-slide-width);
+    scroll-snap-align: start;
+  }
+
+  .all-makeup-carousel__placeholder-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--all-makeup-carousel-card-gap);
+  }
+
+  .all-makeup-carousel__empty {
+    margin: 0;
+    color: var(--all-makeup-carousel-muted);
+    font-size: 14px;
+  }
+
+  .all-makeup-carousel__controls {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    min-height: 48px;
+    margin-top: 46px;
+    color: var(--all-makeup-carousel-text);
+  }
+
+  .all-makeup-carousel__controls::after,
+  .all-makeup-carousel__controls::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    height: 1px;
+  }
+
+  .all-makeup-carousel__controls::after {
+    width: calc(100% - 96px);
+    background: color-mix(in srgb, var(--all-makeup-carousel-text) 16%, transparent);
+  }
+
+  .all-makeup-carousel__controls::before {
+    z-index: 1;
+    width: min(250px, 32%);
+    background: var(--all-makeup-carousel-text);
+  }
+
+  .all-makeup-carousel__controls .slideshow-controls__counter {
+    display: none;
+  }
+
+  .all-makeup-carousel__controls .slideshow-controls__arrows {
+    gap: 0;
+  }
+
+  .all-makeup-carousel__controls .slideshow-control {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    min-height: 32px;
+    color: var(--all-makeup-carousel-text);
+  }
+
+  .all-makeup-carousel__link--mobile {
+    display: none;
+  }
+
+  .all-makeup-carousel .product-carousel-card {
+    background: transparent;
+    color: var(--all-makeup-carousel-text);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+  }
+
+  .all-makeup-carousel .product-carousel-card__media {
+    background: var(--all-makeup-carousel-image-background);
+  }
+
+  .all-makeup-carousel .product-carousel-card__details {
+    gap: 8px;
+    padding-inline: 12px;
+    background: transparent;
+  }
+
+  .all-makeup-carousel .product-carousel-card__title {
+    color: var(--all-makeup-carousel-text);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .all-makeup-carousel .product-carousel-card__subtitle {
+    color: var(--all-makeup-carousel-muted);
+    min-height: 0;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .all-makeup-carousel .product-carousel-card__price {
+    color: var(--all-makeup-carousel-text);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .all-makeup-carousel .product-rating {
+    justify-content: flex-start;
+    min-height: 12px;
+    font-size: 9px;
+  }
+
+  .all-makeup-carousel .product-rating__star {
+    width: 8px;
+    height: 8px;
+    color: var(--all-makeup-carousel-text);
+  }
+
+  .all-makeup-carousel .product-rating__count {
+    color: var(--all-makeup-carousel-muted);
+    font-size: 9px;
+  }
+
+  .all-makeup-carousel .product-carousel-card__swatches {
+    margin-top: 0;
+    --variant-picker-swatch-width: 16px;
+    --variant-picker-swatch-height: 16px;
+  }
+
+  .all-makeup-carousel .product-carousel-card__shade-list {
+    gap: 6px;
+  }
+
+  .all-makeup-carousel .product-carousel-card__shade-option {
+    width: 20px;
+    height: 20px;
+  }
+
+  .all-makeup-carousel .product-carousel-card__shade-option .swatch {
+    --swatch-width: 16px;
+    --swatch-height: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .all-makeup-carousel .product-carousel-card__shade-scroll {
+    color: var(--all-makeup-carousel-text);
+  }
+
+  .all-makeup-carousel .product-carousel-card__swatch-label {
+    color: var(--all-makeup-carousel-muted);
+    font-size: 9px;
+  }
+
+  .all-makeup-carousel .product-carousel-card__wishlist {
+    color: #000;
+  }
+
+  .all-makeup-carousel .product-carousel-card__badge {
+    top: 10px;
+    left: 10px;
+    padding: 5px 7px;
+    background: #fff;
+    color: #4a4a4a;
+    font-size: 8px;
+    font-weight: 500;
+  }
+
+  .all-makeup-carousel .product-carousel-card__button {
+    background: var(--all-makeup-carousel-button-background);
+    color: var(--all-makeup-carousel-button-text);
+    border-color: var(--all-makeup-carousel-button-background);
+  }
+
+  .all-makeup-carousel .product-carousel-card__quick-view {
+    color: var(--all-makeup-carousel-button-text);
+    background: color-mix(in srgb, var(--all-makeup-carousel-button-background) 84%, #fff);
+  }
+
+  @media screen and (max-width: 989px) {
+    .all-makeup-carousel__slideshow {
+      --slideshow-slide-width: calc(
+        (100% - (var(--all-makeup-carousel-card-gap) * 2)) /
+          3
+      );
+    }
+
+    .all-makeup-carousel__placeholder-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .all-makeup-carousel {
+      padding-block: var(--all-makeup-carousel-padding-top-mobile)
+        var(--all-makeup-carousel-padding-bottom-mobile);
+    }
+
+    .all-makeup-carousel__inner {
+      max-width: none;
+    }
+
+    .all-makeup-carousel__link--desktop,
+    .all-makeup-carousel__controls {
+      display: none;
+    }
+
+    .all-makeup-carousel__header {
+      display: block;
+      min-height: 0;
+      margin-bottom: 28px;
+      padding-inline: var(--all-makeup-carousel-mobile-gutter);
+    }
+
+    .all-makeup-carousel__heading {
+      max-width: 340px;
+      font-size: 25px;
+      line-height: 1.16;
+    }
+
+    .all-makeup-carousel__viewport {
+      padding-inline: var(--all-makeup-carousel-mobile-gutter);
+    }
+
+    .all-makeup-carousel__slideshow {
+      --slideshow-slide-width: calc(
+        (100% - (var(--all-makeup-carousel-card-gap-mobile) * (var(--all-makeup-carousel-products-mobile) - 1))) /
+          var(--all-makeup-carousel-products-mobile)
+      );
+    }
+
+    .all-makeup-carousel__slideshow slideshow-slides {
+      align-items: stretch;
+      gap: var(--all-makeup-carousel-card-gap-mobile);
+    }
+
+    .all-makeup-carousel__slide {
+      display: flex;
+    }
+
+    .all-makeup-carousel__slide > product-card {
+      width: 100%;
+    }
+
+    .all-makeup-carousel__placeholder-grid {
+      display: flex;
+      gap: var(--all-makeup-carousel-card-gap-mobile);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .all-makeup-carousel__placeholder-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .all-makeup-carousel__placeholder-grid > * {
+      flex: 0 0 var(--slideshow-slide-width);
+      scroll-snap-align: start;
+    }
+
+    .all-makeup-carousel__link--mobile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: calc(100% - (var(--all-makeup-carousel-mobile-gutter) * 2));
+      min-height: 42px;
+      margin: 62px auto 0;
+      background: var(--all-makeup-carousel-button-background);
+      color: var(--all-makeup-carousel-button-text);
+      font-size: 24px;
+      letter-spacing: 0.12em;
+    }
+
+    .all-makeup-carousel .product-carousel-card {
+      gap: 14px;
+    }
+
+    .all-makeup-carousel .product-carousel-card__details {
+      gap: 8px;
+      padding-inline: 0;
+    }
+
+    .all-makeup-carousel .product-carousel-card__title {
+      font-size: 14px;
+    }
+
+    .all-makeup-carousel .product-carousel-card__subtitle {
+      font-size: 10px;
+    }
+
+    .all-makeup-carousel .product-carousel-card__price {
+      font-size: 14px;
+    }
+
+    .all-makeup-carousel .product-rating,
+    .all-makeup-carousel .product-rating__count {
+      font-size: 9px;
+    }
+
+    .all-makeup-carousel .product-carousel-card__badge {
+      display: none;
+    }
+
+    .all-makeup-carousel .product-carousel-card__button {
+      background: transparent;
+      color: var(--all-makeup-carousel-text);
+      border-color: var(--all-makeup-carousel-text);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "All Makeup carousel",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Effortless Glam, Powered By Nature"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Link label",
+      "default": "All Makeup"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Link"
+    },
+    {
+      "type": "text",
+      "id": "badge_label",
+      "label": "Badge label",
+      "default": "Best-seller"
+    },
+    {
+      "type": "range",
+      "id": "badge_count",
+      "label": "Number of badges",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "subtitle_source",
+      "label": "Subtitle source",
+      "default": "metafield",
+      "options": [
+        {
+          "value": "metafield",
+          "label": "Product subtitle metafield, then type"
+        },
+        {
+          "value": "type",
+          "label": "Product type"
+        },
+        {
+          "value": "vendor",
+          "label": "Vendor"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Use vendor as subtitle fallback",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show review rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Show variant swatches",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist icon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_label",
+      "label": "Add button label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "choose_options_label",
+      "label": "Choose options button label",
+      "default": "Select Shade"
+    },
+    {
+      "type": "text",
+      "id": "quick_view_label",
+      "label": "Quick view label",
+      "default": "View product"
+    },
+    {
+      "type": "checkbox",
+      "id": "transition_to_main_product",
+      "label": "Enable product image transition",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Maximum products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "products_visible_desktop",
+      "label": "Visible products on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 0.5,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "products_visible_mobile",
+      "label": "Visible products on mobile",
+      "default": "2",
+      "options": [
+        {
+          "value": "1.5",
+          "label": "1.5"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1920,
+      "step": 20,
+      "unit": "px",
+      "default": 1080
+    },
+    {
+      "type": "range",
+      "id": "desktop_gutter",
+      "label": "Desktop gutter",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_gutter",
+      "label": "Mobile gutter",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Desktop card gap",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "label": "Mobile card gap",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating",
+      "label": "Fallback rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating_count",
+      "label": "Fallback rating count",
+      "min": 0,
+      "max": 400,
+      "step": 4,
+      "default": 256
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty collection text",
+      "default": "No products found in this collection."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#2f2f2f"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#5f5f5f"
+    },
+    {
+      "type": "color",
+      "id": "image_background_color",
+      "label": "Image background",
+      "default": "#f0f0ef"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 360,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 320,
+      "step": 4,
+      "unit": "px",
+      "default": 136
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "All Makeup carousel",
+      "settings": {
+        "collection": "makeup",
+        "button_label": "All Makeup",
+        "badge_label": "Best-seller"
+      }
+    }
+  ]
+}
+{% endschema %}
