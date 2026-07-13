@@ -7,216 +7,126 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "type": "footer",
   "name": "t:names.footer",
   "sections": {
-    "footer": {
-      "type": "footer",
+    "ogee_footer": {
+      "type": "ogee-footer",
+      "name": "Ogee footer",
+      "settings": {
+        "newsletter_heading": "Get 10% Off Your First Order",
+        "newsletter_text": "by subscribing to our newsletter",
+        "email_label": "Email address",
+        "email_placeholder": "Email Address",
+        "newsletter_button_label": "Subscribe",
+        "newsletter_success_message": "Thanks for subscribing.",
+        "newsletter_background": "#918d86",
+        "newsletter_text_color": "#ffffff",
+        "navigation_label": "Footer navigation",
+        "utility_label": "Footer utility links",
+        "legal_label": "Legal",
+        "social_label": "Social media",
+        "copyright_text": "2024, Ogee All Rights Reserved | Made In USA",
+        "terms_label": "Terms & Conditions",
+        "terms_url": "/policies/terms-of-service",
+        "privacy_label": "Privacy Policy",
+        "privacy_url": "/policies/privacy-policy",
+        "cookies_label": "Cookies Setting",
+        "cookies_url": "",
+        "facebook_url": "https://www.facebook.com",
+        "instagram_url": "https://www.instagram.com",
+        "tiktok_url": "https://www.tiktok.com",
+        "youtube_url": "https://www.youtube.com",
+        "footer_background": "#ffffff",
+        "footer_text_color": "#333030",
+        "footer_muted_text_color": "#666261",
+        "footer_border_color": "#dedbd8"
+      },
       "blocks": {
-        "group_wErUQf": {
-          "type": "group",
-          "name": "Join our email list",
+        "discover": {
+          "type": "link_column",
+          "name": "Discover",
           "settings": {
-            "link": "",
-            "open_in_new_tab": false,
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "background_media": "none",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "placeholder": "",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_pF6rVi": {
-              "type": "text",
-              "name": "Heading",
-              "settings": {
-                "text": "<h2>Join our email list</h2>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h3",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "text_HafH7P": {
-              "type": "text",
-              "name": "Text",
-              "settings": {
-                "text": "<p>Get exclusive deals and early access to new products.</p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "email-signup_HafH7P": {
-              "type": "email-signup",
-              "name": "Email Signup",
-              "settings": {
-                "width": "fill"
-              }
-            }
-          },
-          "block_order": [
-            "text_pF6rVi",
-            "text_HafH7P",
-            "email-signup_HafH7P"
-          ]
-        },
-        "menu_footer": {
-          "type": "menu",
-          "settings": {
-            "menu": "footer",
-            "heading": "",
-            "menu_spacing": 12,
-            "show_as_accordion": false,
-            "accordion_icon": "plus",
-            "accordion_dividers": false,
-            "inherit_color_scheme": true,
-            "heading_preset": "paragraph",
-            "link_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "heading": "Discover",
+            "menu": "",
+            "link_1_label": "Our Story",
+            "link_1_url": "/pages/our-story",
+            "link_2_label": "Our Ingredients",
+            "link_2_url": "/pages/our-ingredients",
+            "link_3_label": "The Glow Book",
+            "link_3_url": "/blogs/the-glow-book",
+            "link_4_label": "Blog",
+            "link_4_url": "/blogs/news",
+            "link_5_label": "Press",
+            "link_5_url": "/pages/press",
+            "link_6_label": "Reviews",
+            "link_6_url": "/pages/reviews"
           }
         },
-        "menu_main": {
-          "type": "menu",
+        "support": {
+          "type": "link_column",
+          "name": "Support",
           "settings": {
-            "menu": "main-menu",
-            "heading": "",
-            "menu_spacing": 12,
-            "show_as_accordion": false,
-            "accordion_icon": "plus",
-            "accordion_dividers": false,
-            "inherit_color_scheme": true,
-            "heading_preset": "paragraph",
-            "link_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "heading": "Support",
+            "menu": "",
+            "link_1_label": "Find Your Complexion",
+            "link_1_url": "/pages/find-your-complexion",
+            "link_2_label": "Find Your Contour",
+            "link_2_url": "/pages/find-your-contour",
+            "link_3_label": "FAQs",
+            "link_3_url": "/pages/faqs",
+            "link_4_label": "Returns & Shipping",
+            "link_4_url": "/pages/returns-shipping",
+            "link_5_label": "Accessibility",
+            "link_5_url": "/pages/accessibility",
+            "link_6_label": "",
+            "link_6_url": ""
+          }
+        },
+        "programme": {
+          "type": "link_column",
+          "name": "Programme",
+          "settings": {
+            "heading": "Programme",
+            "menu": "",
+            "link_1_label": "Rewards",
+            "link_1_url": "/pages/rewards",
+            "link_2_label": "Affiliate",
+            "link_2_url": "/pages/affiliate",
+            "link_3_label": "Creator",
+            "link_3_url": "/pages/creator",
+            "link_4_label": "",
+            "link_4_url": "",
+            "link_5_label": "",
+            "link_5_url": "",
+            "link_6_label": "",
+            "link_6_url": ""
+          }
+        },
+        "contact": {
+          "type": "link_column",
+          "name": "Contact",
+          "settings": {
+            "heading": "Contact",
+            "menu": "",
+            "link_1_label": "CS: Support@Ogee.Com",
+            "link_1_url": "mailto:Support@Ogee.Com",
+            "link_2_label": "Media: Pr@Ogee.Com",
+            "link_2_url": "mailto:Pr@Ogee.Com",
+            "link_3_label": "Wholesale: Wholesale@Ogee.Com",
+            "link_3_url": "mailto:Wholesale@Ogee.Com",
+            "link_4_label": "Store Locator",
+            "link_4_url": "/pages/store-locator",
+            "link_5_label": "Contact Us",
+            "link_5_url": "/pages/contact",
+            "link_6_label": "Live Chat",
+            "link_6_url": "/pages/live-chat"
           }
         }
       },
-      "block_order": [
-        "group_wErUQf",
-        "menu_footer",
-        "menu_main"
-      ],
-      "name": "t:names.footer",
-      "settings": {
-        "section_width": "page-width",
-        "gap": 40,
-        "color_scheme": "scheme-5",
-        "padding-block-start": 36,
-        "padding-block-end": 36
-      }
-    },
-    "utilities": {
-      "type": "footer-utilities",
-      "settings": {
-        "section_width": "page-width",
-        "gap": 24,
-        "divider_thickness": 1,
-        "color_scheme": "scheme-5",
-        "padding-block-start": 12,
-        "padding-block-end": 16
-      },
-      "blocks": {
-        "copyright": {
-          "type": "footer-copyright",
-          "settings": {
-            "show_powered_by": true,
-            "font_size": "0.75rem",
-            "case": "none"
-          }
-        },
-        "policy_list": {
-          "type": "footer-policy-list",
-          "settings": {
-            "font_size": "0.75rem",
-            "case": "none"
-          }
-        },
-        "social_icons": {
-          "type": "social-links",
-          "settings": {
-            "facebook_url": "https://www.facebook.com",
-            "instagram_url": "https://www.instagram.com",
-            "tiktok_url": "https://www.tiktok.com",
-            "twitter_url": "https://www.twitter.com",
-            "youtube_url": "https://www.youtube.com"
-          }
-        }
-      },
-      "block_order": [
-        "copyright",
-        "policy_list",
-        "social_icons"
-      ]
+      "block_order": ["discover", "support", "programme", "contact"]
     }
   },
-  "order": [
-    "footer",
-    "utilities"
-  ]
+  "order": ["ogee_footer"]
 }
