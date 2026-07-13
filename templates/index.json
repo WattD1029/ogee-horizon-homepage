@@ -82,6 +82,30 @@
         "navigation_color": "#333333"
       }
     },
+    "promotion_offer_banner": {
+      "type": "promotion-offer-banner",
+      "settings": {
+        "eyebrow": "Subscribe and Save Up to 10%",
+        "heading": "Glow Naturally. Replenish Regularly. Save Effortlessly.",
+        "subheading": "Unlock exclusive subscriber discounts",
+        "button_label": "Learn More",
+        "product": "",
+        "link": "",
+        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
+        "open_in_new_tab": false,
+        "desktop_height": 220,
+        "mobile_height": 259,
+        "content_max_width": 848,
+        "mobile_content_width": 342,
+        "desktop_content_width": 1080,
+        "background_color": "#faf8f3",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "subheading_color": "#333333",
+        "button_background": "#000000",
+        "button_color": "#ffffff"
+      }
+    },
     "product_carousel_homepage": {
       "type": "product-carousel",
       "blocks": {
