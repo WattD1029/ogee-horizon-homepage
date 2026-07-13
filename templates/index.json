@@ -345,6 +345,97 @@
         "padding_bottom_mobile": 40
       }
     },
+    "all_skincare_carousel_homepage": {
+      "type": "all-skincare-carousel",
+      "blocks": {
+        "advanced_anti_aging": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Advanced Anti-Aging",
+            "collection": "advanced-anti-aging",
+            "button_label": "All Skincare",
+            "button_link": ""
+          },
+          "blocks": {}
+        },
+        "timeless_beauty": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Timeless Beauty",
+            "collection": "timeless-beauty",
+            "button_label": "All Skincare",
+            "button_link": ""
+          },
+          "blocks": {}
+        },
+        "targeted_radiance": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Targeted Radiance",
+            "collection": "targeted-radiance",
+            "button_label": "All Skincare",
+            "button_link": ""
+          },
+          "blocks": {}
+        },
+        "age_defying_essentials": {
+          "type": "_product-carousel-tab",
+          "settings": {
+            "label": "Age-Defying Essentials",
+            "collection": "age-defying-essentials",
+            "button_label": "All Skincare",
+            "button_link": ""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "advanced_anti_aging",
+        "timeless_beauty",
+        "targeted_radiance",
+        "age_defying_essentials"
+      ],
+      "settings": {
+        "heading": "Shop By Collection",
+        "button_label": "All Skincare",
+        "button_link": "",
+        "subtitle_source": "metafield",
+        "show_vendor": false,
+        "show_reviews": true,
+        "show_swatches": false,
+        "show_wishlist": true,
+        "add_to_cart_label": "Select Shade",
+        "choose_options_label": "Select Shade",
+        "quick_view_label": "View product",
+        "transition_to_main_product": false,
+        "max_products": 12,
+        "products_visible_desktop": 3,
+        "products_visible_mobile": "2",
+        "desktop_content_width": 1080,
+        "desktop_gutter": 0,
+        "mobile_gutter": 15,
+        "card_gap": 8,
+        "card_gap_mobile": 8,
+        "fallback_rating": 5,
+        "fallback_rating_count": 256,
+        "empty_text": "No products found in this collection.",
+        "background_color": "#ffffff",
+        "mobile_background_color": "#ffffff",
+        "text_color": "#333333",
+        "mobile_text_color": "#333333",
+        "muted_text_color": "#646464",
+        "mobile_muted_text_color": "#646464",
+        "rule_color": "#dfdfdf",
+        "mobile_rule_color": "#dfdfdf",
+        "image_background_color": "#f0f0ef",
+        "button_background": "#000000",
+        "button_text_color": "#ffffff",
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 28
+      }
+    },
     "quiz_cards_homepage": {
       "type": "quiz-cards",
       "blocks": {
@@ -539,6 +630,7 @@
     "promotion_blocks_QVGxNb",
     "story_split_jL7AGm",
     "all_makeup_carousel_homepage",
+    "all_skincare_carousel_homepage",
     "quiz_cards_homepage",
     "social_proof_homepage",
     "collection_card_section_CkHhCQ",
