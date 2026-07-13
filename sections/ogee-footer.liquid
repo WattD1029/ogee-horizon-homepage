@@ -1,0 +1,983 @@
+{% liquid
+  assign footer_settings = section.settings
+  assign footer_columns = section.blocks | where: 'type', 'link_column'
+  assign social_links = 'facebook,instagram,tiktok,youtube' | split: ','
+%}
+
+<div
+  class="ogee-footer"
+  style="
+    --ogee-footer-background: {{ footer_settings.footer_background }};
+    --ogee-footer-text: {{ footer_settings.footer_text_color }};
+    --ogee-footer-muted-text: {{ footer_settings.footer_muted_text_color }};
+    --ogee-footer-border: {{ footer_settings.footer_border_color }};
+    --ogee-footer-newsletter-background: {{ footer_settings.newsletter_background }};
+    --ogee-footer-newsletter-text: {{ footer_settings.newsletter_text_color }};
+  "
+>
+  <section
+    class="ogee-footer__newsletter"
+    aria-labelledby="OgeeFooterNewsletterHeading-{{ section.id }}"
+  >
+    <div class="ogee-footer__newsletter-inner">
+      <div class="ogee-footer__newsletter-copy">
+        {% if footer_settings.newsletter_heading != blank %}
+          <h2
+            id="OgeeFooterNewsletterHeading-{{ section.id }}"
+            class="ogee-footer__newsletter-heading"
+          >
+            {{ footer_settings.newsletter_heading | escape }}
+          </h2>
+        {% endif %}
+
+        {% if footer_settings.newsletter_text != blank %}
+          <p class="ogee-footer__newsletter-text">
+            {{ footer_settings.newsletter_text | escape }}
+          </p>
+        {% endif %}
+      </div>
+
+      {% form 'customer',
+        id: 'OgeeFooterNewsletterForm',
+        class: 'ogee-footer__newsletter-form'
+      %}
+        <input
+          type="hidden"
+          name="contact[tags]"
+          value="newsletter"
+        >
+
+        <div class="ogee-footer__newsletter-field">
+          <label
+            class="visually-hidden"
+            for="OgeeFooterNewsletterEmail-{{ section.id }}"
+          >
+            {{ footer_settings.email_label | escape }}
+          </label>
+          <input
+            id="OgeeFooterNewsletterEmail-{{ section.id }}"
+            class="ogee-footer__newsletter-input"
+            type="email"
+            name="contact[email]"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="email"
+            placeholder="{{ footer_settings.email_placeholder | escape }}"
+            required
+            {% if form.errors %}
+              autofocus
+              aria-invalid="true"
+              aria-describedby="OgeeFooterNewsletterError-{{ section.id }}"
+            {% elsif form.posted_successfully? %}
+              aria-describedby="OgeeFooterNewsletterSuccess-{{ section.id }}"
+            {% endif %}
+          >
+          <button
+            class="ogee-footer__newsletter-submit"
+            type="submit"
+          >
+            <span>{{ footer_settings.newsletter_button_label | escape }}</span>
+            <svg
+              class="ogee-footer__newsletter-arrow"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+              focusable="false"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {% render 'icon', icon: 'arrow' %}
+            </svg>
+          </button>
+        </div>
+
+        {% if form.errors %}
+          <div
+            id="OgeeFooterNewsletterError-{{ section.id }}"
+            class="ogee-footer__newsletter-message"
+            tabindex="-1"
+          >
+            {{ form.errors.translated_fields.email | capitalize }}
+            {{ form.errors.messages.email }}
+          </div>
+        {% endif %}
+
+        {% if form.posted_successfully? %}
+          <div
+            id="OgeeFooterNewsletterSuccess-{{ section.id }}"
+            class="ogee-footer__newsletter-message"
+            tabindex="-1"
+          >
+            {{ footer_settings.newsletter_success_message | escape }}
+          </div>
+        {% endif %}
+      {% endform %}
+    </div>
+  </section>
+
+  <section
+    class="ogee-footer__navigation"
+    aria-label="{{ footer_settings.navigation_label | escape }}"
+  >
+    <div class="ogee-footer__navigation-inner">
+      {% for block in footer_columns %}
+        {% liquid
+          assign column_menu = block.settings.menu
+          assign column_heading = block.settings.heading | default: column_menu.title
+          capture column_links
+            if column_menu != blank and column_menu.links.size > 0
+              for link in column_menu.links
+                echo '<li class="ogee-footer__nav-item"><a class="ogee-footer__nav-link" href="'
+                echo link.url | escape
+                echo '">'
+                echo link.title | escape
+                echo '</a></li>'
+              endfor
+            else
+              for index in (1..6)
+                assign label_key = 'link_' | append: index | append: '_label'
+                assign url_key = 'link_' | append: index | append: '_url'
+                assign link_label = block.settings[label_key]
+                assign link_url = block.settings[url_key]
+
+                if link_label != blank
+                  echo '<li class="ogee-footer__nav-item">'
+                  if link_url != blank
+                    echo '<a class="ogee-footer__nav-link" href="'
+                    echo link_url | escape
+                    echo '">'
+                    echo link_label | escape
+                    echo '</a>'
+                  else
+                    echo '<span class="ogee-footer__nav-text">'
+                    echo link_label | escape
+                    echo '</span>'
+                  endif
+                  echo '</li>'
+                endif
+              endfor
+            endif
+          endcapture
+        %}
+
+        {% if column_heading != blank and column_links != blank %}
+          <div
+            class="ogee-footer__column"
+            {{ block.shopify_attributes }}
+          >
+            <div class="ogee-footer__column-desktop">
+              <h3 class="ogee-footer__column-heading">
+                {{ column_heading | escape }}
+              </h3>
+              <ul class="ogee-footer__nav-list list-unstyled">
+                {{ column_links }}
+              </ul>
+            </div>
+
+            <details class="ogee-footer__accordion">
+              <summary class="ogee-footer__accordion-summary">
+                <span>{{ column_heading | escape }}</span>
+                <svg
+                  class="ogee-footer__accordion-icon"
+                  viewBox="0 0 10 6"
+                  aria-hidden="true"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {% render 'icon', icon: 'caret' %}
+                </svg>
+              </summary>
+              <ul class="ogee-footer__nav-list list-unstyled">
+                {{ column_links }}
+              </ul>
+            </details>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section
+    class="ogee-footer__utility"
+    aria-label="{{ footer_settings.utility_label | escape }}"
+  >
+    <div class="ogee-footer__utility-inner">
+      {% if footer_settings.copyright_text != blank %}
+        <p class="ogee-footer__copyright">
+          &copy; {{ footer_settings.copyright_text | escape }}
+        </p>
+      {% endif %}
+
+      <div class="ogee-footer__legal-social">
+        <nav
+          class="ogee-footer__legal"
+          aria-label="{{ footer_settings.legal_label | escape }}"
+        >
+          {% if footer_settings.terms_label != blank %}
+            {% if footer_settings.terms_url != blank %}
+              <a href="{{ footer_settings.terms_url | escape }}">
+                {{ footer_settings.terms_label | escape }}
+              </a>
+            {% else %}
+              <span>{{ footer_settings.terms_label | escape }}</span>
+            {% endif %}
+          {% endif %}
+
+          {% if footer_settings.privacy_label != blank %}
+            {% if footer_settings.privacy_url != blank %}
+              <a href="{{ footer_settings.privacy_url | escape }}">
+                {{ footer_settings.privacy_label | escape }}
+              </a>
+            {% else %}
+              <span>{{ footer_settings.privacy_label | escape }}</span>
+            {% endif %}
+          {% endif %}
+
+          {% if footer_settings.cookies_label != blank %}
+            {% if footer_settings.cookies_url != blank %}
+              <a href="{{ footer_settings.cookies_url | escape }}">
+                {{ footer_settings.cookies_label | escape }}
+              </a>
+            {% else %}
+              <button
+                class="ogee-footer__cookie-button"
+                type="button"
+                data-ogee-cookie-settings
+              >
+                {{ footer_settings.cookies_label | escape }}
+              </button>
+            {% endif %}
+          {% endif %}
+        </nav>
+
+        <div
+          class="ogee-footer__social"
+          aria-label="{{ footer_settings.social_label | escape }}"
+        >
+          {% for platform in social_links %}
+            {% liquid
+              assign url_key = platform | append: '_url'
+              assign social_url = footer_settings[url_key]
+            %}
+
+            {% if social_url != blank %}
+              <a
+                class="ogee-footer__social-link"
+                href="{{ social_url | escape }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="{{ platform | capitalize }}"
+              >
+                <svg
+                  class="ogee-footer__social-icon"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {% render 'icon', icon: platform %}
+                </svg>
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% stylesheet %}
+  .ogee-footer {
+    background: var(--ogee-footer-background);
+    color: var(--ogee-footer-text);
+    font-family: var(--font-body--family);
+  }
+
+  .ogee-footer a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ogee-footer a:hover {
+    color: var(--ogee-footer-muted-text);
+  }
+
+  .ogee-footer__newsletter {
+    background: var(--ogee-footer-newsletter-background);
+    color: var(--ogee-footer-newsletter-text);
+  }
+
+  .ogee-footer__newsletter-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 34.7rem) minmax(0, 40rem);
+    align-items: center;
+    gap: 5.25rem;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: 1.25rem 0 1.5rem;
+  }
+
+  .ogee-footer__newsletter-heading,
+  .ogee-footer__newsletter-text,
+  .ogee-footer__copyright {
+    margin: 0;
+  }
+
+  .ogee-footer__newsletter-heading {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 2.125rem;
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  .ogee-footer__newsletter-text {
+    margin-block-start: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  .ogee-footer__newsletter-form {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .ogee-footer__newsletter-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    border-block-end: 1px solid currentcolor;
+  }
+
+  .ogee-footer .ogee-footer__newsletter-input[type='email'] {
+    appearance: none;
+    min-width: 0;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    background-color: transparent;
+    box-shadow: none;
+    color: currentcolor;
+    font: inherit;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem 0.75rem 0;
+  }
+
+  .ogee-footer .ogee-footer__newsletter-input[type='email']:hover,
+  .ogee-footer .ogee-footer__newsletter-input[type='email']:focus {
+    background: transparent;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .ogee-footer .ogee-footer__newsletter-input[type='email']::placeholder {
+    color: currentcolor;
+    opacity: 0.75;
+  }
+
+  .ogee-footer__newsletter-input:focus-visible,
+  .ogee-footer__newsletter-submit:focus-visible,
+  .ogee-footer__legal a:focus-visible,
+  .ogee-footer__cookie-button:focus-visible,
+  .ogee-footer__social-link:focus-visible,
+  .ogee-footer__accordion-summary:focus-visible {
+    outline: var(--focus-outline-width) solid currentcolor;
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  .ogee-footer__newsletter-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: var(--minimum-touch-target);
+    border: 0;
+    background: transparent;
+    color: currentcolor;
+    cursor: pointer;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+    text-transform: uppercase;
+  }
+
+  .ogee-footer__newsletter-arrow {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .ogee-footer__newsletter-message {
+    font-size: 0.8125rem;
+    line-height: 1.3;
+  }
+
+  .ogee-footer__navigation-inner {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6rem;
+    max-width: 75rem;
+    margin-inline: auto;
+    padding: 3rem 0 3.6rem;
+  }
+
+  .ogee-footer__column-heading {
+    margin: 0 0 1.3rem;
+    color: var(--ogee-footer-text);
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .ogee-footer__nav-list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ogee-footer__nav-link,
+  .ogee-footer__nav-text {
+    color: var(--ogee-footer-muted-text);
+    font-size: 0.875rem;
+    line-height: 1.25;
+  }
+
+  .ogee-footer__accordion {
+    display: none;
+  }
+
+  .ogee-footer__utility {
+    border-block-start: 1px solid var(--ogee-footer-border);
+  }
+
+  .ogee-footer__utility-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+    max-width: 75rem;
+    margin-inline: auto;
+    padding: 1.25rem 0;
+  }
+
+  .ogee-footer__copyright,
+  .ogee-footer__legal a,
+  .ogee-footer__legal span,
+  .ogee-footer__cookie-button {
+    color: var(--ogee-footer-muted-text);
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .ogee-footer__legal-social {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .ogee-footer__legal {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    white-space: nowrap;
+  }
+
+  .ogee-footer__cookie-button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+  }
+
+  .ogee-footer__social {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  .ogee-footer__social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    margin: -0.75rem;
+  }
+
+  .ogee-footer__social-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ogee-footer__newsletter-inner {
+      display: block;
+      padding: 1.7rem 2rem 2.5rem;
+    }
+
+    .ogee-footer__newsletter-heading {
+      font-size: 1.625rem;
+    }
+
+    .ogee-footer__newsletter-text {
+      margin-block-start: 1rem;
+      font-size: 0.9375rem;
+      line-height: 1.35;
+    }
+
+    .ogee-footer__newsletter-form {
+      margin-block-start: 2rem;
+    }
+
+    .ogee-footer__newsletter-field {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .ogee-footer .ogee-footer__newsletter-input[type='email'] {
+      font-size: 0.9375rem;
+      padding-block: 0.8rem;
+    }
+
+    .ogee-footer__newsletter-submit {
+      gap: 0.9rem;
+      font-size: 0.9375rem;
+    }
+
+    .ogee-footer__navigation-inner {
+      display: block;
+      padding: 2.4rem 2rem 2.9rem;
+    }
+
+    .ogee-footer__column + .ogee-footer__column {
+      margin-block-start: 1.7rem;
+    }
+
+    .ogee-footer__column-desktop {
+      display: none;
+    }
+
+    .ogee-footer__accordion {
+      display: block;
+    }
+
+    .ogee-footer__accordion-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: var(--minimum-touch-target);
+      cursor: pointer;
+      color: var(--ogee-footer-text);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      line-height: 1.2;
+      list-style: none;
+      text-transform: uppercase;
+    }
+
+    .ogee-footer__accordion-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .ogee-footer__accordion-icon {
+      width: 0.8rem;
+      height: 0.8rem;
+      transition: rotate var(--animation-values);
+    }
+
+    .ogee-footer__accordion[open] .ogee-footer__accordion-icon {
+      rotate: 180deg;
+    }
+
+    .ogee-footer__accordion .ogee-footer__nav-list {
+      padding-block: 0.8rem 0.4rem;
+    }
+
+    .ogee-footer__nav-link,
+    .ogee-footer__nav-text {
+      font-size: 0.875rem;
+      line-height: 1.35;
+    }
+
+    .ogee-footer__utility-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 2.1rem;
+      padding: 2.1rem 2rem 2.2rem;
+      text-align: center;
+    }
+
+    .ogee-footer__copyright {
+      order: 2;
+    }
+
+    .ogee-footer__legal-social {
+      order: 1;
+      flex-direction: column;
+      gap: 2.1rem;
+    }
+
+    .ogee-footer__legal {
+      justify-content: center;
+      gap: 1.75rem;
+      white-space: normal;
+    }
+
+    .ogee-footer__copyright,
+    .ogee-footer__legal a,
+    .ogee-footer__legal span,
+    .ogee-footer__cookie-button {
+      font-size: 0.875rem;
+    }
+
+    .ogee-footer__social {
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .ogee-footer__social-link {
+      margin: -0.4rem;
+    }
+
+    .ogee-footer__social-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : event.target.parentElement;
+
+    if (!target) {
+      return;
+    }
+
+    const trigger = target.closest('[data-ogee-cookie-settings]');
+
+    if (!trigger) {
+      return;
+    }
+
+    const privacy = window.Shopify && window.Shopify.customerPrivacy;
+
+    if (privacy && typeof privacy.showPreferences === 'function') {
+      privacy.showPreferences();
+    }
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Ogee footer",
+  "tag": "section",
+  "class": "ogee-footer-section",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "Get 10% Off Your First Order"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Text",
+      "default": "by subscribing to our newsletter"
+    },
+    {
+      "type": "text",
+      "id": "email_label",
+      "label": "Email label",
+      "default": "Email address"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "Email Address"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button_label",
+      "label": "Button label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_success_message",
+      "label": "Success message",
+      "default": "Thanks for subscribing."
+    },
+    {
+      "type": "color",
+      "id": "newsletter_background",
+      "label": "Newsletter background",
+      "default": "#918d86"
+    },
+    {
+      "type": "color",
+      "id": "newsletter_text_color",
+      "label": "Newsletter text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Footer"
+    },
+    {
+      "type": "text",
+      "id": "navigation_label",
+      "label": "Navigation label",
+      "default": "Footer navigation"
+    },
+    {
+      "type": "text",
+      "id": "utility_label",
+      "label": "Utility label",
+      "default": "Footer utility links"
+    },
+    {
+      "type": "text",
+      "id": "legal_label",
+      "label": "Legal navigation label",
+      "default": "Legal"
+    },
+    {
+      "type": "text",
+      "id": "social_label",
+      "label": "Social links label",
+      "default": "Social media"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "default": "2024, Ogee All Rights Reserved | Made In USA"
+    },
+    {
+      "type": "text",
+      "id": "terms_label",
+      "label": "Terms label",
+      "default": "Terms & Conditions"
+    },
+    {
+      "type": "url",
+      "id": "terms_url",
+      "label": "Terms link"
+    },
+    {
+      "type": "text",
+      "id": "privacy_label",
+      "label": "Privacy label",
+      "default": "Privacy Policy"
+    },
+    {
+      "type": "url",
+      "id": "privacy_url",
+      "label": "Privacy link"
+    },
+    {
+      "type": "text",
+      "id": "cookies_label",
+      "label": "Cookies label",
+      "default": "Cookies Setting"
+    },
+    {
+      "type": "url",
+      "id": "cookies_url",
+      "label": "Cookies link"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram"
+    },
+    {
+      "type": "url",
+      "id": "tiktok_url",
+      "label": "TikTok"
+    },
+    {
+      "type": "url",
+      "id": "youtube_url",
+      "label": "YouTube"
+    },
+    {
+      "type": "color",
+      "id": "footer_background",
+      "label": "Footer background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "footer_text_color",
+      "label": "Footer text",
+      "default": "#333030"
+    },
+    {
+      "type": "color",
+      "id": "footer_muted_text_color",
+      "label": "Footer muted text",
+      "default": "#666261"
+    },
+    {
+      "type": "color",
+      "id": "footer_border_color",
+      "label": "Footer border",
+      "default": "#dedbd8"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "Link column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Discover"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Fallback links"
+        },
+        {
+          "type": "text",
+          "id": "link_1_label",
+          "label": "Link 1 label"
+        },
+        {
+          "type": "url",
+          "id": "link_1_url",
+          "label": "Link 1"
+        },
+        {
+          "type": "text",
+          "id": "link_2_label",
+          "label": "Link 2 label"
+        },
+        {
+          "type": "url",
+          "id": "link_2_url",
+          "label": "Link 2"
+        },
+        {
+          "type": "text",
+          "id": "link_3_label",
+          "label": "Link 3 label"
+        },
+        {
+          "type": "url",
+          "id": "link_3_url",
+          "label": "Link 3"
+        },
+        {
+          "type": "text",
+          "id": "link_4_label",
+          "label": "Link 4 label"
+        },
+        {
+          "type": "url",
+          "id": "link_4_url",
+          "label": "Link 4"
+        },
+        {
+          "type": "text",
+          "id": "link_5_label",
+          "label": "Link 5 label"
+        },
+        {
+          "type": "url",
+          "id": "link_5_url",
+          "label": "Link 5"
+        },
+        {
+          "type": "text",
+          "id": "link_6_label",
+          "label": "Link 6 label"
+        },
+        {
+          "type": "url",
+          "id": "link_6_url",
+          "label": "Link 6"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ogee footer",
+      "category": "Footer",
+      "blocks": {
+        "discover": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Discover",
+            "link_1_label": "Our Story",
+            "link_2_label": "Our Ingredients",
+            "link_3_label": "The Glow Book",
+            "link_4_label": "Blog",
+            "link_5_label": "Press",
+            "link_6_label": "Reviews"
+          }
+        },
+        "support": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Support",
+            "link_1_label": "Find Your Complexion",
+            "link_2_label": "Find Your Contour",
+            "link_3_label": "FAQs",
+            "link_4_label": "Returns & Shipping",
+            "link_5_label": "Accessibility"
+          }
+        },
+        "programme": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Programme",
+            "link_1_label": "Rewards",
+            "link_2_label": "Affiliate",
+            "link_3_label": "Creator"
+          }
+        },
+        "contact": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Contact",
+            "link_1_label": "CS: Support@Ogee.Com",
+            "link_2_label": "Media: Pr@Ogee.Com",
+            "link_3_label": "Wholesale: Wholesale@Ogee.Com",
+            "link_4_label": "Store Locator",
+            "link_5_label": "Contact Us",
+            "link_6_label": "Live Chat"
+          }
+        }
+      },
+      "block_order": ["discover", "support", "programme", "contact"]
+    }
+  ]
+}
+{% endschema %}
