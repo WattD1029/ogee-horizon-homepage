@@ -522,6 +522,62 @@
         "padding_bottom_mobile": 32
       }
     },
+    "result_proof_gVjHaF": {
+      "type": "result-proof",
+      "blocks": {
+        "stat_XQRhWc": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        },
+        "stat_EFqW8D": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        },
+        "stat_bmgimp": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        }
+      },
+      "block_order": [
+        "stat_XQRhWc",
+        "stat_EFqW8D",
+        "stat_bmgimp"
+      ],
+      "name": "Result proof",
+      "settings": {
+        "eyebrow": "\"Natural is too gentle\" ?",
+        "heading": "Formulated For Results",
+        "description": "Certified by NSF Organic and powered by botanical actives, our formulas are clinically tested to deliver visible results--not just feel good on the skin.",
+        "quote": "\"It's rare to find a product that feels like skincare but performs like pro makeup. OGEE nailed it.\"",
+        "attribution": "- Amy Boyd, Age 32",
+        "stats_label": "Clinical results",
+        "composite_alt": "Before and after skin result from week 1 to week 12",
+        "before_label": "Week 1",
+        "after_label": "Week 12",
+        "slider_label": "Compare week 1 and week 12 results",
+        "desktop_content_width": 1080,
+        "padding_top": 96,
+        "padding_bottom": 48,
+        "background_color": "#fafafa",
+        "text_color": "#333333",
+        "muted_text_color": "#404040",
+        "rule_color": "#333333",
+        "accent_soft_color": "#f9f1dd",
+        "accent_color": "#f0dcab"
+      }
+    },
     "collection_card_section_CkHhCQ": {
       "type": "collection-card-section",
       "blocks": {
@@ -622,60 +678,54 @@
         "button_color": "#ffffff"
       }
     },
-    "result_proof_gVjHaF": {
-      "type": "result-proof",
+    "featured_in_carousel_acpNhg": {
+      "type": "featured-in-carousel",
       "blocks": {
-        "stat_XQRhWc": {
-          "type": "stat",
+        "featured_in_press_slide_JDFyfh": {
+          "type": "_featured-in-press-slide",
           "settings": {
-            "value": "92%",
-            "caption": "said OGEE performed as well or better than non-organic contour products",
-            "progress": 92
-          }
+            "bundled_image": "vogue",
+            "logo_text": "VOGUE",
+            "logo_subtext": "",
+            "logo_style": "vogue",
+            "quote": "\"Ogee's <u>Sculpted Face Stick</u> is crafted with the brand's silky-smooth activated botanical primer, creating a smooth base for your products.\""
+          },
+          "blocks": {}
         },
-        "stat_EFqW8D": {
-          "type": "stat",
+        "featured_in_press_slide_gRYWgg": {
+          "type": "_featured-in-press-slide",
           "settings": {
-            "value": "92%",
-            "caption": "said OGEE performed as well or better than non-organic contour products",
-            "progress": 92
-          }
-        },
-        "stat_bmgimp": {
-          "type": "stat",
-          "settings": {
-            "value": "92%",
-            "caption": "said OGEE performed as well or better than non-organic contour products",
-            "progress": 92
-          }
+            "bundled_image": "saatva",
+            "logo_text": "saatva",
+            "logo_subtext": "Smarter luxury sleep",
+            "logo_style": "saatva",
+            "quote": "\"Ogee's Ogee Hydraganics Indigo Dream Renewal Cream is The Best Overnight Beauty Treatments to Improve Your Skin and Hair While You Sleep.\""
+          },
+          "blocks": {}
         }
       },
       "block_order": [
-        "stat_XQRhWc",
-        "stat_EFqW8D",
-        "stat_bmgimp"
+        "featured_in_press_slide_JDFyfh",
+        "featured_in_press_slide_gRYWgg"
       ],
-      "name": "Result proof",
+      "name": "Featured in carousel",
       "settings": {
-        "eyebrow": "\"Natural is too gentle\" ?",
-        "heading": "Formulated For Results",
-        "description": "Certified by NSF Organic and powered by botanical actives, our formulas are clinically tested to deliver visible results--not just feel good on the skin.",
-        "quote": "\"It's rare to find a product that feels like skincare but performs like pro makeup. OGEE nailed it.\"",
-        "attribution": "- Amy Boyd, Age 32",
-        "stats_label": "Clinical results",
-        "composite_alt": "Before and after skin result from week 1 to week 12",
-        "before_label": "Week 1",
-        "after_label": "Week 12",
-        "slider_label": "Compare week 1 and week 12 results",
-        "desktop_content_width": 1080,
-        "padding_top": 96,
-        "padding_bottom": 48,
-        "background_color": "#fafafa",
-        "text_color": "#333333",
+        "accessible_heading": "Featured in press",
+        "eyebrow": "Featured In",
+        "button_label": "All Press",
+        "button_link": "",
+        "empty_text": "Add press slides to this section.",
+        "content_width": 1080,
+        "color_scheme": "",
+        "panel_background": "#FAFAFA",
+        "text_color": "#000000",
         "muted_text_color": "#404040",
-        "rule_color": "#333333",
-        "accent_soft_color": "#f9f1dd",
-        "accent_color": "#f0dcab"
+        "button_background": "#000000",
+        "button_color": "#FFFFFF",
+        "padding_top": 96,
+        "padding_bottom": 96,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
       }
     }
   },
@@ -691,6 +741,7 @@
     "social_proof_homepage",
     "result_proof_gVjHaF",
     "collection_card_section_CkHhCQ",
-    "subscription_promotion_banner"
+    "subscription_promotion_banner",
+    "featured_in_carousel_acpNhg"
   ]
 }
