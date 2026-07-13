@@ -181,223 +181,82 @@
         "padding_bottom": 56
       }
     },
-    "promotion_offer_banner": {
-      "type": "promotion-offer-banner",
+    "collection_card_section_homepage": {
+      "type": "collection-card-section",
+      "blocks": {
+        "makeup": {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "makeup",
+            "title": "Makeup",
+            "bundled_image": "makeup",
+            "image_position": "center center",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          },
+          "blocks": {}
+        },
+        "skincare": {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "skincare",
+            "title": "Skincare",
+            "bundled_image": "skincare",
+            "image_position": "center center",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          },
+          "blocks": {}
+        },
+        "bundles": {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "bundles",
+            "title": "Bundles",
+            "bundled_image": "bundles",
+            "image_position": "center center",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          },
+          "blocks": {}
+        },
+        "accessories": {
+          "type": "_collection-card-section-card",
+          "settings": {
+            "collection": "accessories",
+            "title": "Accessories",
+            "bundled_image": "accessories",
+            "image_position": "center center",
+            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
+            "button_label": "SHOP NOW"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "makeup",
+        "skincare",
+        "bundles",
+        "accessories"
+      ],
       "settings": {
-        "eyebrow": "THE CONTOUR COLLECTIONS",
-        "heading": "Recognized With 5,000+ Five-Star Reviews.",
-        "subheading": "Three-Step Glow Routine",
-        "image_width_desktop": 220,
-        "image_width_mobile": 100,
-        "desktop_height": 220,
-        "mobile_height": 380,
-        "content_max_width": 660,
-        "desktop_content_width": 1080,
+        "heading": "Shop by collection",
         "button_label": "SHOP NOW",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
-        "open_in_new_tab": false,
-        "background_color": "#fafafa",
-        "text_color": "#000000",
-        "muted_text_color": "#404040",
-        "button_background": "#000000",
-        "button_color": "#ffffff"
-      }
-    },
-    "promotion_blocks_QVGxNb": {
-      "type": "promotion-blocks",
-      "blocks": {
-        "promotion_block_wFgqc6": {
-          "type": "_promotion-block",
-          "settings": {
-            "icon": "gift",
-            "title": "Get free Gift with purchase of $150+",
-            "body": "You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!",
-            "button_label": "Shop now",
-            "link": "",
-            "open_in_new_tab": false
-          },
-          "blocks": {}
-        },
-        "promotion_block_Xqjz4z": {
-          "type": "_promotion-block",
-          "settings": {
-            "icon": "calendar",
-            "title": "Try Before You Buy",
-            "body": "Choose up to 6 items. Try for 14 days. Only Pay For what you keep.",
-            "button_label": "Try Before You Buy",
-            "link": "",
-            "open_in_new_tab": false
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "promotion_block_wFgqc6",
-        "promotion_block_Xqjz4z"
-      ],
-      "name": "Promotion blocks",
-      "settings": {
-        "heading": "Promotions",
-        "section_width": "full-width",
-        "color_scheme": "",
-        "card_background": "#faf8f3",
-        "text_color": "#333333",
-        "button_color": "#000000",
-        "progress_color": "#333333",
-        "desktop_gap": 8,
-        "mobile_gap": 16,
-        "padding_top": 0,
-        "padding_bottom": 96
-      }
-    },
-    "quiz_cards_homepage": {
-      "type": "quiz-cards",
-      "blocks": {
-        "perfect_shade": {
-          "type": "quiz_card",
-          "settings": {
-            "bundled_image": "perfect_shade",
-            "image_position_desktop": "center center",
-            "image_position_mobile": "center center",
-            "overlay_strength": 58,
-            "time_label": "2 MINS",
-            "heading": "Find Your Perfect Shade",
-            "description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
-            "button_label": "START QUIZ",
-            "link": "",
-            "open_in_new_tab": false
-          }
-        },
-        "skincare_routine": {
-          "type": "quiz_card",
-          "settings": {
-            "bundled_image": "skincare_routine",
-            "image_position_desktop": "center center",
-            "image_position_mobile": "center center",
-            "overlay_strength": 58,
-            "time_label": "2 MINS",
-            "heading": "Find Your Skincare Routine",
-            "description": "Discover the perfect skincare routine to nourish, hydrate, and illuminate your complexion.",
-            "button_label": "START QUIZ",
-            "link": "",
-            "open_in_new_tab": false
-          }
-        }
-      },
-      "block_order": [
-        "perfect_shade",
-        "skincare_routine"
-      ],
-      "settings": {
-        "accessibility_heading": "Find your personalized Ogee quiz",
-        "max_width": 1080,
-        "desktop_height": 400,
-        "mobile_height": 360,
-        "gap": 8,
-        "mobile_gutter": 15,
-        "padding_top": 48,
-        "padding_bottom": 48,
-        "text_color": "#ffffff",
-        "overlay_color": "#000000",
-        "button_color": "#ffffff",
-        "button_border_color": "#ffffff"
-      }
-    },
-    "social_proof_homepage": {
-      "type": "social-proof",
-      "blocks": {
-        "products": {
-          "type": "proof",
-          "settings": {
-            "fallback_image": "products",
-            "alt_text": "Ogee makeup products arranged on a textured rug.",
-            "link": ""
-          }
-        },
-        "foundation": {
-          "type": "proof",
-          "settings": {
-            "fallback_image": "foundation",
-            "alt_text": "A customer holding an Ogee complexion product.",
-            "link": ""
-          }
-        },
-        "brush": {
-          "type": "proof",
-          "settings": {
-            "fallback_image": "brush",
-            "alt_text": "A customer applying Ogee makeup with a brush.",
-            "link": ""
-          }
-        },
-        "stick": {
-          "type": "proof",
-          "settings": {
-            "fallback_image": "stick",
-            "alt_text": "An Ogee sculpting stick held in hand.",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "products",
-        "foundation",
-        "brush",
-        "stick"
-      ],
-      "settings": {
-        "heading": "Beyond Clean Beauties",
-        "background_color": "#ffffff",
-        "text_color": "#000000",
-        "rail_color": "#000000",
-        "cards_visible_desktop": 4,
-        "cards_visible_mobile": "1.8",
+        "desktop_content_width": 1080,
+        "desktop_card_height": 330,
+        "mobile_card_width": 300,
+        "mobile_card_height": 375,
         "card_gap": 8,
-        "show_arrows": true,
-        "padding_top": 52,
-        "padding_bottom": 88,
-        "padding_top_mobile": 48,
-        "padding_bottom_mobile": 32
-      }
-    },
-    "story_split_jL7AGm": {
-      "type": "story-split",
-      "name": "Story split",
-      "settings": {
-        "video_source": "theme_asset",
-        "theme_video_asset": "ogee-storefront-explanation.mp4",
-        "video_label": "Ogee brand story video",
-        "media_title": "",
-        "heading": "OGEE Is Where Certified Organic Skincare Meets High Performance. No Compromises.",
-        "text": "We adhere to the most stringent standards in clean beauty through our renowned NSF certification.",
-        "badge_asset": "nsf-badge.png",
-        "badge_alt": "NSF Certified",
-        "story_button_label": "Our Story",
-        "story_button_link": "",
-        "ingredients_button_label": "Ingredients",
-        "ingredients_button_link": "",
-        "desktop_height": 600,
-        "mobile_media_height": 390,
-        "color_scheme": "",
-        "background_color": "#fafafa",
-        "copy_color": "#000000",
-        "text_color": "#333333",
-        "media_title_color": "#ffffff",
-        "button_background": "#000000",
-        "button_color": "#ffffff",
-        "overlay_color": "#00000000"
+        "color_scheme": "scheme-1",
+        "padding_top": 48,
+        "padding_bottom": 48
       }
     }
   },
   "order": [
     "hero_crystal_contour",
     "product_carousel_homepage",
-    "promotion_offer_banner",
-    "promotion_blocks_QVGxNb",
-    "story_split_jL7AGm",
-    "quiz_cards_homepage",
-    "social_proof_homepage"
+    "collection_card_section_homepage",
+    "promotion_offer_banner"
   ]
 }
