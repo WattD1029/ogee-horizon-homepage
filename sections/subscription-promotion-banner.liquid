@@ -53,10 +53,15 @@
         {% endif %}
       </div>
 
-      {% if cta_url != blank %}
+      {% if cta_label != blank %}
         <a
           class="subscription-promotion-banner__button"
-          href="{{ cta_url }}"
+          {% if cta_url != blank %}
+            href="{{ cta_url }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+          {% endif %}
           aria-label="{{ cta_aria_label | escape }}"
           {% if section_settings.open_in_new_tab %}
             target="_blank"
@@ -178,6 +183,11 @@
   .subscription-promotion-banner__button:hover {
     color: var(--subscription-promotion-button-background);
     background: transparent;
+  }
+
+  .subscription-promotion-banner__button[aria-disabled='true'] {
+    pointer-events: none;
+    cursor: default;
   }
 
   .subscription-promotion-banner__button:focus-visible {
