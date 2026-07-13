@@ -138,10 +138,23 @@
 
   .featured-in-carousel__mobile-progress .slideshow-controls__dots {
     display: flex;
+    position: relative;
     width: 100%;
+    height: var(--minimum-touch-target);
     gap: 0;
     padding: 0;
     border-radius: 0;
+  }
+
+  .featured-in-carousel__mobile-progress .slideshow-controls__dots::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 50%;
+    height: 1px;
+    background: color-mix(in srgb, var(--featured-in-text-color) 16%, transparent);
+    transform: translateY(-50%);
   }
 
   .featured-in-carousel__mobile-progress .slideshow-controls__dots li {
@@ -150,6 +163,7 @@
   }
 
   .featured-in-carousel__mobile-progress .slideshow-controls__dots button {
+    position: relative;
     width: 100%;
     height: var(--minimum-touch-target);
     min-height: var(--minimum-touch-target);
@@ -160,16 +174,20 @@
 
   .featured-in-carousel__mobile-progress .slideshow-controls__dots button::after {
     content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
     display: block;
     width: 100%;
     height: 1px;
     border-radius: 0;
-    background: color-mix(in srgb, var(--featured-in-text-color) 20%, transparent);
+    background: transparent;
     box-shadow: none;
+    transform: translateY(-50%);
   }
 
   .featured-in-carousel__mobile-progress .slideshow-controls__dots button[aria-selected='true']::after {
-    background: var(--featured-in-text-color);
+    background: color-mix(in srgb, var(--featured-in-text-color) 58%, transparent);
   }
 
   .featured-in-carousel__button {
