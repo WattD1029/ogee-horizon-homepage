@@ -317,7 +317,7 @@
       scroll-padding-inline: 24px;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
-      touch-action: pan-x;
+      touch-action: pan-y;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -380,7 +380,11 @@
       if (!this.track || !this.thumb) return;
 
       this.updateProgress = this.updateProgress.bind(this);
+      this.handleTouchStart = this.handleTouchStart.bind(this);
+      this.handleTouchMove = this.handleTouchMove.bind(this);
       this.track.addEventListener('scroll', this.updateProgress, { passive: true });
+      this.track.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+      this.track.addEventListener('touchmove', this.handleTouchMove, { passive: false });
 
       if ('ResizeObserver' in window) {
         this.resizeObserver = new ResizeObserver(this.updateProgress);
@@ -393,11 +397,41 @@
     disconnectedCallback() {
       if (this.track) {
         this.track.removeEventListener('scroll', this.updateProgress);
+        this.track.removeEventListener('touchstart', this.handleTouchStart);
+        this.track.removeEventListener('touchmove', this.handleTouchMove);
       }
 
       if (this.resizeObserver) {
         this.resizeObserver.disconnect();
       }
+    }
+
+    handleTouchStart(event) {
+      const touch = event.touches[0];
+
+      if (!touch) return;
+
+      this.touchStartX = touch.clientX;
+      this.touchStartY = touch.clientY;
+      this.touchStartScrollLeft = this.track.scrollLeft;
+      this.touchDragging = false;
+    }
+
+    handleTouchMove(event) {
+      const touch = event.touches[0];
+
+      if (!touch) return;
+      if (typeof this.touchStartX !== 'number') return;
+
+      const deltaX = this.touchStartX - touch.clientX;
+      const deltaY = this.touchStartY - touch.clientY;
+
+      if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 6) return;
+
+      this.touchDragging = true;
+      event.preventDefault();
+      this.track.scrollLeft = this.touchStartScrollLeft + deltaX;
+      this.updateProgress();
     }
 
     updateProgress() {
