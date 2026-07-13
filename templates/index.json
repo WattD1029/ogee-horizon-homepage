@@ -205,30 +205,6 @@
         "button_color": "#ffffff"
       }
     },
-    "subscription_promotion_banner": {
-      "type": "subscription-promotion-banner",
-      "settings": {
-        "eyebrow": "Subscribe and Save Up to 10%",
-        "heading": "Glow Naturally. Replenish Regularly. Save Effortlessly.",
-        "subheading": "Unlock exclusive subscriber discounts",
-        "desktop_height": 220,
-        "mobile_height": 259,
-        "content_max_width": 848,
-        "mobile_content_width": 342,
-        "desktop_content_width": 1080,
-        "button_label": "Learn More",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "",
-        "open_in_new_tab": false,
-        "background_color": "#faf8f3",
-        "text_color": "#000000",
-        "muted_text_color": "#404040",
-        "subheading_color": "#333333",
-        "button_background": "#000000",
-        "button_color": "#ffffff"
-      }
-    },
     "promotion_blocks_QVGxNb": {
       "type": "promotion-blocks",
       "blocks": {
@@ -345,6 +321,59 @@
         "padding_bottom_mobile": 40
       }
     },
+    "quiz_cards_homepage": {
+      "type": "quiz-cards",
+      "blocks": {
+        "perfect_shade": {
+          "type": "quiz_card",
+          "settings": {
+            "bundled_image": "perfect_shade",
+            "image_position_desktop": "center center",
+            "image_position_mobile": "center center",
+            "overlay_strength": 58,
+            "time_label": "2 MINS",
+            "heading": "Find Your Perfect Shade",
+            "description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
+            "button_label": "START QUIZ",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "skincare_routine": {
+          "type": "quiz_card",
+          "settings": {
+            "bundled_image": "skincare_routine",
+            "image_position_desktop": "center center",
+            "image_position_mobile": "center center",
+            "overlay_strength": 58,
+            "time_label": "2 MINS",
+            "heading": "Find Your Skincare Routine",
+            "description": "Discover the perfect skincare routine to nourish, hydrate, and illuminate your complexion.",
+            "button_label": "START QUIZ",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "perfect_shade",
+        "skincare_routine"
+      ],
+      "settings": {
+        "accessibility_heading": "Find your personalized Ogee quiz",
+        "max_width": 1080,
+        "desktop_height": 400,
+        "mobile_height": 360,
+        "gap": 8,
+        "mobile_gutter": 15,
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "text_color": "#ffffff",
+        "overlay_color": "#000000",
+        "button_color": "#ffffff",
+        "button_border_color": "#ffffff"
+      }
+    },
     "all_skincare_carousel_homepage": {
       "type": "all-skincare-carousel",
       "blocks": {
@@ -434,59 +463,6 @@
         "padding_bottom": 48,
         "padding_top_mobile": 24,
         "padding_bottom_mobile": 28
-      }
-    },
-    "quiz_cards_homepage": {
-      "type": "quiz-cards",
-      "blocks": {
-        "perfect_shade": {
-          "type": "quiz_card",
-          "settings": {
-            "bundled_image": "perfect_shade",
-            "image_position_desktop": "center center",
-            "image_position_mobile": "center center",
-            "overlay_strength": 58,
-            "time_label": "2 MINS",
-            "heading": "Find Your Perfect Shade",
-            "description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
-            "button_label": "START QUIZ",
-            "link": "",
-            "open_in_new_tab": false
-          }
-        },
-        "skincare_routine": {
-          "type": "quiz_card",
-          "settings": {
-            "bundled_image": "skincare_routine",
-            "image_position_desktop": "center center",
-            "image_position_mobile": "center center",
-            "overlay_strength": 58,
-            "time_label": "2 MINS",
-            "heading": "Find Your Skincare Routine",
-            "description": "Discover the perfect skincare routine to nourish, hydrate, and illuminate your complexion.",
-            "button_label": "START QUIZ",
-            "link": "",
-            "open_in_new_tab": false
-          }
-        }
-      },
-      "block_order": [
-        "perfect_shade",
-        "skincare_routine"
-      ],
-      "settings": {
-        "accessibility_heading": "Find your personalized Ogee quiz",
-        "max_width": 1080,
-        "desktop_height": 400,
-        "mobile_height": 360,
-        "gap": 8,
-        "mobile_gutter": 15,
-        "padding_top": 48,
-        "padding_bottom": 48,
-        "text_color": "#ffffff",
-        "overlay_color": "#000000",
-        "button_color": "#ffffff",
-        "button_border_color": "#ffffff"
       }
     },
     "social_proof_homepage": {
@@ -621,6 +597,30 @@
         "padding_top": 48,
         "padding_bottom": 48
       }
+    },
+    "subscription_promotion_banner": {
+      "type": "subscription-promotion-banner",
+      "settings": {
+        "eyebrow": "Subscribe and Save Up to 10%",
+        "heading": "Glow Naturally. Replenish Regularly. Save Effortlessly.",
+        "subheading": "Unlock exclusive subscriber discounts",
+        "desktop_height": 220,
+        "mobile_height": 259,
+        "content_max_width": 848,
+        "mobile_content_width": 342,
+        "desktop_content_width": 1080,
+        "button_label": "Learn More",
+        "product": "",
+        "link": "",
+        "fallback_product_handle": "",
+        "open_in_new_tab": false,
+        "background_color": "#faf8f3",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "subheading_color": "#333333",
+        "button_background": "#000000",
+        "button_color": "#ffffff"
+      }
     }
   },
   "order": [
@@ -630,8 +630,8 @@
     "promotion_blocks_QVGxNb",
     "story_split_jL7AGm",
     "all_makeup_carousel_homepage",
-    "all_skincare_carousel_homepage",
     "quiz_cards_homepage",
+    "all_skincare_carousel_homepage",
     "social_proof_homepage",
     "collection_card_section_CkHhCQ",
     "subscription_promotion_banner"
