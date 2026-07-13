@@ -1,0 +1,858 @@
+{% liquid
+  assign section_settings = section.settings
+  assign heading_id = 'ResultProofHeading-' | append: section.id
+  assign has_before_image = false
+  assign has_after_image = false
+  assign has_comparison = false
+  assign has_custom_composite = false
+  assign has_fallback_comparison = false
+  assign renders_comparison = false
+  assign loading = 'lazy'
+  assign fetch_priority = 'low'
+
+  if section_settings.before_image != blank
+    assign has_before_image = true
+  endif
+
+  if section_settings.after_image != blank
+    assign has_after_image = true
+  endif
+
+  if has_before_image
+    if has_after_image
+      assign has_comparison = true
+    endif
+  endif
+
+  if section_settings.composite_image != blank
+    assign has_custom_composite = true
+  endif
+
+  if has_comparison
+    assign renders_comparison = true
+  else
+    unless has_custom_composite
+      assign has_fallback_comparison = true
+      assign renders_comparison = true
+    endunless
+  endif
+
+  if section.index <= 3
+    assign loading = 'eager'
+  endif
+
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+%}
+
+{% if renders_comparison %}
+  <script
+    src="{{ 'comparison-slider.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+{% endif %}
+
+<section
+  class="result-proof"
+  aria-labelledby="{{ heading_id }}"
+  style="
+    --result-proof-background: {{ section_settings.background_color }};
+    --result-proof-text: {{ section_settings.text_color }};
+    --result-proof-muted: {{ section_settings.muted_text_color }};
+    --result-proof-rule: {{ section_settings.rule_color }};
+    --result-proof-accent-soft: {{ section_settings.accent_soft_color }};
+    --result-proof-accent: {{ section_settings.accent_color }};
+    --result-proof-content-width: {{ section_settings.desktop_content_width }}px;
+    --result-proof-padding-top: {{ section_settings.padding_top }}px;
+    --result-proof-padding-bottom: {{ section_settings.padding_bottom }}px;
+  "
+>
+  <div class="result-proof__inner">
+    <div class="result-proof__lead">
+      <div class="result-proof__media">
+        {% if renders_comparison %}
+          <comparison-slider-component class="result-proof-comparison{% if has_fallback_comparison %} result-proof-comparison--fallback{% endif %}">
+            <div
+              class="result-proof-comparison__media"
+              ref="mediaWrapper"
+              data-orientation="horizontal"
+            >
+              <div class="result-proof-comparison__layer result-proof-comparison__layer--before">
+                {% if has_comparison %}
+                  {{
+                    section_settings.before_image
+                    | image_url: width: 1600
+                    | image_tag:
+                      widths: '360, 540, 720, 960, 1200, 1600',
+                      sizes: '(min-width: 990px) 480px, calc(100vw - 30px)',
+                      loading: loading,
+                      fetchpriority: fetch_priority,
+                      alt: section_settings.before_image.alt,
+                      class: 'result-proof-comparison__image'
+                  }}
+                {% else %}
+                  <img
+                    src="{{ 'result-proof-week-1.png' | asset_url }}"
+                    alt="{{ section_settings.before_label | escape }} skin result"
+                    class="result-proof-comparison__image"
+                    width="1254"
+                    height="1254"
+                    loading="{{ loading }}"
+                    fetchpriority="{{ fetch_priority }}"
+                  >
+                {% endif %}
+              </div>
+              <div class="result-proof-comparison__layer result-proof-comparison__layer--after">
+                {% if has_comparison %}
+                  {{
+                    section_settings.after_image
+                    | image_url: width: 1600
+                    | image_tag:
+                      widths: '360, 540, 720, 960, 1200, 1600',
+                      sizes: '(min-width: 990px) 480px, calc(100vw - 30px)',
+                      loading: loading,
+                      fetchpriority: fetch_priority,
+                      alt: section_settings.after_image.alt,
+                      class: 'result-proof-comparison__image',
+                      ref: 'afterImage'
+                  }}
+                {% else %}
+                  <img
+                    src="{{ 'result-proof-week-12.png' | asset_url }}"
+                    alt="{{ section_settings.after_label | escape }} skin result"
+                    class="result-proof-comparison__image"
+                    width="1254"
+                    height="1254"
+                    loading="{{ loading }}"
+                    fetchpriority="{{ fetch_priority }}"
+                    ref="afterImage"
+                  >
+                {% endif %}
+              </div>
+              {% if has_comparison %}
+                {% if section_settings.before_label != blank %}
+                  <span class="result-proof-comparison__tag result-proof-comparison__tag--before">
+                    {{ section_settings.before_label | escape }}
+                  </span>
+                {% endif %}
+                {% if section_settings.after_label != blank %}
+                  <span class="result-proof-comparison__tag result-proof-comparison__tag--after">
+                    {{ section_settings.after_label | escape }}
+                  </span>
+                {% endif %}
+              {% endif %}
+              <span class="result-proof-comparison__line" aria-hidden="true"></span>
+              <span class="result-proof-comparison__handle" aria-hidden="true">
+                <span class="result-proof-comparison__handle-icon">
+                  {{- 'icon-double-chevron.svg' | inline_asset_content -}}
+                </span>
+              </span>
+              <input
+                type="range"
+                class="result-proof-comparison__range"
+                ref="slider"
+                min="0"
+                max="100"
+                value="50"
+                aria-label="{{ section_settings.slider_label | escape }}"
+                on:input="/sync"
+                on:pointerdown="/sync"
+              >
+            </div>
+          </comparison-slider-component>
+        {% else %}
+          <div class="result-proof__composite-media">
+            {% if has_custom_composite %}
+              {{
+                section_settings.composite_image
+                | image_url: width: 1600
+                | image_tag:
+                  widths: '360, 540, 720, 960, 1200, 1600',
+                  sizes: '(min-width: 990px) 480px, calc(100vw - 30px)',
+                  loading: loading,
+                  fetchpriority: fetch_priority,
+                  alt: section_settings.composite_image.alt,
+                  class: 'result-proof__composite-image'
+              }}
+            {% else %}
+              <img
+                src="{{ 'result-proof-before-after.png' | asset_url }}"
+                alt="{{ section_settings.composite_alt | escape }}"
+                class="result-proof__composite-image"
+                width="752"
+                height="616"
+                loading="{{ loading }}"
+                fetchpriority="{{ fetch_priority }}"
+              >
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="result-proof__content">
+        <div class="result-proof__copy">
+          {% if section_settings.eyebrow != blank %}
+            <p class="result-proof__eyebrow">{{ section_settings.eyebrow | escape }}</p>
+          {% endif %}
+
+          <h2 id="{{ heading_id }}" class="result-proof__heading">
+            {{ section_settings.heading | default: 'Results proof' | escape }}
+          </h2>
+
+          {% if section_settings.description != blank %}
+            <p class="result-proof__description">{{ section_settings.description | escape }}</p>
+          {% endif %}
+        </div>
+
+        {% if section.blocks.size > 0 %}
+          <div class="result-proof__stats" role="list" aria-label="{{ section_settings.stats_label | escape }}">
+            {% for block in section.blocks %}
+              <div
+                class="result-proof__stat"
+                role="listitem"
+                style="--result-proof-stat-progress: {{ block.settings.progress }}%;"
+                {{ block.shopify_attributes }}
+              >
+                {% if block.settings.value != blank %}
+                  <p class="result-proof__stat-value">{{ block.settings.value | escape }}</p>
+                {% endif %}
+                <div class="result-proof__stat-bar" aria-hidden="true">
+                  <span></span>
+                </div>
+                {% if block.settings.caption != blank %}
+                  <p class="result-proof__stat-caption">{{ block.settings.caption | escape }}</p>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="result-proof__testimonial">
+      {% if section_settings.quote != blank %}
+        <blockquote class="result-proof__quote">
+          <p>{{ section_settings.quote | escape }}</p>
+        </blockquote>
+      {% endif %}
+      {% if section_settings.attribution != blank %}
+        <p class="result-proof__attribution">{{ section_settings.attribution | escape }}</p>
+      {% endif %}
+      <div class="result-proof__progress" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .result-proof {
+    background: var(--result-proof-background);
+    color: var(--result-proof-text);
+  }
+
+  .result-proof__inner {
+    width: 100%;
+    max-width: calc(var(--result-proof-content-width) + (var(--page-margin) * 2));
+    margin-inline: auto;
+    padding: var(--result-proof-padding-top) var(--page-margin) var(--result-proof-padding-bottom);
+  }
+
+  .result-proof__lead {
+    display: grid;
+    grid-template-columns: minmax(360px, 480px) minmax(0, 600px);
+    align-items: center;
+    justify-content: center;
+    column-gap: 80px;
+  }
+
+  .result-proof__media {
+    min-width: 0;
+  }
+
+  .result-proof__composite-media,
+  .result-proof-comparison {
+    display: block;
+    position: relative;
+    aspect-ratio: 600 / 500;
+    width: 100%;
+    overflow: hidden;
+    border: 8px solid #ffffff;
+    background: #ffffff;
+  }
+
+  .result-proof__composite-image,
+  .result-proof-comparison__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .result-proof-comparison__media {
+    --compare: 50;
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .result-proof-comparison__layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .result-proof-comparison__layer--before {
+    clip-path: inset(0 calc((100 - var(--compare)) * 1%) 0 0);
+  }
+
+  .result-proof-comparison__layer--after {
+    clip-path: inset(0 0 0 calc(var(--compare) * 1%));
+  }
+
+  .result-proof-comparison__tag {
+    position: absolute;
+    top: 10px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
+    padding: 6px 10px;
+    color: #434343;
+    background: var(--result-proof-accent-soft);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .result-proof-comparison__tag--before {
+    left: 10px;
+  }
+
+  .result-proof-comparison__tag--after {
+    right: 10px;
+  }
+
+  .result-proof-comparison__line {
+    position: absolute;
+    inset-block: 0;
+    left: calc(var(--compare) * 1%);
+    z-index: 3;
+    width: 2px;
+    background: #ffffff;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .result-proof-comparison__handle {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--compare) * 1%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #111111;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 16px rgb(0 0 0 / 0.12);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .result-proof-comparison__handle-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    transform: rotate(90deg);
+  }
+
+  .result-proof-comparison__handle-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .result-proof-comparison__range {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    appearance: none;
+  }
+
+  .result-proof-comparison__range::-webkit-slider-thumb {
+    width: 32px;
+    height: 32px;
+    appearance: none;
+  }
+
+  .result-proof-comparison__range::-moz-range-thumb {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+  }
+
+  .result-proof__content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    min-width: 0;
+  }
+
+  .result-proof__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .result-proof__eyebrow,
+  .result-proof__heading,
+  .result-proof__description,
+  .result-proof__stat-value,
+  .result-proof__stat-caption,
+  .result-proof__quote,
+  .result-proof__quote p,
+  .result-proof__attribution {
+    margin: 0;
+  }
+
+  .result-proof__eyebrow {
+    color: var(--result-proof-muted);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+  }
+
+  .result-proof__heading {
+    color: var(--result-proof-text);
+    font-family: 'Chronicle Display', 'Chronicle Display Light', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', 'Times New Roman', serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+    text-transform: capitalize;
+  }
+
+  .result-proof__description {
+    max-width: 520px;
+    color: var(--result-proof-text);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .result-proof__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .result-proof__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .result-proof__stat-value {
+    color: var(--result-proof-text);
+    font-family: 'Chronicle Display', 'Chronicle Display Light', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', 'Times New Roman', serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.5;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  .result-proof__stat-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--result-proof-accent-soft);
+  }
+
+  .result-proof__stat-bar span {
+    display: block;
+    width: var(--result-proof-stat-progress);
+    max-width: 100%;
+    height: 100%;
+    background: var(--result-proof-accent);
+  }
+
+  .result-proof__stat-caption {
+    color: var(--result-proof-text);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .result-proof__testimonial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    margin-block-start: 96px;
+    text-align: center;
+  }
+
+  .result-proof__quote {
+    width: min(100%, 800px);
+    color: var(--result-proof-muted);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-transform: capitalize;
+  }
+
+  .result-proof__attribution {
+    color: var(--result-proof-text);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .result-proof__progress {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(100%, 1080px);
+    height: 1px;
+    margin-block-start: 8px;
+  }
+
+  .result-proof__progress span {
+    background: rgb(0 0 0 / 0.2);
+  }
+
+  .result-proof__progress span:first-child {
+    background: var(--result-proof-rule);
+  }
+
+  @media screen and (max-width: 989px) {
+    .result-proof__lead {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .result-proof__content {
+      order: -1;
+      align-items: center;
+      padding-inline: 16px;
+      text-align: center;
+    }
+
+    .result-proof__description {
+      max-width: 640px;
+    }
+
+    .result-proof__stats {
+      width: calc(100% + 32px);
+      margin-inline: -16px;
+      padding-inline: 16px;
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scroll-padding-inline: 16px;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      text-align: left;
+    }
+
+    .result-proof__stats::-webkit-scrollbar {
+      display: none;
+    }
+
+    .result-proof__stat {
+      flex: 0 0 300px;
+      scroll-snap-align: start;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .result-proof__inner {
+      padding: var(--result-proof-padding-top) 15px var(--result-proof-padding-bottom);
+    }
+
+    .result-proof__lead {
+      gap: 48px;
+    }
+
+    .result-proof__content {
+      gap: 32px;
+      padding-inline: 16px;
+    }
+
+    .result-proof__heading {
+      font-size: 28px;
+    }
+
+    .result-proof__composite-media,
+    .result-proof-comparison {
+      border-width: 8px;
+    }
+
+    .result-proof-comparison__handle {
+      width: 32px;
+      height: 32px;
+    }
+
+    .result-proof__testimonial {
+      gap: 24px;
+      margin-block-start: 48px;
+      padding-inline: 15px;
+    }
+
+    .result-proof__quote {
+      font-size: 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Result proof",
+  "tag": "section",
+  "class": "result-proof-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "\"Natural is too gentle\" ?"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Formulated For Results"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Certified by NSF Organic and powered by botanical actives, our formulas are clinically tested to deliver visible results--not just feel good on the skin."
+    },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Quote",
+      "default": "\"It's rare to find a product that feels like skincare but performs like pro makeup. OGEE nailed it.\""
+    },
+    {
+      "type": "text",
+      "id": "attribution",
+      "label": "Attribution",
+      "default": "- Amy Boyd, Age 32"
+    },
+    {
+      "type": "text",
+      "id": "stats_label",
+      "label": "Stats accessible label",
+      "default": "Clinical results"
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "composite_image",
+      "label": "Static composite image"
+    },
+    {
+      "type": "text",
+      "id": "composite_alt",
+      "label": "Static image alt text",
+      "default": "Before and after skin result from week 1 to week 12"
+    },
+    {
+      "type": "image_picker",
+      "id": "before_image",
+      "label": "Before image"
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image",
+      "label": "After image"
+    },
+    {
+      "type": "text",
+      "id": "before_label",
+      "label": "Before label",
+      "default": "Week 1"
+    },
+    {
+      "type": "text",
+      "id": "after_label",
+      "label": "After label",
+      "default": "Week 12"
+    },
+    {
+      "type": "text",
+      "id": "slider_label",
+      "label": "Comparison slider label",
+      "default": "Compare week 1 and week 12 results"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1080
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#404040"
+    },
+    {
+      "type": "color",
+      "id": "rule_color",
+      "label": "Active rule",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "accent_soft_color",
+      "label": "Soft accent",
+      "default": "#f9f1dd"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#f0dcab"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Statistic",
+      "settings": [
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "default": "92%"
+        },
+        {
+          "type": "textarea",
+          "id": "caption",
+          "label": "Caption",
+          "default": "said OGEE performed as well or better than non-organic contour products"
+        },
+        {
+          "type": "range",
+          "id": "progress",
+          "label": "Bar progress",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 92
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "Result proof",
+      "blocks": [
+        {
+          "type": "stat"
+        },
+        {
+          "type": "stat"
+        },
+        {
+          "type": "stat"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

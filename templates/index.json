@@ -181,82 +181,69 @@
         "padding_bottom": 56
       }
     },
-    "collection_card_section_homepage": {
-      "type": "collection-card-section",
+    "result_proof_homepage": {
+      "type": "result-proof",
       "blocks": {
-        "makeup": {
-          "type": "_collection-card-section-card",
+        "result_stat_1": {
+          "type": "stat",
           "settings": {
-            "collection": "makeup",
-            "title": "Makeup",
-            "bundled_image": "makeup",
-            "image_position": "center center",
-            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
-            "button_label": "SHOP NOW"
-          },
-          "blocks": {}
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
         },
-        "skincare": {
-          "type": "_collection-card-section-card",
+        "result_stat_2": {
+          "type": "stat",
           "settings": {
-            "collection": "skincare",
-            "title": "Skincare",
-            "bundled_image": "skincare",
-            "image_position": "center center",
-            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
-            "button_label": "SHOP NOW"
-          },
-          "blocks": {}
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
         },
-        "bundles": {
-          "type": "_collection-card-section-card",
+        "result_stat_3": {
+          "type": "stat",
           "settings": {
-            "collection": "bundles",
-            "title": "Bundles",
-            "bundled_image": "bundles",
-            "image_position": "center center",
-            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
-            "button_label": "SHOP NOW"
-          },
-          "blocks": {}
-        },
-        "accessories": {
-          "type": "_collection-card-section-card",
-          "settings": {
-            "collection": "accessories",
-            "title": "Accessories",
-            "bundled_image": "accessories",
-            "image_position": "center center",
-            "description": "Lorem Ipsum Lorem Ipsum Lorem Ipsum",
-            "button_label": "SHOP NOW"
-          },
-          "blocks": {}
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
         }
       },
       "block_order": [
-        "makeup",
-        "skincare",
-        "bundles",
-        "accessories"
+        "result_stat_1",
+        "result_stat_2",
+        "result_stat_3"
       ],
       "settings": {
-        "heading": "Shop by collection",
-        "button_label": "SHOP NOW",
+        "eyebrow": "\"Natural is too gentle\" ?",
+        "heading": "Formulated For Results",
+        "description": "Certified by NSF Organic and powered by botanical actives, our formulas are clinically tested to deliver visible results--not just feel good on the skin.",
+        "quote": "\"It's rare to find a product that feels like skincare but performs like pro makeup. OGEE nailed it.\"",
+        "attribution": "- Amy Boyd, Age 32",
+        "stats_label": "Clinical results",
+        "composite_image": "",
+        "composite_alt": "Before and after skin result from week 1 to week 12",
+        "before_image": "",
+        "after_image": "",
+        "before_label": "Week 1",
+        "after_label": "Week 12",
+        "slider_label": "Compare week 1 and week 12 results",
         "desktop_content_width": 1080,
-        "desktop_card_height": 330,
-        "mobile_card_width": 300,
-        "mobile_card_height": 375,
-        "card_gap": 8,
-        "color_scheme": "scheme-1",
-        "padding_top": 48,
-        "padding_bottom": 48
+        "padding_top": 96,
+        "padding_bottom": 48,
+        "background_color": "#fafafa",
+        "text_color": "#333333",
+        "muted_text_color": "#404040",
+        "rule_color": "#333333",
+        "accent_soft_color": "#f9f1dd",
+        "accent_color": "#f0dcab"
       }
     }
   },
   "order": [
     "hero_crystal_contour",
     "product_carousel_homepage",
-    "collection_card_section_homepage",
+    "result_proof_homepage",
     "promotion_offer_banner"
   ]
 }
