@@ -1,7 +1,7 @@
 {% liquid
   assign section_settings = section.settings
   assign cta_url = section_settings.link
-  assign cta_label = section_settings.button_label | default: 'Learn more'
+  assign cta_label = section_settings.button_label
   assign cta_aria_label = cta_label
 
   if section_settings.product != blank
@@ -16,84 +16,147 @@
     endif
   endif
 
+  if cta_label == blank
+    assign cta_label = 'Shop now'
+  endif
+
   if section_settings.heading != blank
     assign cta_aria_label = cta_label | append: ': ' | append: section_settings.heading
+  endif
+
+  assign loading = 'lazy'
+  assign fetch_priority = 'low'
+
+  if section.index <= 3
+    assign loading = 'eager'
+  endif
+
+  if section.index == 1
+    assign fetch_priority = 'high'
   endif
 %}
 
 <div
-  class="promotion-offer-banner-shell section section--full-width"
+  class="promotion-offer-banner-shell section section--page-width"
   style="
     --promotion-offer-background: {{ section_settings.background_color }};
     --promotion-offer-text: {{ section_settings.text_color }};
     --promotion-offer-muted: {{ section_settings.muted_text_color }};
-    --promotion-offer-subheading: {{ section_settings.subheading_color }};
     --promotion-offer-button-background: {{ section_settings.button_background }};
     --promotion-offer-button-color: {{ section_settings.button_color }};
     --promotion-offer-desktop-height: {{ section_settings.desktop_height }}px;
     --promotion-offer-mobile-height: {{ section_settings.mobile_height }}px;
     --promotion-offer-content-max-width: {{ section_settings.content_max_width }}px;
-    --promotion-offer-mobile-content-width: {{ section_settings.mobile_content_width }}px;
     --promotion-offer-banner-content-width: {{ section_settings.desktop_content_width | default: 1080 }}px;
+    --promotion-offer-image-width-desktop: {{ section_settings.image_width_desktop }}px;
+    --promotion-offer-image-width-mobile: {{ section_settings.image_width_mobile }}px;
   "
 >
   <div class="promotion-offer-banner">
-    <div class="promotion-offer-banner__inner">
-      <div class="promotion-offer-banner__copy">
-        {% if section_settings.eyebrow != blank %}
-          <p class="promotion-offer-banner__eyebrow">{{ section_settings.eyebrow | escape }}</p>
-        {% endif %}
+  <div class="promotion-offer-banner__media" aria-hidden="true">
+    {% if section_settings.image != blank %}
+      {{
+        section_settings.image
+        | image_url: width: 440
+        | image_tag:
+          widths: '100, 200, 220, 440',
+          sizes: '(min-width: 1200px) 220px, 100px',
+          loading: loading,
+          fetchpriority: fetch_priority,
+          alt: '',
+          class: 'promotion-offer-banner__image'
+      }}
+    {% else %}
+      <img
+        src="{{ 'ogee-contour-product-stack.png' | asset_url }}"
+        alt=""
+        class="promotion-offer-banner__image"
+        width="440"
+        height="440"
+        loading="{{ loading }}"
+        fetchpriority="{{ fetch_priority }}"
+      >
+    {% endif %}
+  </div>
 
-        {% if section_settings.heading != blank %}
-          <h2 class="promotion-offer-banner__heading">{{ section_settings.heading | escape }}</h2>
-        {% endif %}
+  <div class="promotion-offer-banner__copy">
+    {% if section_settings.eyebrow != blank %}
+      <p class="promotion-offer-banner__eyebrow">{{ section_settings.eyebrow | escape }}</p>
+    {% endif %}
 
-        {% if section_settings.subheading != blank %}
-          <p class="promotion-offer-banner__subheading">{{ section_settings.subheading | escape }}</p>
-        {% endif %}
-      </div>
+    {% if section_settings.heading != blank %}
+      <h2 class="promotion-offer-banner__heading">{{ section_settings.heading | escape }}</h2>
+    {% endif %}
 
-      {% if cta_url != blank %}
-        <a
-          class="promotion-offer-banner__button"
-          href="{{ cta_url }}"
-          aria-label="{{ cta_aria_label | escape }}"
-          {% if section_settings.open_in_new_tab %}
-            target="_blank"
-            rel="noopener"
-          {% endif %}
-        >
-          {{ cta_label | escape }}
-        </a>
+    {% if section_settings.subheading != blank %}
+      <p class="promotion-offer-banner__subheading">{{ section_settings.subheading | escape }}</p>
+    {% endif %}
+  </div>
+
+  {% if cta_url != blank %}
+    <a
+      class="promotion-offer-banner__button"
+      href="{{ cta_url }}"
+      aria-label="{{ cta_aria_label | escape }}"
+      {% if section_settings.open_in_new_tab %}
+        target="_blank"
+        rel="noopener"
       {% endif %}
-    </div>
+    >
+      {{ cta_label | escape }}
+    </a>
+  {% endif %}
   </div>
 </div>
 
 {% stylesheet %}
   .promotion-offer-banner-shell {
-    background: var(--promotion-offer-background);
+    --page-content-width: var(--promotion-offer-banner-content-width);
+    --page-width: calc(var(--page-content-width) + (var(--page-margin) * 2));
+
+    padding-block-end: 96px;
   }
 
   .promotion-offer-banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: var(--promotion-offer-desktop-height);
-    padding-inline: var(--page-margin);
-    color: var(--promotion-offer-text);
-    background: var(--promotion-offer-background);
-  }
-
-  .promotion-offer-banner__inner {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, var(--promotion-offer-content-max-width)) 200px;
+    grid-template-columns: var(--promotion-offer-image-width-desktop) minmax(0, var(--promotion-offer-content-max-width)) minmax(200px, 1fr);
     column-gap: 32px;
     align-items: center;
-    width: min(100%, var(--promotion-offer-banner-content-width));
+    justify-content: stretch;
+    min-height: var(--promotion-offer-desktop-height);
+    padding: 0 48px 0 0;
+    color: var(--promotion-offer-text);
+    background: var(--promotion-offer-background);
+    overflow: hidden;
+  }
+
+  .promotion-offer-banner__media {
+    position: relative;
+    grid-column: 1;
+    justify-self: start;
+    width: var(--promotion-offer-image-width-desktop);
+    height: var(--promotion-offer-image-width-desktop);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .promotion-offer-banner__image {
+    display: block;
+    width: 125%;
+    max-width: none;
+    height: 100%;
+    margin-left: -23.43%;
+    object-fit: contain;
+  }
+
+  .promotion-offer-banner__image--placeholder {
+    color: color-mix(in srgb, var(--promotion-offer-muted) 22%, transparent);
   }
 
   .promotion-offer-banner__copy {
+    z-index: 1;
+    grid-column: 2;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -108,25 +171,26 @@
   }
 
   .promotion-offer-banner__eyebrow,
-  .promotion-offer-banner__subheading,
-  .promotion-offer-banner__button {
-    font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-body--family), sans-serif;
+  .promotion-offer-banner__subheading {
+    color: var(--promotion-offer-muted);
+    font-family: var(--font-body--family);
     font-style: normal;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
   }
 
   .promotion-offer-banner__eyebrow {
-    color: var(--promotion-offer-muted);
     font-size: 15px;
     font-weight: 400;
-    line-height: 1.5;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.75px;
     text-transform: uppercase;
   }
 
   .promotion-offer-banner__heading {
-    max-width: var(--promotion-offer-content-max-width);
+    max-width: 650px;
     color: var(--promotion-offer-text);
-    font-family: 'Chronicle Display', Georgia, 'Times New Roman', var(--font-heading--family), serif;
+    font-family: Georgia, 'Times New Roman', serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 300;
@@ -137,42 +201,34 @@
   }
 
   .promotion-offer-banner__subheading {
-    color: var(--promotion-offer-subheading);
+    color: #333333;
     font-size: 16px;
-    font-weight: 300;
-    line-height: 1.5;
-    letter-spacing: 0;
   }
 
   .promotion-offer-banner__button {
-    position: relative;
+    z-index: 1;
+    grid-column: 3;
     justify-self: end;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 200px;
     min-width: 200px;
     height: 42px;
     min-height: 42px;
-    padding: 0 32px;
+    padding: 16px 32px;
     color: var(--promotion-offer-button-color);
     background: var(--promotion-offer-button-background);
     border: 1px solid var(--promotion-offer-button-background);
     border-radius: 0;
+    font-family: var(--font-body--family);
     font-size: 13px;
+    font-style: normal;
     font-weight: 500;
     line-height: 1.1;
-    letter-spacing: 0.1em;
+    letter-spacing: 1.3px;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
-  }
-
-  .promotion-offer-banner__button::after {
-    content: '';
-    position: absolute;
-    inset-block: -1px;
-    inset-inline: 0;
   }
 
   .promotion-offer-banner__button:hover {
@@ -181,43 +237,93 @@
   }
 
   .promotion-offer-banner__button:focus-visible {
-    outline: 2px solid var(--promotion-offer-button-background);
+    outline: 2px solid currentcolor;
     outline-offset: 4px;
   }
 
   @media screen and (max-width: 989px) {
+    .promotion-offer-banner-shell {
+      padding: 0 15px 48px;
+    }
+
     .promotion-offer-banner {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
       min-height: var(--promotion-offer-mobile-height);
+      max-width: 360px;
+      margin-inline: auto;
       padding: 32px 24px;
       text-align: center;
     }
 
-    .promotion-offer-banner__inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 24px;
-      width: min(100%, var(--promotion-offer-mobile-content-width));
+    .promotion-offer-banner__media {
+      width: var(--promotion-offer-image-width-mobile);
+      height: var(--promotion-offer-image-width-mobile);
+      max-width: none;
+    }
+
+    .promotion-offer-banner__copy,
+    .promotion-offer-banner__button {
+      grid-column: 1;
     }
 
     .promotion-offer-banner__copy {
       align-items: center;
-      width: 100%;
+      gap: 10px;
     }
 
-    .promotion-offer-banner__eyebrow,
-    .promotion-offer-banner__heading,
-    .promotion-offer-banner__subheading {
-      width: 100%;
+    .promotion-offer-banner__eyebrow {
+      font-size: 15px;
+      letter-spacing: 0.75px;
     }
 
     .promotion-offer-banner__heading {
-      max-width: var(--promotion-offer-mobile-content-width);
+      max-width: 312px;
       font-size: 26px;
+      line-height: 1.2;
+    }
+
+    .promotion-offer-banner__subheading {
+      font-size: 16px;
     }
 
     .promotion-offer-banner__button {
-      justify-self: center;
+      width: auto;
+      min-width: 200px;
+      height: 42px;
+      min-height: 42px;
+      margin-block-start: 14px;
+      font-size: 13px;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .promotion-offer-banner {
+      padding-inline: 24px;
+    }
+
+    .promotion-offer-banner__media {
+      max-width: none;
+    }
+
+    .promotion-offer-banner__eyebrow {
+      font-size: 15px;
+    }
+
+    .promotion-offer-banner__heading {
+      font-size: 26px;
+    }
+
+    .promotion-offer-banner__subheading {
+      font-size: 16px;
+    }
+
+    .promotion-offer-banner__button {
+      min-height: 42px;
+      margin-block-start: 14px;
+      font-size: 13px;
     }
   }
 {% endstylesheet %}
@@ -239,19 +345,48 @@
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow",
-      "default": "Subscribe and Save Up to 10%"
+      "default": "THE CONTOUR COLLECTIONS"
     },
     {
       "type": "text",
       "id": "heading",
       "label": "t:settings.heading",
-      "default": "Glow Naturally. Replenish Regularly. Save Effortlessly."
+      "default": "Recognized With 5,000+ Five-Star Reviews."
     },
     {
       "type": "text",
       "id": "subheading",
       "label": "Subheading",
-      "default": "Unlock exclusive subscriber discounts"
+      "default": "Three-Step Glow Routine"
+    },
+    {
+      "type": "header",
+      "content": "t:content.media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Product stack image"
+    },
+    {
+      "type": "range",
+      "id": "image_width_desktop",
+      "label": "Desktop image width",
+      "min": 160,
+      "max": 440,
+      "step": 10,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "image_width_mobile",
+      "label": "Mobile image width",
+      "min": 80,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "default": 100
     },
     {
       "type": "header",
@@ -262,8 +397,8 @@
       "id": "desktop_height",
       "label": "Desktop height",
       "min": 160,
-      "max": 260,
-      "step": 1,
+      "max": 560,
+      "step": 10,
       "unit": "px",
       "default": 220
     },
@@ -271,31 +406,21 @@
       "type": "range",
       "id": "mobile_height",
       "label": "Mobile height",
-      "min": 200,
-      "max": 300,
-      "step": 1,
+      "min": 320,
+      "max": 860,
+      "step": 10,
       "unit": "px",
-      "default": 259
+      "default": 380
     },
     {
       "type": "range",
       "id": "content_max_width",
       "label": "Content width",
-      "min": 640,
+      "min": 520,
       "max": 900,
-      "step": 4,
+      "step": 10,
       "unit": "px",
-      "default": 848
-    },
-    {
-      "type": "range",
-      "id": "mobile_content_width",
-      "label": "Mobile content width",
-      "min": 300,
-      "max": 390,
-      "step": 1,
-      "unit": "px",
-      "default": 342
+      "default": 660
     },
     {
       "type": "range",
@@ -315,7 +440,7 @@
       "type": "text",
       "id": "button_label",
       "label": "t:settings.label",
-      "default": "Learn More"
+      "default": "SHOP NOW"
     },
     {
       "type": "product",
@@ -347,7 +472,7 @@
       "type": "color",
       "id": "background_color",
       "label": "t:settings.background_color",
-      "default": "#faf8f3"
+      "default": "#fafafa"
     },
     {
       "type": "color",
@@ -360,12 +485,6 @@
       "id": "muted_text_color",
       "label": "Muted text",
       "default": "#404040"
-    },
-    {
-      "type": "color",
-      "id": "subheading_color",
-      "label": "Subheading",
-      "default": "#333333"
     },
     {
       "type": "color",
