@@ -205,28 +205,55 @@
         "padding_bottom": 56
       }
     },
-    "promotion_offer_banner": {
-      "type": "promotion-offer-banner",
+    "featured_in_carousel": {
+      "type": "featured-in-carousel",
+      "blocks": {
+        "vogue": {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "image": "",
+            "bundled_image": "vogue",
+            "logo_text": "VOGUE",
+            "logo_subtext": "",
+            "logo_style": "vogue",
+            "quote": "\"Ogee's <u>Sculpted Face Stick</u> is crafted with the brand's silky-smooth activated botanical primer, creating a smooth base for your products.\""
+          },
+          "blocks": {}
+        },
+        "saatva": {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "image": "",
+            "bundled_image": "saatva",
+            "logo_text": "saatva",
+            "logo_subtext": "Smarter luxury sleep",
+            "logo_style": "saatva",
+            "quote": "\"Ogee's Ogee Hydraganics Indigo Dream Renewal Cream is The Best Overnight Beauty Treatments to Improve Your Skin and Hair While You Sleep.\""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "vogue",
+        "saatva"
+      ],
       "settings": {
-        "eyebrow": "THE CONTOUR COLLECTIONS",
-        "heading": "Recognized With 5,000+ Five-Star Reviews.",
-        "subheading": "Three-Step Glow Routine",
-        "image_width_desktop": 220,
-        "image_width_mobile": 100,
-        "desktop_height": 220,
-        "mobile_height": 380,
-        "content_max_width": 660,
-        "desktop_content_width": 1080,
-        "button_label": "SHOP NOW",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "sculpted-face-stick-bundle-3pc",
-        "open_in_new_tab": false,
-        "background_color": "#fafafa",
+        "accessible_heading": "Featured in press",
+        "eyebrow": "Featured In",
+        "button_label": "All Press",
+        "button_link": "/pages/press",
+        "empty_text": "Add press slides to this section.",
+        "content_width": 1080,
+        "color_scheme": "scheme-1",
+        "panel_background": "#FAFAFA",
         "text_color": "#000000",
         "muted_text_color": "#404040",
         "button_background": "#000000",
-        "button_color": "#ffffff"
+        "button_color": "#FFFFFF",
+        "padding_top": 96,
+        "padding_bottom": 96,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
       }
     },
     "promotion_blocks_QVGxNb": {
@@ -551,11 +578,6 @@
     "hero_crystal_contour",
     "product_carousel_homepage",
     "promotion_offer_banner",
-    "promotion_blocks_QVGxNb",
-    "story_split_jL7AGm",
-    "quiz_cards_homepage",
-    "social_proof_homepage",
-    "result_proof_UtBz6c",
-    "collection_card_section_CkHhCQ"
+    "featured_in_carousel"
   ]
 }

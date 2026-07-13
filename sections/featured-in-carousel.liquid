@@ -1,0 +1,471 @@
+{% liquid
+  assign slide_count = section.blocks.size
+%}
+
+{% if slide_count > 1 %}
+  {% capture controls %}
+    <div class="featured-in-carousel__desktop-arrows">
+      {% render 'slideshow-arrow', action: 'previous', icon_style: 'chevron', icon_shape: 'none' %}
+      {% render 'slideshow-arrow', action: 'next', icon_style: 'chevron', icon_shape: 'none' %}
+    </div>
+
+    {% render 'slideshow-controls',
+      style: 'dots',
+      item_count: slide_count,
+      show_arrows: false,
+      arrows_on_media: false,
+      controls_on_media: false,
+      pagination_position: 'center',
+      icon_style: 'none',
+      shape: 'none',
+      class: 'featured-in-carousel__mobile-progress'
+    %}
+  {% endcapture %}
+{% endif %}
+
+{% capture slides %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+<section
+  class="featured-in-carousel color-{{ section.settings.color_scheme }}"
+  style="
+    --featured-in-padding-top: {{ section.settings.padding_top }}px;
+    --featured-in-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --featured-in-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --featured-in-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --featured-in-content-width: {{ section.settings.content_width }}px;
+    --featured-in-panel-background: {{ section.settings.panel_background }};
+    --featured-in-text-color: {{ section.settings.text_color }};
+    --featured-in-muted-color: {{ section.settings.muted_text_color }};
+    --featured-in-button-background: {{ section.settings.button_background }};
+    --featured-in-button-color: {{ section.settings.button_color }};
+  "
+>
+  <div class="featured-in-carousel__inner">
+    <h2 class="visually-hidden">{{ section.settings.accessible_heading | escape }}</h2>
+
+    {% if slide_count > 0 %}
+      {% render 'slideshow',
+        class: 'featured-in-carousel__slideshow',
+        controls: controls,
+        slides: slides,
+        slide_count: slide_count,
+        show_arrows: false,
+        autoplay: false,
+        infinite: true
+      %}
+    {% else %}
+      <div class="featured-in-carousel__empty">
+        {{ section.settings.empty_text | escape }}
+      </div>
+    {% endif %}
+
+    {% if section.settings.button_label != blank %}
+      <a
+        class="featured-in-carousel__button"
+        {% if section.settings.button_link != blank %}
+          href="{{ section.settings.button_link }}"
+        {% else %}
+          role="link"
+          aria-disabled="true"
+        {% endif %}
+      >
+        {{ section.settings.button_label | escape }}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .featured-in-carousel {
+    padding-block: var(--featured-in-padding-top-mobile) var(--featured-in-padding-bottom-mobile);
+    background: rgb(var(--color-background-rgb));
+    color: var(--featured-in-text-color);
+  }
+
+  .featured-in-carousel__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: calc(var(--featured-in-content-width) + (var(--page-margin) * 2));
+    margin-inline: auto;
+    padding-inline: 15px;
+  }
+
+  .featured-in-carousel__slideshow {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    min-height: 302px;
+  }
+
+  .featured-in-carousel__slideshow slideshow-container,
+  .featured-in-carousel__slideshow slideshow-slides,
+  .featured-in-carousel__slideshow slideshow-slide {
+    min-height: 302px;
+    height: 302px;
+  }
+
+  .featured-in-carousel__slideshow slideshow-container {
+    background: var(--featured-in-panel-background);
+  }
+
+  .featured-in-carousel__slideshow slideshow-slides {
+    scrollbar-width: none;
+  }
+
+  .featured-in-carousel__slideshow slideshow-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .featured-in-carousel__desktop-arrows {
+    display: none;
+  }
+
+  .featured-in-carousel__mobile-progress {
+    position: absolute;
+    right: 24px;
+    bottom: 31px;
+    left: 24px;
+    z-index: var(--layer-raised);
+    min-height: 1px;
+    color: var(--featured-in-text-color);
+    mix-blend-mode: normal;
+  }
+
+  .featured-in-carousel__mobile-progress .slideshow-controls__dots {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: var(--minimum-touch-target);
+    gap: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .featured-in-carousel__mobile-progress .slideshow-controls__dots::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 50%;
+    height: 1px;
+    background: color-mix(in srgb, var(--featured-in-text-color) 16%, transparent);
+    transform: translateY(-50%);
+  }
+
+  .featured-in-carousel__mobile-progress .slideshow-controls__dots li {
+    display: flex;
+    flex: 1 1 0;
+  }
+
+  .featured-in-carousel__mobile-progress .slideshow-controls__dots button {
+    position: relative;
+    width: 100%;
+    height: var(--minimum-touch-target);
+    min-height: var(--minimum-touch-target);
+    margin: -21px 0;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .featured-in-carousel__mobile-progress .slideshow-controls__dots button::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    display: block;
+    width: 100%;
+    height: 1px;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: translateY(-50%);
+  }
+
+  .featured-in-carousel__mobile-progress .slideshow-controls__dots button[aria-selected='true']::after {
+    background: color-mix(in srgb, var(--featured-in-text-color) 58%, transparent);
+  }
+
+  .featured-in-carousel__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 360px;
+    min-height: var(--minimum-touch-target);
+    padding: 0 32px;
+    color: var(--featured-in-button-color);
+    background: var(--featured-in-button-background);
+    border: 1px solid var(--featured-in-button-background);
+    border-radius: 0;
+    font-family: 'Helvetica Neue', Arial, var(--font-body--family);
+    font-size: 0.8125rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .featured-in-carousel__button[aria-disabled='true'] {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  .featured-in-carousel__button:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 3px;
+  }
+
+  .featured-in-carousel__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 302px;
+    background: var(--featured-in-panel-background);
+    color: var(--featured-in-muted-color);
+    font-family: 'Helvetica Neue', Arial, var(--font-body--family);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .featured-in-carousel {
+      padding-block: var(--featured-in-padding-top) var(--featured-in-padding-bottom);
+    }
+
+    .featured-in-carousel__inner {
+      gap: 32px;
+      padding-inline: var(--page-margin);
+    }
+
+    .featured-in-carousel__slideshow {
+      max-width: none;
+      min-height: 0;
+      aspect-ratio: 1080 / 381;
+    }
+
+    .featured-in-carousel__slideshow slideshow-container,
+    .featured-in-carousel__slideshow slideshow-slides,
+    .featured-in-carousel__slideshow slideshow-slide {
+      min-height: 0;
+      height: 100%;
+    }
+
+    .featured-in-carousel__mobile-progress {
+      display: none;
+    }
+
+    .featured-in-carousel__desktop-arrows {
+      position: absolute;
+      top: calc(88.45% - 22px);
+      left: calc(29.63% + ((100% - 29.63%) / 2));
+      z-index: var(--layer-raised);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 90px;
+      min-height: var(--minimum-touch-target);
+      color: var(--featured-in-text-color);
+      transform: translateX(-50%);
+    }
+
+    .featured-in-carousel__desktop-arrows .slideshow-control {
+      width: 40px;
+      height: var(--minimum-touch-target);
+      color: var(--featured-in-text-color);
+    }
+
+    .featured-in-carousel__desktop-arrows .slideshow-control .svg-wrapper,
+    .featured-in-carousel__desktop-arrows .slideshow-control svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .featured-in-carousel__button {
+      width: auto;
+      min-width: 200px;
+      min-height: 42px;
+    }
+
+    .featured-in-carousel__empty {
+      min-height: 381px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured in carousel",
+  "tag": "section",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "_featured-in-press-slide"
+    }
+  ],
+  "max_blocks": 6,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "accessible_heading",
+      "label": "Accessible heading",
+      "default": "Featured in press"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Featured In"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "All Press"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty text",
+      "default": "Add press slides to this section."
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1080
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "panel_background",
+      "label": "Panel background",
+      "default": "#FAFAFA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#404040"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured in carousel",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "bundled_image": "vogue",
+            "logo_text": "VOGUE",
+            "logo_style": "vogue",
+            "quote": "\"Ogee's <u>Sculpted Face Stick</u> is crafted with the brand's silky-smooth activated botanical primer, creating a smooth base for your products.\""
+          }
+        },
+        {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "bundled_image": "saatva",
+            "logo_text": "saatva",
+            "logo_subtext": "Smarter luxury sleep",
+            "logo_style": "saatva",
+            "quote": "\"Ogee's Ogee Hydraganics Indigo Dream Renewal Cream is The Best Overnight Beauty Treatments to Improve Your Skin and Hair While You Sleep.\""
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
