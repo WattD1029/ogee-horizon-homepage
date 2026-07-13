@@ -181,47 +181,6 @@
         "padding_bottom": 56
       }
     },
-    "all_makeup_carousel_homepage": {
-      "type": "all-makeup-carousel",
-      "settings": {
-        "heading": "Effortless Glam, Powered By Nature",
-        "collection": "makeup",
-        "button_label": "All Makeup",
-        "button_link": "",
-        "badge_label": "Best-seller",
-        "badge_count": 2,
-        "subtitle_source": "metafield",
-        "show_vendor": false,
-        "show_reviews": true,
-        "show_swatches": true,
-        "show_wishlist": true,
-        "add_to_cart_label": "Add to cart",
-        "choose_options_label": "Select Shade",
-        "quick_view_label": "View product",
-        "transition_to_main_product": false,
-        "max_products": 12,
-        "products_visible_desktop": 4,
-        "products_visible_mobile": "2",
-        "desktop_content_width": 1080,
-        "desktop_gutter": 0,
-        "mobile_gutter": 15,
-        "card_gap": 8,
-        "card_gap_mobile": 8,
-        "fallback_rating": 5,
-        "fallback_rating_count": 256,
-        "empty_text": "No products found in this collection.",
-        "background_color": "#ffffff",
-        "text_color": "#2f2f2f",
-        "muted_text_color": "#5f5f5f",
-        "image_background_color": "#f0f0ef",
-        "button_background": "#000000",
-        "button_text_color": "#ffffff",
-        "padding_top": 96,
-        "padding_bottom": 48,
-        "padding_top_mobile": 136,
-        "padding_bottom_mobile": 40
-      }
-    },
     "promotion_offer_banner": {
       "type": "promotion-offer-banner",
       "settings": {
@@ -343,6 +302,47 @@
         "button_background": "#000000",
         "button_color": "#ffffff",
         "overlay_color": "rgba(0,0,0,0)"
+      }
+    },
+    "all_makeup_carousel_homepage": {
+      "type": "all-makeup-carousel",
+      "settings": {
+        "heading": "Effortless Glam, Powered By Nature",
+        "collection": "makeup",
+        "button_label": "All Makeup",
+        "button_link": "",
+        "badge_label": "Best-seller",
+        "badge_count": 2,
+        "subtitle_source": "metafield",
+        "show_vendor": false,
+        "show_reviews": true,
+        "show_swatches": true,
+        "show_wishlist": true,
+        "add_to_cart_label": "Add to cart",
+        "choose_options_label": "Select Shade",
+        "quick_view_label": "View product",
+        "transition_to_main_product": false,
+        "max_products": 12,
+        "products_visible_desktop": 4,
+        "products_visible_mobile": "2",
+        "desktop_content_width": 1080,
+        "desktop_gutter": 0,
+        "mobile_gutter": 15,
+        "card_gap": 8,
+        "card_gap_mobile": 8,
+        "fallback_rating": 5,
+        "fallback_rating_count": 256,
+        "empty_text": "No products found in this collection.",
+        "background_color": "#ffffff",
+        "text_color": "#2f2f2f",
+        "muted_text_color": "#5f5f5f",
+        "image_background_color": "#f0f0ef",
+        "button_background": "#000000",
+        "button_text_color": "#ffffff",
+        "padding_top": 96,
+        "padding_bottom": 48,
+        "padding_top_mobile": 136,
+        "padding_bottom_mobile": 40
       }
     },
     "quiz_cards_homepage": {
@@ -535,13 +535,13 @@
   "order": [
     "hero_crystal_contour",
     "product_carousel_homepage",
-    "all_makeup_carousel_homepage",
     "promotion_offer_banner",
-    "subscription_promotion_banner",
     "promotion_blocks_QVGxNb",
     "story_split_jL7AGm",
+    "all_makeup_carousel_homepage",
     "quiz_cards_homepage",
     "social_proof_homepage",
-    "collection_card_section_CkHhCQ"
+    "collection_card_section_CkHhCQ",
+    "subscription_promotion_banner"
   ]
 }
