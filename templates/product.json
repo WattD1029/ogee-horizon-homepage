@@ -9,8 +9,37 @@
  */
  {
   "sections": {
+    "ogee_product_buy": {
+      "type": "ogee-product-buy",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "hero_badge_label": "1 million sold",
+        "shade_finder_link": "",
+        "shade_note": "",
+        "pairs_products": [],
+        "delivery_intro": "Buy it today, receive on",
+        "delivery_days": 5,
+        "delivery_date": "",
+        "trust_bullet_1": "Free shipping over $50",
+        "trust_bullet_2": "Free 30-day returns",
+        "certification_claim_1": "Organic ingredients",
+        "certification_claim_2": "Cruelty free",
+        "certification_claim_3": "Gluten free",
+        "certification_claim_4": "Beyond clean beauty",
+        "details_fallback": "",
+        "ingredients_fallback": "",
+        "how_to_use_fallback": "",
+        "benefits_fallback": "",
+        "shipping_returns_fallback": "",
+        "press_quote": "Making its way into the hearts of skincare fanatics.",
+        "press_logo": "",
+        "fallback_rating": 5,
+        "fallback_rating_count": 500
+      }
+    },
     "main": {
       "type": "product-information",
+      "disabled": true,
       "blocks": {
         "media-gallery": {
           "type": "_product-media-gallery",
@@ -411,6 +440,7 @@
     }
   },
   "order": [
+    "ogee_product_buy",
     "main",
     "product_recommendations_qggXJq"
   ]

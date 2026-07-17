@@ -1,0 +1,74 @@
+{% doc %}
+  Outputs a CSS color fallback for a shade option when Shopify native swatches are empty.
+
+  @param {object} option_value - Product option value
+  @param {object} [variant] - Variant connected to the option value
+
+  @example
+  {% render 'ogee-shade-color', option_value: product_option_value, variant: product_option_value.variant %}
+{% enddoc %}
+
+{%- liquid
+  assign shade_color = variant.metafields.custom.shade_hex.value
+  if shade_color == blank
+    assign shade_color = variant.metafields.custom.swatch_color.value
+  endif
+  if shade_color == blank
+    assign shade_color = variant.metafields.custom.shade_color.value
+  endif
+  if shade_color == blank
+    assign shade_color = variant.metafields.custom.color.value
+  endif
+
+  if shade_color == blank
+    assign shade_handle = option_value.name | default: option_value | handleize
+
+    if shade_handle contains 'camellia'
+      assign shade_color = '#b01636'
+    elsif shade_handle contains 'classic-pink'
+      assign shade_color = '#b01636'
+    elsif shade_handle contains 'rosewood'
+      assign shade_color = '#b98273'
+    elsif shade_handle contains 'rose'
+      assign shade_color = '#a74a55'
+    elsif shade_handle contains 'pink'
+      assign shade_color = '#d58c91'
+    elsif shade_handle contains 'berry'
+      assign shade_color = '#7d2639'
+    elsif shade_handle contains 'plum'
+      assign shade_color = '#6e2f42'
+    elsif shade_handle contains 'mauve'
+      assign shade_color = '#a76572'
+    elsif shade_handle contains 'coral'
+      assign shade_color = '#dc7a5f'
+    elsif shade_handle contains 'peach'
+      assign shade_color = '#e7aa88'
+    elsif shade_handle contains 'nude'
+      assign shade_color = '#c58c74'
+    elsif shade_handle contains 'fair'
+      assign shade_color = '#edc9b6'
+    elsif shade_handle contains 'light'
+      assign shade_color = '#e2b99f'
+    elsif shade_handle contains 'medium'
+      assign shade_color = '#c99372'
+    elsif shade_handle contains 'deep'
+      assign shade_color = '#744531'
+    elsif shade_handle contains 'rich'
+      assign shade_color = '#5a382a'
+    elsif shade_handle contains 'poplar'
+      assign shade_color = '#e8c0ad'
+    elsif shade_handle contains 'birch'
+      assign shade_color = '#efcdb9'
+    elsif shade_handle contains 'beech'
+      assign shade_color = '#d8aa8f'
+    elsif shade_handle contains 'cedar'
+      assign shade_color = '#b77d5b'
+    elsif shade_handle contains 'walnut'
+      assign shade_color = '#74472f'
+    elsif shade_handle contains 'mahogany'
+      assign shade_color = '#5c3527'
+    endif
+  endif
+
+  echo shade_color
+-%}
