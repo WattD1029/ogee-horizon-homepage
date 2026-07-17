@@ -5,6 +5,9 @@
   @param {string} section_id - Parent section ID, used by product form components
   @param {string} [card_id] - Unique suffix for form and element IDs
   @param {string} [badge_label] - Optional badge text
+  @param {boolean} [show_badge] - Whether to render the badge
+  @param {number} [badge_limit] - Maximum card index that should show a badge
+  @param {number} [card_index] - One-based card index for badge limiting
   @param {string} [subtitle_source] - Metafield/fallback source for the subtitle
   @param {boolean} [show_vendor] - Whether to show product vendor/type fallback text
   @param {boolean} [show_reviews] - Whether to render product review rating
@@ -25,7 +28,19 @@
 {% liquid
   assign section_id = section_id | default: 'product-carousel'
   assign card_id = card_id | default: product.id | default: 'placeholder'
-  assign badge_label = badge_label | default: 'New'
+  unless show_badge == false
+    assign show_badge = true
+  endunless
+  if badge_limit != blank and card_index != blank
+    if card_index > badge_limit
+      assign show_badge = false
+    endif
+  endif
+  if badge_label == blank
+    if badge_limit == blank
+      assign badge_label = 'New'
+    endif
+  endif
   assign subtitle_source = subtitle_source | default: 'metafield'
   assign add_to_cart_label = add_to_cart_label | default: 'Add to cart'
   assign choose_options_label = choose_options_label | default: 'Select Shade'
@@ -168,7 +183,7 @@
       data-view-transition-to-main-product
     {% endif %}
   >
-    {% if badge_label != blank %}
+    {% if show_badge and badge_label != blank %}
       <span class="product-carousel-card__badge">{{ badge_label }}</span>
     {% endif %}
 
@@ -280,7 +295,7 @@
         <button
           type="button"
           class="product-carousel-card__shade-scroll product-carousel-card__shade-scroll--previous"
-          aria-label="{{ 'accessibility.previous' | t }}"
+          aria-label="{{ 'accessibility.slideshow_previous' | t }}"
           data-shade-scroll="previous"
         >
           <svg viewBox="0 0 10 10" focusable="false" aria-hidden="true">
@@ -363,7 +378,7 @@
         <button
           type="button"
           class="product-carousel-card__shade-scroll product-carousel-card__shade-scroll--next"
-          aria-label="{{ 'accessibility.next' | t }}"
+          aria-label="{{ 'accessibility.slideshow_next' | t }}"
           data-shade-scroll="next"
         >
           <svg viewBox="0 0 10 10" focusable="false" aria-hidden="true">

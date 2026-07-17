@@ -1,0 +1,225 @@
+{
+  "source": {
+    "figmaUrl": "https://www.figma.com/design/JmK3iquj6j0Z2W4Ofa1pKU/-Site-Redesign--Ogee-PDP-UI-R5?node-id=11348-1230",
+    "figmaFileKey": "JmK3iquj6j0Z2W4Ofa1pKU",
+    "rootNodeId": "11348:1230",
+    "rootName": "26Feb 2025",
+    "desktopArtboard": {
+      "nodeId": "11348:1231",
+      "name": "PDP-UI",
+      "width": 1920,
+      "height": 9165.4091796875
+    },
+    "mobileArtboard": {
+      "nodeId": "11348:1662",
+      "name": "PDP-UI",
+      "width": 390,
+      "height": 8705
+    },
+    "localThumbnail": "docs/design-references/pdp-ui-r5/source/figma-overview-thumbnail.png",
+    "notes": "Verified from live Figma metadata on node 11348:1230. Desktop sections 12 and 13 are nested inside desktop group 11348:1452."
+  },
+  "trackingRules": {
+    "basecamp": "Create one Basecamp card per numbered section.",
+    "timeTracking": "Developers must log active development hours daily inside the project tracking Excel sheet.",
+    "exports": "Each section card should reference desktop and mobile image exports from the matching folder."
+  },
+  "sections": [
+    {
+      "order": 1,
+      "id": "global-header-announcement",
+      "name": "Global header + announcement",
+      "desktopNodeId": "11348:1232",
+      "mobileNodeId": "11348:1663",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/01-global-header-announcement/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/01-global-header-announcement/mobile",
+      "scope": "Announcement bar and header/navigation. Global scope; only include in PDP branch if header changes are required.",
+      "shopifyTargets": [
+        "sections/header-group.json",
+        "sections/header-announcements.liquid",
+        "sections/header.liquid",
+        "snippets/header-row.liquid"
+      ]
+    },
+    {
+      "order": 2,
+      "id": "product-buy-section",
+      "name": "Product buy section",
+      "desktopNodeId": "11348:1235",
+      "mobileNodeId": "11348:1666",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/02-product-buy-section/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/02-product-buy-section/mobile",
+      "scope": "Gallery, product title, subtitle, rating, price, shade picker, subscription selector, ATC, mini trust bullets, pairs-well-with mini carousel, cert icons, accordions, press quote.",
+      "shopifyTargets": [
+        "templates/product.json",
+        "sections/product-information.liquid",
+        "snippets/product-information-content.liquid",
+        "blocks/_product-media-gallery.liquid",
+        "blocks/_product-details.liquid",
+        "blocks/variant-picker.liquid",
+        "blocks/buy-buttons.liquid",
+        "blocks/accordion.liquid"
+      ]
+    },
+    {
+      "order": 3,
+      "id": "complete-the-look-upsell",
+      "name": "Complete the look upsell",
+      "desktopNodeId": "11348:1357",
+      "mobileNodeId": "11348:1780",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/03-complete-the-look-upsell/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/03-complete-the-look-upsell/mobile",
+      "scope": "Multi-item upsell list/cards, subtotal/compare price area, section CTA.",
+      "shopifyTargets": [
+        "sections/product-recommendations.liquid",
+        "blocks/product-recommendations.liquid",
+        "new PDP upsell section if custom subtotal behavior is needed"
+      ]
+    },
+    {
+      "order": 4,
+      "id": "plant-derived-ingredients",
+      "name": "Plant-derived ingredients",
+      "desktopNodeId": "11348:1376",
+      "mobileNodeId": "11348:1797",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/04-plant-derived-ingredients/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/04-plant-derived-ingredients/mobile",
+      "scope": "Ingredient carousel with heading, supporting copy, ingredient cards, arrows/slider.",
+      "shopifyTargets": [
+        "new ingredient-carousel section",
+        "product metafields for ingredient cards if content should be product-specific"
+      ]
+    },
+    {
+      "order": 5,
+      "id": "beyond-clean-certification",
+      "name": "Beyond clean certification",
+      "desktopNodeId": "11348:1388",
+      "mobileNodeId": "11348:1809",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/05-beyond-clean-certification/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/05-beyond-clean-certification/mobile",
+      "scope": "Certification media plus copy, organic standard icons/seals.",
+      "shopifyTargets": [
+        "sections/story-split.liquid",
+        "new certification section if icon grid is required"
+      ]
+    },
+    {
+      "order": 6,
+      "id": "results-stats",
+      "name": "Results stats",
+      "desktopNodeId": "11348:1398",
+      "mobileNodeId": "11348:1817",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/06-results-stats/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/06-results-stats/mobile",
+      "scope": "Results heading, description, stat cards, carousel/slider behavior.",
+      "shopifyTargets": [
+        "sections/result-proof.liquid",
+        "new stats-card block if Figma card design differs from current result-proof section"
+      ]
+    },
+    {
+      "order": 7,
+      "id": "how-to-use",
+      "name": "How to use",
+      "desktopNodeId": "11348:1413",
+      "mobileNodeId": "11348:1828",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/07-how-to-use/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/07-how-to-use/mobile",
+      "scope": "Media/video panel, play control, how-to heading and instructional copy.",
+      "shopifyTargets": [
+        "sections/story-split.liquid",
+        "blocks/video.liquid",
+        "new how-to-use section if video overlay behavior is custom"
+      ]
+    },
+    {
+      "order": 8,
+      "id": "faq",
+      "name": "FAQ",
+      "desktopNodeId": "11348:1420",
+      "mobileNodeId": "11348:1834",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/08-faq/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/08-faq/mobile",
+      "scope": "FAQ accordion list and expanded mobile/desktop states.",
+      "shopifyTargets": [
+        "blocks/accordion.liquid",
+        "blocks/_accordion-row.liquid",
+        "new FAQ section if standalone template positioning is preferred"
+      ]
+    },
+    {
+      "order": 9,
+      "id": "shop-ogee-instagram",
+      "name": "Shop @ogee Instagram",
+      "desktopNodeId": "11348:1430",
+      "mobileNodeId": "11348:1844",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/09-shop-ogee-instagram/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/09-shop-ogee-instagram/mobile",
+      "scope": "Instagram/UGC rail, heading, hashtag/subcopy, slider, optional mobile CTA.",
+      "shopifyTargets": [
+        "sections/social-proof.liquid",
+        "new instagram-ugc section if feed/content source is custom"
+      ]
+    },
+    {
+      "order": 10,
+      "id": "positive-reviews-quote",
+      "name": "Positive reviews quote",
+      "desktopNodeId": "11348:1444",
+      "mobileNodeId": "11348:1852",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/10-positive-reviews-quote/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/10-positive-reviews-quote/mobile",
+      "scope": "Reviews count strip and featured customer quote.",
+      "shopifyTargets": [
+        "new review-quote section",
+        "review app integration if live review data is required"
+      ]
+    },
+    {
+      "order": 11,
+      "id": "full-customer-reviews-widget",
+      "name": "Full customer reviews widget",
+      "desktopNodeId": "11348:1451 and 11348:1452 child 11348:1453",
+      "mobileNodeId": "11348:1859",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/11-full-customer-reviews-widget/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/11-full-customer-reviews-widget/mobile",
+      "scope": "Full reviews summary, rating distribution, filters, customer review list, and show-more behavior.",
+      "shopifyTargets": [
+        "new customer-reviews section",
+        "review app/widget integration if live review data is required",
+        "assets for exported review widget if rebuilding is not required"
+      ]
+    },
+    {
+      "order": 12,
+      "id": "beauty-picks-recommendations",
+      "name": "Beauty picks recommendations",
+      "desktopNodeId": "nested in 11348:1452",
+      "mobileNodeId": "11348:1863",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/12-beauty-picks-recommendations/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/12-beauty-picks-recommendations/mobile",
+      "scope": "\"Beauty Picks Just for You\" recommendations/media card area. Desktop is nested in the bottom review group.",
+      "shopifyTargets": [
+        "sections/product-recommendations.liquid",
+        "sections/product-carousel.liquid",
+        "blocks/_product-card.liquid"
+      ]
+    },
+    {
+      "order": 13,
+      "id": "global-footer-newsletter",
+      "name": "Global footer + newsletter",
+      "desktopNodeId": "nested in 11348:1452",
+      "mobileNodeId": "11348:1866",
+      "desktopFolder": "docs/design-references/pdp-ui-r5/section-images/13-global-footer-newsletter/desktop",
+      "mobileFolder": "docs/design-references/pdp-ui-r5/section-images/13-global-footer-newsletter/mobile",
+      "scope": "Newsletter and footer. Global scope; only include in PDP branch if footer changes are required.",
+      "shopifyTargets": [
+        "sections/footer-group.json",
+        "sections/footer.liquid",
+        "sections/ogee-footer.liquid"
+      ]
+    }
+  ]
+}

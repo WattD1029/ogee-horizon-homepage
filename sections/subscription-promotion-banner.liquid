@@ -1,0 +1,400 @@
+{% liquid
+  assign section_settings = section.settings
+  assign cta_url = section_settings.link
+  assign cta_label = section_settings.button_label | default: 'Learn more'
+  assign cta_aria_label = cta_label
+
+  if section_settings.product != blank
+    assign cta_url = section_settings.product.url
+  endif
+
+  if cta_url == blank
+    if section_settings.fallback_product_handle != blank
+      assign fallback_product_handle = section_settings.fallback_product_handle | handleize
+      assign product_path = routes.root_url | append: '/products/' | append: fallback_product_handle
+      assign cta_url = product_path | replace: '//products/', '/products/'
+    endif
+  endif
+
+  if section_settings.heading != blank
+    assign cta_aria_label = cta_label | append: ': ' | append: section_settings.heading
+  endif
+%}
+
+<div
+  class="subscription-promotion-banner-shell section section--full-width"
+  style="
+    --subscription-promotion-background: {{ section_settings.background_color }};
+    --subscription-promotion-text: {{ section_settings.text_color }};
+    --subscription-promotion-muted: {{ section_settings.muted_text_color }};
+    --subscription-promotion-subheading: {{ section_settings.subheading_color }};
+    --subscription-promotion-button-background: {{ section_settings.button_background }};
+    --subscription-promotion-button-color: {{ section_settings.button_color }};
+    --subscription-promotion-desktop-height: {{ section_settings.desktop_height }}px;
+    --subscription-promotion-mobile-height: {{ section_settings.mobile_height }}px;
+    --subscription-promotion-content-max-width: {{ section_settings.content_max_width }}px;
+    --subscription-promotion-mobile-content-width: {{ section_settings.mobile_content_width }}px;
+    --subscription-promotion-banner-content-width: {{ section_settings.desktop_content_width | default: 1080 }}px;
+  "
+>
+  <div class="subscription-promotion-banner">
+    <div class="subscription-promotion-banner__inner">
+      <div class="subscription-promotion-banner__copy">
+        {% if section_settings.eyebrow != blank %}
+          <p class="subscription-promotion-banner__eyebrow">{{ section_settings.eyebrow | escape }}</p>
+        {% endif %}
+
+        {% if section_settings.heading != blank %}
+          <h2 class="subscription-promotion-banner__heading">{{ section_settings.heading | escape }}</h2>
+        {% endif %}
+
+        {% if section_settings.subheading != blank %}
+          <p class="subscription-promotion-banner__subheading">{{ section_settings.subheading | escape }}</p>
+        {% endif %}
+      </div>
+
+      {% if cta_label != blank %}
+        <a
+          class="subscription-promotion-banner__button"
+          {% if cta_url != blank %}
+            href="{{ cta_url }}"
+          {% else %}
+            role="link"
+            aria-disabled="true"
+          {% endif %}
+          aria-label="{{ cta_aria_label | escape }}"
+          {% if section_settings.open_in_new_tab %}
+            target="_blank"
+            rel="noopener"
+          {% endif %}
+        >
+          {{ cta_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .subscription-promotion-banner-shell {
+    background: var(--subscription-promotion-background);
+  }
+
+  .subscription-promotion-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--subscription-promotion-desktop-height);
+    padding-inline: var(--page-margin);
+    color: var(--subscription-promotion-text);
+    background: var(--subscription-promotion-background);
+  }
+
+  .subscription-promotion-banner__inner {
+    display: grid;
+    grid-template-columns: minmax(0, var(--subscription-promotion-content-max-width)) 200px;
+    column-gap: 32px;
+    align-items: center;
+    width: min(100%, var(--subscription-promotion-banner-content-width));
+  }
+
+  .subscription-promotion-banner__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .subscription-promotion-banner__eyebrow,
+  .subscription-promotion-banner__heading,
+  .subscription-promotion-banner__subheading {
+    margin: 0;
+  }
+
+  .subscription-promotion-banner__eyebrow,
+  .subscription-promotion-banner__subheading,
+  .subscription-promotion-banner__button {
+    font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-style: normal;
+  }
+
+  .subscription-promotion-banner__eyebrow {
+    color: var(--subscription-promotion-muted);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .subscription-promotion-banner__heading {
+    max-width: var(--subscription-promotion-content-max-width);
+    color: var(--subscription-promotion-text);
+    font-family: 'Chronicle Display', Georgia, 'Times New Roman', var(--font-heading--family), serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-wrap: pretty;
+    text-transform: capitalize;
+  }
+
+  .subscription-promotion-banner__subheading {
+    color: var(--subscription-promotion-subheading);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .subscription-promotion-banner__button {
+    position: relative;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    min-width: 200px;
+    height: 42px;
+    min-height: 42px;
+    padding: 0 32px;
+    color: var(--subscription-promotion-button-color);
+    background: var(--subscription-promotion-button-background);
+    border: 1px solid var(--subscription-promotion-button-background);
+    border-radius: 0;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .subscription-promotion-banner__button::after {
+    content: '';
+    position: absolute;
+    inset-block: -1px;
+    inset-inline: 0;
+  }
+
+  .subscription-promotion-banner__button:hover {
+    color: var(--subscription-promotion-button-background);
+    background: transparent;
+  }
+
+  .subscription-promotion-banner__button[aria-disabled='true'] {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .subscription-promotion-banner__button:focus-visible {
+    outline: 2px solid var(--subscription-promotion-button-background);
+    outline-offset: 4px;
+  }
+
+  @media screen and (max-width: 989px) {
+    .subscription-promotion-banner {
+      min-height: var(--subscription-promotion-mobile-height);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .subscription-promotion-banner__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: min(100%, var(--subscription-promotion-mobile-content-width));
+    }
+
+    .subscription-promotion-banner__copy {
+      align-items: center;
+      width: 100%;
+    }
+
+    .subscription-promotion-banner__eyebrow,
+    .subscription-promotion-banner__heading,
+    .subscription-promotion-banner__subheading {
+      width: 100%;
+    }
+
+    .subscription-promotion-banner__heading {
+      max-width: var(--subscription-promotion-mobile-content-width);
+      font-size: 26px;
+    }
+
+    .subscription-promotion-banner__button {
+      justify-self: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Subscription promo",
+  "tag": "section",
+  "class": "subscription-promotion-banner-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Subscribe and Save Up to 10%"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Glow Naturally. Replenish Regularly. Save Effortlessly."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Unlock exclusive subscriber discounts"
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "min": 160,
+      "max": 260,
+      "step": 1,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "min": 200,
+      "max": 300,
+      "step": 1,
+      "unit": "px",
+      "default": 259
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content width",
+      "min": 640,
+      "max": 900,
+      "step": 4,
+      "unit": "px",
+      "default": 848
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_width",
+      "label": "Mobile content width",
+      "min": 300,
+      "max": 390,
+      "step": 1,
+      "unit": "px",
+      "default": 342
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1080
+    },
+    {
+      "type": "header",
+      "content": "t:content.buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:settings.label",
+      "default": "Learn More"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.custom_link"
+    },
+    {
+      "type": "text",
+      "id": "fallback_product_handle",
+      "label": "Fallback product handle",
+      "info": "Used only when no product or custom link is selected."
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#faf8f3"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#404040"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "t:settings.primary_button_background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "t:settings.primary_button_text",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Subscription promo",
+      "category": "t:categories.banners"
+    }
+  ]
+}
+{% endschema %}
