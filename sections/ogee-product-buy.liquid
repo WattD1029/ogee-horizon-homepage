@@ -1810,12 +1810,25 @@
     .ogee-product-buy__inner {
       width: min(350px, calc(100vw - 40px));
       padding-block: 24px 48px;
-      gap: 24px;
+      gap: 20px;
+    }
+
+    .ogee-product-buy__details {
+      display: contents;
+    }
+
+    .ogee-product-buy__details > * {
+      order: 2;
+    }
+
+    .ogee-product-buy__gallery {
+      order: 1;
     }
 
     .ogee-product-buy__header {
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 14px;
+      order: 0;
     }
 
     .ogee-product-buy__title {
