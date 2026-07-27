@@ -280,8 +280,9 @@
       "type": "story-split",
       "name": "Story split",
       "settings": {
-        "video_source": "theme_asset",
-        "theme_video_asset": "ogee-storefront-explanation.mp4",
+        "video_source": "uploaded",
+        "video": "shopify://files/videos/ogee-video1.mp4",
+        "theme_video_asset": "",
         "video_label": "Ogee brand story video",
         "media_title": "",
         "heading": "OGEE Is Where Certified Organic Skincare Meets High Performance. No Compromises.",
