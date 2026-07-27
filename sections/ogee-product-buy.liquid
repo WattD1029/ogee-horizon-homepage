@@ -93,6 +93,7 @@
 
   assign trust_bullet_1 = product_resource.metafields.custom.trust_bullet_1.value | default: section.settings.trust_bullet_1
   assign trust_bullet_2 = product_resource.metafields.custom.trust_bullet_2.value | default: section.settings.trust_bullet_2
+  assign certification_claims = product_resource.metafields.custom.certification_claims.value
   assign certification_claim_1 = product_resource.metafields.custom.certification_claim_1.value | default: section.settings.certification_claim_1
   assign certification_claim_2 = product_resource.metafields.custom.certification_claim_2.value | default: section.settings.certification_claim_2
   assign certification_claim_3 = product_resource.metafields.custom.certification_claim_3.value | default: section.settings.certification_claim_3
@@ -869,26 +870,42 @@
         </section>
       {%- endif -%}
 
-      {%- if certification_claim_1 != blank or certification_claim_2 != blank or certification_claim_3 != blank or certification_claim_4 != blank -%}
+      {%- if certification_claims != blank or certification_claim_1 != blank or certification_claim_2 != blank or certification_claim_3 != blank or certification_claim_4 != blank -%}
         <div class="ogee-product-buy__certifications">
           <div class="ogee-product-buy__cert-copy">
-            {%- if certification_claim_1 != blank -%}<span>{{ certification_claim_1 }}</span>{%- endif -%}
-            {%- if certification_claim_2 != blank -%}<span>{{ certification_claim_2 }}</span>{%- endif -%}
-            {%- if certification_claim_3 != blank -%}<span>{{ certification_claim_3 }}</span>{%- endif -%}
-            {%- if certification_claim_4 != blank -%}<span>{{ certification_claim_4 }}</span>{%- endif -%}
+            {%- if certification_claims != blank -%}
+              {%- for certification_claim in certification_claims -%}
+                {%- assign certification_claim_label = certification_claim.label.value -%}
+                {%- if certification_claim_label != blank -%}<span>{{ certification_claim_label | escape }}</span>{%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- if certification_claim_1 != blank -%}<span>{{ certification_claim_1 | escape }}</span>{%- endif -%}
+              {%- if certification_claim_2 != blank -%}<span>{{ certification_claim_2 | escape }}</span>{%- endif -%}
+              {%- if certification_claim_3 != blank -%}<span>{{ certification_claim_3 | escape }}</span>{%- endif -%}
+              {%- if certification_claim_4 != blank -%}<span>{{ certification_claim_4 | escape }}</span>{%- endif -%}
+            {%- endif -%}
           </div>
           <div class="ogee-product-buy__cert-icons">
-            {%- if certification_claim_1 != blank -%}
-              <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_1 }}</span>
-            {%- endif -%}
-            {%- if certification_claim_2 != blank -%}
-              <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_2 }}</span>
-            {%- endif -%}
-            {%- if certification_claim_3 != blank -%}
-              <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_3 }}</span>
-            {%- endif -%}
-            {%- if certification_claim_4 != blank -%}
-              <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_4 }}</span>
+            {%- if certification_claims != blank -%}
+              {%- for certification_claim in certification_claims -%}
+                {%- assign certification_claim_label = certification_claim.label.value -%}
+                {%- if certification_claim_label != blank -%}
+                  <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_label | escape }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- if certification_claim_1 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_1 | escape }}</span>
+              {%- endif -%}
+              {%- if certification_claim_2 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_2 | escape }}</span>
+              {%- endif -%}
+              {%- if certification_claim_3 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_3 | escape }}</span>
+              {%- endif -%}
+              {%- if certification_claim_4 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_4 | escape }}</span>
+              {%- endif -%}
             {%- endif -%}
           </div>
         </div>
@@ -2231,25 +2248,25 @@
     {
       "type": "text",
       "id": "certification_claim_1",
-      "label": "Certification claim 1",
+      "label": "Fallback certification claim 1",
       "default": "Organic ingredients"
     },
     {
       "type": "text",
       "id": "certification_claim_2",
-      "label": "Certification claim 2",
+      "label": "Fallback certification claim 2",
       "default": "Cruelty free"
     },
     {
       "type": "text",
       "id": "certification_claim_3",
-      "label": "Certification claim 3",
+      "label": "Fallback certification claim 3",
       "default": "Gluten free"
     },
     {
       "type": "text",
       "id": "certification_claim_4",
-      "label": "Certification claim 4",
+      "label": "Fallback certification claim 4",
       "default": "Beyond clean beauty"
     },
     {
