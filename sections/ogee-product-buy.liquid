@@ -1809,12 +1809,13 @@
   @media screen and (max-width: 749px) {
     .ogee-product-buy__inner {
       width: min(350px, calc(100vw - 40px));
-      padding-block-start: 24px;
+      padding-block: 24px 48px;
+      gap: 24px;
     }
 
     .ogee-product-buy__header {
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
+      gap: 14px;
     }
 
     .ogee-product-buy__title {
@@ -1899,25 +1900,26 @@
 
     .ogee-product-buy__shade-heading {
       gap: 12px;
-      align-items: start;
+      align-items: center;
     }
 
     .ogee-product-buy__shade-finder {
-      min-height: 28px;
+      min-width: 128px;
+      min-height: 30px;
       padding-inline: 12px;
       font-size: 10px;
     }
 
     .ogee-product-buy__shade-summary {
       min-height: 58px;
-      grid-template-columns: 28px minmax(0, 1fr) 16px;
+      grid-template-columns: 30px minmax(0, 1fr) 16px;
       gap: 12px;
       padding: 10px;
     }
 
     .ogee-product-buy__shade-summary-swatch {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
     }
 
     .ogee-product-buy__shade-tabs {
@@ -1957,14 +1959,18 @@
     }
 
     .ogee-product-buy__buttons .add-to-cart-button {
-      min-height: 50px;
+      min-height: 52px;
+      border-radius: 10px;
       padding-inline-end: 88px;
       font-size: 12px;
+      letter-spacing: 0;
+      text-transform: none;
     }
 
     .ogee-product-buy__button-price {
       width: 70px;
       font-size: 12px;
+      letter-spacing: 0.7px;
     }
 
     .ogee-product-buy__delivery {
@@ -1982,18 +1988,26 @@
     .ogee-product-buy__pairs {
       margin-inline: -20px;
       border-radius: 0;
-      padding: 16px 20px;
+      padding: 16px 20px 28px;
     }
 
     .ogee-product-buy__pairs-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(150px, 160px);
+      grid-template-columns: none;
       gap: 16px;
-      overflow: auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .ogee-product-buy__pairs-list::-webkit-scrollbar {
+      display: none;
     }
 
     .ogee-product-buy__pair-card {
       grid-template-columns: 1fr;
       align-content: start;
+      gap: 12px;
     }
 
     .ogee-product-buy__pair-check {
