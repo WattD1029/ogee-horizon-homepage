@@ -898,7 +898,9 @@
         <details class="ogee-product-buy__accordion">
           <summary>Product details</summary>
           <div class="rte">
-            {%- if product_resource.description != blank -%}
+            {%- if product_resource.metafields.custom.product_details != blank -%}
+              {{ product_resource.metafields.custom.product_details | metafield_tag }}
+            {%- elsif product_resource.description != blank -%}
               {{ product_resource.description }}
             {%- else -%}
               {{ section.settings.details_fallback }}
@@ -931,7 +933,9 @@
         <details class="ogee-product-buy__accordion">
           <summary>Drug facts</summary>
           <div class="rte">
-            {%- if product_resource.metafields.custom.benefits != blank -%}
+            {%- if product_resource.metafields.custom.drug_facts != blank -%}
+              {{ product_resource.metafields.custom.drug_facts | metafield_tag }}
+            {%- elsif product_resource.metafields.custom.benefits != blank -%}
               {{ product_resource.metafields.custom.benefits | metafield_tag }}
             {%- else -%}
               {{ section.settings.benefits_fallback }}
@@ -2270,7 +2274,7 @@
     {
       "type": "richtext",
       "id": "benefits_fallback",
-      "label": "Benefits fallback"
+      "label": "Drug facts fallback"
     },
     {
       "type": "richtext",
