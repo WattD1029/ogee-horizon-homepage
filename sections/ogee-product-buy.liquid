@@ -133,6 +133,20 @@
   endif
 
   assign press_quote = product_resource.metafields.custom.press_quote.value | default: section.settings.press_quote
+
+  assign initial_gallery_key = 'base'
+  assign current_shade_gallery = current_variant.metafields.custom.shade_gallery.value
+  assign current_shade_image = current_variant.metafields.custom.shade_image.value
+  assign current_shade_image_url = current_variant.metafields.custom.shade_image_url.value
+  if current_variant.id
+    if current_shade_gallery != blank
+      assign initial_gallery_key = current_variant.id | prepend: 'variant-'
+    elsif current_shade_image != blank
+      assign initial_gallery_key = current_variant.id | prepend: 'variant-'
+    elsif current_shade_image_url != blank
+      assign initial_gallery_key = current_variant.id | prepend: 'variant-'
+    endif
+  endif
 -%}
 
 {%- if product_resource != blank -%}
@@ -143,19 +157,30 @@
 
 <section class="ogee-product-buy color-{{ section.settings.color_scheme }}" data-section-id="{{ section.id }}">
   <div class="ogee-product-buy__inner">
-    <ogee-product-media class="ogee-product-buy__gallery">
+    <ogee-product-media class="ogee-product-buy__gallery" data-ogee-initial-gallery-key="{{ initial_gallery_key }}">
       <div class="ogee-product-buy__thumbs" aria-label="Product media thumbnails">
-        {%- assign ogee_media_index = 0 -%}
         {%- for media in product_resource.media limit: 11 -%}
-          {%- assign media_button_label = media.alt | default: media.media_type -%}
+          {%- liquid
+            assign media_button_label = media.alt | default: media.media_type
+            assign is_base_active = false
+            if initial_gallery_key == 'base'
+              if forloop.first
+                assign is_base_active = true
+              endif
+            endif
+          -%}
           <button
             type="button"
-            class="ogee-product-buy__thumb{% if forloop.first %} is-active{% endif %}"
+            class="ogee-product-buy__thumb{% if is_base_active %} is-active{% endif %}"
             data-ogee-media-button
-            data-ogee-media-index="{{ ogee_media_index }}"
+            data-ogee-media-index="{{ forloop.index0 }}"
             data-ogee-media-id="{{ media.id }}"
+            data-ogee-gallery-key="base"
             aria-label="{{ 'accessibility.scroll_to' | t: title: media_button_label }}"
-            aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-current="{% if is_base_active %}true{% else %}false{% endif %}"
+            {% if initial_gallery_key != 'base' %}
+              hidden
+            {% endif %}
           >
             {{
               media.preview_image
@@ -165,9 +190,8 @@
                 sizes: '80px',
                 loading: 'lazy',
                 alt: media.alt
-            }}
+              }}
           </button>
-          {%- assign ogee_media_index = ogee_media_index | plus: 1 -%}
         {%- else -%}
           <div class="ogee-product-buy__thumb ogee-product-buy__thumb--placeholder">
             {{ 'product-apparel-1' | placeholder_svg_tag }}
@@ -196,6 +220,8 @@
             {%- for product_option_value in product_option.values -%}
               {%- liquid
                 assign shade_variant = product_option_value.variant
+                assign shade_gallery = shade_variant.metafields.custom.shade_gallery.value
+                assign shade_gallery_key = shade_variant.id | prepend: 'variant-'
                 assign shade_image = shade_variant.metafields.custom.shade_image.value
                 assign shade_image_url = shade_variant.metafields.custom.shade_image_url.value
                 assign shade_image_alt = product_option_value.name | default: product_resource.title
@@ -208,15 +234,53 @@
                   endif
                 endif
               -%}
-              {%- if has_shade_image -%}
+              {%- if shade_gallery != blank -%}
+                {%- for shade_gallery_image in shade_gallery -%}
+                  {%- liquid
+                    assign is_gallery_thumb_active = false
+                    if shade_gallery_key == initial_gallery_key
+                      if forloop.first
+                        assign is_gallery_thumb_active = true
+                      endif
+                    endif
+                  -%}
+                  <button
+                    type="button"
+                    class="ogee-product-buy__thumb{% if is_gallery_thumb_active %} is-active{% endif %}"
+                    data-ogee-media-button
+                    data-ogee-media-index="{{ forloop.index0 }}"
+                    data-ogee-gallery-key="{{ shade_gallery_key }}"
+                    data-ogee-variant-id="{{ shade_variant.id }}"
+                    aria-label="{{ 'accessibility.scroll_to' | t: title: shade_image_alt }}"
+                    aria-current="{% if is_gallery_thumb_active %}true{% else %}false{% endif %}"
+                    {% if shade_gallery_key != initial_gallery_key %}
+                      hidden
+                    {% endif %}
+                  >
+                    {{
+                      shade_gallery_image
+                      | image_url: width: 160
+                      | image_tag:
+                        widths: '80, 160',
+                        sizes: '80px',
+                        loading: 'lazy',
+                        alt: shade_image_alt
+                    }}
+                  </button>
+                {%- endfor -%}
+              {%- elsif has_shade_image -%}
                 <button
                   type="button"
-                  class="ogee-product-buy__thumb"
+                  class="ogee-product-buy__thumb{% if shade_gallery_key == initial_gallery_key %} is-active{% endif %}"
                   data-ogee-media-button
-                  data-ogee-media-index="{{ ogee_media_index }}"
+                  data-ogee-media-index="0"
+                  data-ogee-gallery-key="{{ shade_gallery_key }}"
                   data-ogee-variant-id="{{ shade_variant.id }}"
                   aria-label="{{ 'accessibility.scroll_to' | t: title: shade_image_alt }}"
-                  aria-current="false"
+                  aria-current="{% if shade_gallery_key == initial_gallery_key %}true{% else %}false{% endif %}"
+                  {% if shade_gallery_key != initial_gallery_key %}
+                    hidden
+                  {% endif %}
                 >
                   {%- if shade_image != blank -%}
                     {{
@@ -238,7 +302,6 @@
                     >
                   {%- endif -%}
                 </button>
-                {%- assign ogee_media_index = ogee_media_index | plus: 1 -%}
               {%- endif -%}
             {%- endfor -%}
             {%- break -%}
@@ -247,20 +310,24 @@
       </div>
 
       <div class="ogee-product-buy__stage">
-        {%- assign ogee_media_index = 0 -%}
         {%- for media in product_resource.media limit: 11 -%}
           {%- liquid
             assign media_loading = 'lazy'
-            if forloop.first
-              assign media_loading = 'eager'
+            assign is_base_panel_active = false
+            if initial_gallery_key == 'base'
+              if forloop.first
+                assign media_loading = 'eager'
+                assign is_base_panel_active = true
+              endif
             endif
           -%}
           <div
             class="ogee-product-buy__media-panel"
             data-ogee-media-panel
-            data-ogee-media-index="{{ ogee_media_index }}"
+            data-ogee-media-index="{{ forloop.index0 }}"
             data-ogee-media-id="{{ media.id }}"
-            {% unless forloop.first %}
+            data-ogee-gallery-key="base"
+            {% unless is_base_panel_active %}
               hidden
             {% endunless %}
           >
@@ -273,7 +340,6 @@
               is_main_product_media: forloop.first
             -%}
           </div>
-          {%- assign ogee_media_index = ogee_media_index | plus: 1 -%}
         {%- else -%}
           <div class="ogee-product-buy__media-panel">
             {{ 'product-apparel-1' | placeholder_svg_tag: 'ogee-product-buy__placeholder' }}
@@ -302,6 +368,8 @@
             {%- for product_option_value in product_option.values -%}
               {%- liquid
                 assign shade_variant = product_option_value.variant
+                assign shade_gallery = shade_variant.metafields.custom.shade_gallery.value
+                assign shade_gallery_key = shade_variant.id | prepend: 'variant-'
                 assign shade_image = shade_variant.metafields.custom.shade_image.value
                 assign shade_image_url = shade_variant.metafields.custom.shade_image_url.value
                 assign shade_image_alt = product_option_value.name | default: product_resource.title
@@ -314,13 +382,50 @@
                   endif
                 endif
               -%}
-              {%- if has_shade_image -%}
+              {%- if shade_gallery != blank -%}
+                {%- for shade_gallery_image in shade_gallery -%}
+                  {%- liquid
+                    assign shade_gallery_loading = 'lazy'
+                    assign is_gallery_panel_active = false
+                    if shade_gallery_key == initial_gallery_key
+                      if forloop.first
+                        assign shade_gallery_loading = 'eager'
+                        assign is_gallery_panel_active = true
+                      endif
+                    endif
+                  -%}
+                  <div
+                    class="ogee-product-buy__media-panel"
+                    data-ogee-media-panel
+                    data-ogee-media-index="{{ forloop.index0 }}"
+                    data-ogee-gallery-key="{{ shade_gallery_key }}"
+                    data-ogee-variant-id="{{ shade_variant.id }}"
+                    {% unless is_gallery_panel_active %}
+                      hidden
+                    {% endunless %}
+                  >
+                    {{
+                      shade_gallery_image
+                      | image_url: width: 1200
+                      | image_tag:
+                        widths: '350, 578, 832, 1200',
+                        sizes: '(min-width: 990px) 578px, calc(100vw - 40px)',
+                        loading: shade_gallery_loading,
+                        class: 'product-media__image',
+                        alt: shade_image_alt
+                    }}
+                  </div>
+                {%- endfor -%}
+              {%- elsif has_shade_image -%}
                 <div
                   class="ogee-product-buy__media-panel"
                   data-ogee-media-panel
-                  data-ogee-media-index="{{ ogee_media_index }}"
+                  data-ogee-media-index="0"
+                  data-ogee-gallery-key="{{ shade_gallery_key }}"
                   data-ogee-variant-id="{{ shade_variant.id }}"
-                  hidden
+                  {% if shade_gallery_key != initial_gallery_key %}
+                    hidden
+                  {% endif %}
                 >
                   {%- if shade_image != blank -%}
                     {{
@@ -344,7 +449,6 @@
                     >
                   {%- endif -%}
                 </div>
-                {%- assign ogee_media_index = ogee_media_index | plus: 1 -%}
               {%- endif -%}
             {%- endfor -%}
             {%- break -%}
@@ -1901,6 +2005,7 @@
       this.buttons = Array.from(this.querySelectorAll('[data-ogee-media-button]'));
       this.panels = Array.from(this.querySelectorAll('[data-ogee-media-panel]'));
       this.progress = this.querySelector('[data-ogee-media-progress]');
+      this.activeGalleryKey = this.dataset.ogeeInitialGalleryKey || this.panels[0]?.dataset.ogeeGalleryKey || 'base';
       this.index = 0;
       this.addEventListener('click', this.handleClick);
       this.update();
@@ -1916,20 +2021,31 @@
       const next = event.target.closest('[data-ogee-media-next]');
 
       if (button) {
+        this.activeGalleryKey = button.dataset.ogeeGalleryKey || this.activeGalleryKey;
         this.selectIndex(Number(button.dataset.ogeeMediaIndex) || 0);
       }
 
       if (previous) {
-        this.selectIndex((this.index - 1 + this.panels.length) % this.panels.length);
+        const panels = this.activePanels();
+        this.selectIndex((this.index - 1 + panels.length) % panels.length);
       }
 
       if (next) {
-        this.selectIndex((this.index + 1) % this.panels.length);
+        const panels = this.activePanels();
+        this.selectIndex((this.index + 1) % panels.length);
       }
     };
 
+    activePanels() {
+      return this.panels.filter((panel) => (panel.dataset.ogeeGalleryKey || 'base') === this.activeGalleryKey);
+    }
+
     selectIndex(index) {
-      this.index = index;
+      const panels = this.activePanels();
+
+      if (panels.length === 0) return;
+
+      this.index = Math.max(0, Math.min(index, panels.length - 1));
       this.update();
     }
 
@@ -1938,6 +2054,7 @@
 
       if (!panel) return false;
 
+      this.activeGalleryKey = panel.dataset.ogeeGalleryKey || this.activeGalleryKey;
       this.selectIndex(Number(panel.dataset.ogeeMediaIndex) || 0);
       return true;
     }
@@ -1947,23 +2064,33 @@
 
       if (!panel) return false;
 
+      this.activeGalleryKey = panel.dataset.ogeeGalleryKey || `variant-${variantId}`;
       this.selectIndex(Number(panel.dataset.ogeeMediaIndex) || 0);
       return true;
     }
 
     update() {
-      this.panels.forEach((panel, index) => {
-        panel.hidden = index !== this.index;
+      const activePanels = this.activePanels();
+      const activePanel = activePanels[this.index] || activePanels[0];
+
+      if (!activePanel) return;
+
+      this.index = activePanels.indexOf(activePanel);
+
+      this.panels.forEach((panel) => {
+        panel.hidden = panel !== activePanel;
       });
 
-      this.buttons.forEach((button, index) => {
-        const active = index === this.index;
+      this.buttons.forEach((button) => {
+        const galleryMatches = (button.dataset.ogeeGalleryKey || 'base') === this.activeGalleryKey;
+        const active = galleryMatches && Number(button.dataset.ogeeMediaIndex) === this.index;
+        button.hidden = !galleryMatches;
         button.classList.toggle('is-active', active);
         button.setAttribute('aria-current', active ? 'true' : 'false');
       });
 
-      if (this.progress && this.panels.length > 0) {
-        this.progress.style.setProperty('--ogee-progress', `${((this.index + 1) / this.panels.length) * 100}%`);
+      if (this.progress && activePanels.length > 0) {
+        this.progress.style.setProperty('--ogee-progress', `${((this.index + 1) / activePanels.length) * 100}%`);
       }
     }
   }
