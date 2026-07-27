@@ -1,7 +1,0 @@
-.tmp/
-.playwright-cli/
-output/
-dist/
-.agents/
-.cursor/
-assets/*.mp4
