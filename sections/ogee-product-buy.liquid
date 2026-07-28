@@ -1,0 +1,2372 @@
+{%- liquid
+  assign product_resource = product
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+
+  assign current_variant = product_resource.selected_or_first_available_variant
+  assign inventory_quantity = current_variant.inventory_quantity
+  assign inventory_policy = current_variant.inventory_policy
+  assign inventory_managed = false
+  assign quantity_rule_soldout = false
+  assign quantity_default = 1
+
+  if current_variant.inventory_management == 'shopify'
+    assign inventory_managed = true
+  endif
+
+  if current_variant
+    if current_variant.quantity_rule.min
+      assign quantity_default = current_variant.quantity_rule.min
+    endif
+
+    if current_variant.quantity_rule.min > current_variant.inventory_quantity
+      if inventory_managed
+        if inventory_policy == 'deny'
+          assign quantity_rule_soldout = true
+        endif
+      endif
+    endif
+  endif
+
+  assign can_add_to_cart = false
+  assign add_to_cart_text = 'products.product.unavailable' | t
+  assign current_variant_price = ''
+  assign subscription_price = ''
+
+  if current_variant
+    assign current_variant_price = current_variant.price | money
+    assign subscription_price = current_variant.price | times: 90 | divided_by: 100 | money
+
+    if current_variant.available
+      assign can_add_to_cart = true
+      assign add_to_cart_text = 'Add to cart'
+    else
+      if inventory_managed
+        if inventory_quantity <= 0
+          if inventory_policy == 'deny'
+            assign add_to_cart_text = 'products.product.sold_out' | t
+          endif
+        endif
+      endif
+
+      if quantity_rule_soldout
+        assign add_to_cart_text = 'products.product.sold_out' | t
+      endif
+    endif
+  endif
+
+  assign subtitle = product_resource.metafields.custom.subtitle.value
+  if subtitle == blank
+    assign subtitle = product_resource.metafields.custom.short_description.value
+  endif
+  if subtitle == blank
+    assign subtitle = product_resource.metafields.descriptors.subtitle.value
+  endif
+  if subtitle == blank
+    assign subtitle = product_resource.type
+  endif
+
+  assign display_weight = product_resource.metafields.custom.display_weight.value
+  if display_weight == blank
+    if current_variant.weight > 0
+      assign display_weight = current_variant.weight | weight_with_unit
+    endif
+  endif
+
+  assign hero_badge = product_resource.metafields.custom.hero_badge_label.value | default: section.settings.hero_badge_label
+  assign rating = product_resource.metafields.reviews.rating.value.rating
+  assign rating_count = product_resource.metafields.reviews.rating_count
+  if rating == blank
+    assign rating = section.settings.fallback_rating
+  endif
+  if rating_count == blank
+    assign rating_count = section.settings.fallback_rating_count
+  endif
+  assign rating_floor = rating | floor
+  assign rating_decimal = rating | modulo: 1
+  assign rounded_star = 0
+  if rating_decimal >= 0.5
+    assign rounded_star = 1
+  endif
+  assign filled_stars = rating_floor | plus: rounded_star
+
+  assign trust_bullet_1 = product_resource.metafields.custom.trust_bullet_1.value | default: section.settings.trust_bullet_1
+  assign trust_bullet_2 = product_resource.metafields.custom.trust_bullet_2.value | default: section.settings.trust_bullet_2
+  assign certification_claims = product_resource.metafields.custom.certification_claims.value
+  assign certification_claim_1 = product_resource.metafields.custom.certification_claim_1.value | default: section.settings.certification_claim_1
+  assign certification_claim_2 = product_resource.metafields.custom.certification_claim_2.value | default: section.settings.certification_claim_2
+  assign certification_claim_3 = product_resource.metafields.custom.certification_claim_3.value | default: section.settings.certification_claim_3
+  assign certification_claim_4 = product_resource.metafields.custom.certification_claim_4.value | default: section.settings.certification_claim_4
+  assign pairs_products = product_resource.metafields.custom.pairs_well_with.value
+  if pairs_products == blank
+    assign pairs_products = section.settings.pairs_products
+  endif
+  assign fallback_pair_product = blank
+  if pairs_products == blank
+    for product_collection in product_resource.collections
+      for collection_product in product_collection.products
+        if collection_product.id != product_resource.id
+          assign fallback_pair_product = collection_product
+          break
+        endif
+      endfor
+      if fallback_pair_product != blank
+        break
+      endif
+    endfor
+  endif
+
+  assign shade_note = product_resource.metafields.custom.shade_undertone.value
+  if shade_note == blank
+    assign shade_note = product_resource.metafields.custom.selected_shade_note.value
+  endif
+  if shade_note == blank
+    assign shade_note = section.settings.shade_note
+  endif
+
+  assign delivery_intro = product_resource.metafields.custom.delivery_intro.value | default: section.settings.delivery_intro
+  assign delivery_seconds = section.settings.delivery_days | times: 86400
+  assign delivery_date = 'now' | date: '%s' | plus: delivery_seconds | date: '%d %B, %Y'
+  assign delivery_date_override = product_resource.metafields.custom.delivery_date.value | default: section.settings.delivery_date
+  if delivery_date_override != blank
+    assign delivery_date = delivery_date_override
+  endif
+
+  assign press_quote = product_resource.metafields.custom.press_quote.value | default: section.settings.press_quote
+
+  assign initial_gallery_key = 'base'
+  assign current_shade_gallery = current_variant.metafields.custom.shade_gallery.value
+  assign current_shade_image = current_variant.metafields.custom.shade_image.value
+  assign current_shade_image_url = current_variant.metafields.custom.shade_image_url.value
+  if current_variant.id
+    if current_shade_gallery != blank
+      assign initial_gallery_key = current_variant.id | prepend: 'variant-'
+    elsif current_shade_image != blank
+      assign initial_gallery_key = current_variant.id | prepend: 'variant-'
+    elsif current_shade_image_url != blank
+      assign initial_gallery_key = current_variant.id | prepend: 'variant-'
+    endif
+  endif
+-%}
+
+{%- if product_resource != blank -%}
+  <script type="application/ld+json">
+    {{ product_resource | structured_data }}
+  </script>
+{%- endif -%}
+
+<section class="ogee-product-buy color-{{ section.settings.color_scheme }}" data-section-id="{{ section.id }}">
+  <div class="ogee-product-buy__inner">
+    <ogee-product-media class="ogee-product-buy__gallery" data-ogee-initial-gallery-key="{{ initial_gallery_key }}">
+      <div class="ogee-product-buy__thumbs" aria-label="Product media thumbnails">
+        {%- for media in product_resource.media limit: 11 -%}
+          {%- liquid
+            assign media_button_label = media.alt | default: media.media_type
+            assign is_base_active = false
+            if initial_gallery_key == 'base'
+              if forloop.first
+                assign is_base_active = true
+              endif
+            endif
+          -%}
+          <button
+            type="button"
+            class="ogee-product-buy__thumb{% if is_base_active %} is-active{% endif %}"
+            data-ogee-media-button
+            data-ogee-media-index="{{ forloop.index0 }}"
+            data-ogee-media-id="{{ media.id }}"
+            data-ogee-gallery-key="base"
+            aria-label="{{ 'accessibility.scroll_to' | t: title: media_button_label }}"
+            aria-current="{% if is_base_active %}true{% else %}false{% endif %}"
+            {% if initial_gallery_key != 'base' %}
+              hidden
+            {% endif %}
+          >
+            {{
+              media.preview_image
+              | image_url: width: 160
+              | image_tag:
+                widths: '80, 160',
+                sizes: '80px',
+                loading: 'lazy',
+                alt: media.alt
+              }}
+          </button>
+        {%- else -%}
+          <div class="ogee-product-buy__thumb ogee-product-buy__thumb--placeholder">
+            {{ 'product-apparel-1' | placeholder_svg_tag }}
+          </div>
+        {%- endfor -%}
+
+        {%- for product_option in product_resource.options_with_values -%}
+          {%- liquid
+            assign option_name_downcase = product_option.name | downcase
+            assign swatch_count = product_option.values | map: 'swatch' | compact | size
+            assign is_swatch_option = false
+            if swatch_count > 0
+              assign is_swatch_option = true
+            endif
+            if option_name_downcase contains 'shade'
+              assign is_swatch_option = true
+            endif
+            if option_name_downcase contains 'color'
+              assign is_swatch_option = true
+            endif
+            if option_name_downcase contains 'colour'
+              assign is_swatch_option = true
+            endif
+          -%}
+          {%- if is_swatch_option -%}
+            {%- for product_option_value in product_option.values -%}
+              {%- liquid
+                assign shade_variant = product_option_value.variant
+                assign shade_gallery = shade_variant.metafields.custom.shade_gallery.value
+                assign shade_gallery_key = shade_variant.id | prepend: 'variant-'
+                assign shade_image = shade_variant.metafields.custom.shade_image.value
+                assign shade_image_url = shade_variant.metafields.custom.shade_image_url.value
+                assign shade_image_alt = product_option_value.name | default: product_resource.title
+                assign has_shade_image = false
+                if shade_variant.id
+                  if shade_image != blank
+                    assign has_shade_image = true
+                  elsif shade_image_url != blank
+                    assign has_shade_image = true
+                  endif
+                endif
+              -%}
+              {%- if shade_gallery != blank -%}
+                {%- for shade_gallery_image in shade_gallery -%}
+                  {%- liquid
+                    assign is_gallery_thumb_active = false
+                    if shade_gallery_key == initial_gallery_key
+                      if forloop.first
+                        assign is_gallery_thumb_active = true
+                      endif
+                    endif
+                  -%}
+                  <button
+                    type="button"
+                    class="ogee-product-buy__thumb{% if is_gallery_thumb_active %} is-active{% endif %}"
+                    data-ogee-media-button
+                    data-ogee-media-index="{{ forloop.index0 }}"
+                    data-ogee-gallery-key="{{ shade_gallery_key }}"
+                    data-ogee-variant-id="{{ shade_variant.id }}"
+                    aria-label="{{ 'accessibility.scroll_to' | t: title: shade_image_alt }}"
+                    aria-current="{% if is_gallery_thumb_active %}true{% else %}false{% endif %}"
+                    {% if shade_gallery_key != initial_gallery_key %}
+                      hidden
+                    {% endif %}
+                  >
+                    {{
+                      shade_gallery_image
+                      | image_url: width: 160
+                      | image_tag:
+                        widths: '80, 160',
+                        sizes: '80px',
+                        loading: 'lazy',
+                        alt: shade_image_alt
+                    }}
+                  </button>
+                {%- endfor -%}
+              {%- elsif has_shade_image -%}
+                <button
+                  type="button"
+                  class="ogee-product-buy__thumb{% if shade_gallery_key == initial_gallery_key %} is-active{% endif %}"
+                  data-ogee-media-button
+                  data-ogee-media-index="0"
+                  data-ogee-gallery-key="{{ shade_gallery_key }}"
+                  data-ogee-variant-id="{{ shade_variant.id }}"
+                  aria-label="{{ 'accessibility.scroll_to' | t: title: shade_image_alt }}"
+                  aria-current="{% if shade_gallery_key == initial_gallery_key %}true{% else %}false{% endif %}"
+                  {% if shade_gallery_key != initial_gallery_key %}
+                    hidden
+                  {% endif %}
+                >
+                  {%- if shade_image != blank -%}
+                    {{
+                      shade_image
+                      | image_url: width: 160
+                      | image_tag:
+                        widths: '80, 160',
+                        sizes: '80px',
+                        loading: 'lazy',
+                        alt: shade_image_alt
+                    }}
+                  {%- else -%}
+                    <img
+                      src="{{ shade_image_url | escape }}"
+                      alt="{{ shade_image_alt | escape }}"
+                      width="80"
+                      height="80"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="ogee-product-buy__stage">
+        {%- for media in product_resource.media limit: 11 -%}
+          {%- liquid
+            assign media_loading = 'lazy'
+            assign is_base_panel_active = false
+            if initial_gallery_key == 'base'
+              if forloop.first
+                assign media_loading = 'eager'
+                assign is_base_panel_active = true
+              endif
+            endif
+          -%}
+          <div
+            class="ogee-product-buy__media-panel"
+            data-ogee-media-panel
+            data-ogee-media-index="{{ forloop.index0 }}"
+            data-ogee-media-id="{{ media.id }}"
+            data-ogee-gallery-key="base"
+            {% unless is_base_panel_active %}
+              hidden
+            {% endunless %}
+          >
+            {%- render 'product-media',
+              media: media,
+              preview_image_only: true,
+              loading: media_loading,
+              sizes: '(min-width: 990px) 578px, calc(100vw - 40px)',
+              widths: '350, 578, 832, 1200',
+              is_main_product_media: forloop.first
+            -%}
+          </div>
+        {%- else -%}
+          <div class="ogee-product-buy__media-panel">
+            {{ 'product-apparel-1' | placeholder_svg_tag: 'ogee-product-buy__placeholder' }}
+          </div>
+        {%- endfor -%}
+
+        {%- for product_option in product_resource.options_with_values -%}
+          {%- liquid
+            assign option_name_downcase = product_option.name | downcase
+            assign swatch_count = product_option.values | map: 'swatch' | compact | size
+            assign is_swatch_option = false
+            if swatch_count > 0
+              assign is_swatch_option = true
+            endif
+            if option_name_downcase contains 'shade'
+              assign is_swatch_option = true
+            endif
+            if option_name_downcase contains 'color'
+              assign is_swatch_option = true
+            endif
+            if option_name_downcase contains 'colour'
+              assign is_swatch_option = true
+            endif
+          -%}
+          {%- if is_swatch_option -%}
+            {%- for product_option_value in product_option.values -%}
+              {%- liquid
+                assign shade_variant = product_option_value.variant
+                assign shade_gallery = shade_variant.metafields.custom.shade_gallery.value
+                assign shade_gallery_key = shade_variant.id | prepend: 'variant-'
+                assign shade_image = shade_variant.metafields.custom.shade_image.value
+                assign shade_image_url = shade_variant.metafields.custom.shade_image_url.value
+                assign shade_image_alt = product_option_value.name | default: product_resource.title
+                assign has_shade_image = false
+                if shade_variant.id
+                  if shade_image != blank
+                    assign has_shade_image = true
+                  elsif shade_image_url != blank
+                    assign has_shade_image = true
+                  endif
+                endif
+              -%}
+              {%- if shade_gallery != blank -%}
+                {%- for shade_gallery_image in shade_gallery -%}
+                  {%- liquid
+                    assign shade_gallery_loading = 'lazy'
+                    assign is_gallery_panel_active = false
+                    if shade_gallery_key == initial_gallery_key
+                      if forloop.first
+                        assign shade_gallery_loading = 'eager'
+                        assign is_gallery_panel_active = true
+                      endif
+                    endif
+                  -%}
+                  <div
+                    class="ogee-product-buy__media-panel"
+                    data-ogee-media-panel
+                    data-ogee-media-index="{{ forloop.index0 }}"
+                    data-ogee-gallery-key="{{ shade_gallery_key }}"
+                    data-ogee-variant-id="{{ shade_variant.id }}"
+                    {% unless is_gallery_panel_active %}
+                      hidden
+                    {% endunless %}
+                  >
+                    {{
+                      shade_gallery_image
+                      | image_url: width: 1200
+                      | image_tag:
+                        widths: '350, 578, 832, 1200',
+                        sizes: '(min-width: 990px) 578px, calc(100vw - 40px)',
+                        loading: shade_gallery_loading,
+                        class: 'product-media__image',
+                        alt: shade_image_alt
+                    }}
+                  </div>
+                {%- endfor -%}
+              {%- elsif has_shade_image -%}
+                <div
+                  class="ogee-product-buy__media-panel"
+                  data-ogee-media-panel
+                  data-ogee-media-index="0"
+                  data-ogee-gallery-key="{{ shade_gallery_key }}"
+                  data-ogee-variant-id="{{ shade_variant.id }}"
+                  {% if shade_gallery_key != initial_gallery_key %}
+                    hidden
+                  {% endif %}
+                >
+                  {%- if shade_image != blank -%}
+                    {{
+                      shade_image
+                      | image_url: width: 1200
+                      | image_tag:
+                        widths: '350, 578, 832, 1200',
+                        sizes: '(min-width: 990px) 578px, calc(100vw - 40px)',
+                        loading: 'lazy',
+                        class: 'product-media__image',
+                        alt: shade_image_alt
+                    }}
+                  {%- else -%}
+                    <img
+                      src="{{ shade_image_url | escape }}"
+                      alt="{{ shade_image_alt | escape }}"
+                      width="1200"
+                      height="1200"
+                      class="product-media__image"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if hero_badge != blank -%}
+          <div class="ogee-product-buy__badge">{{ hero_badge }}</div>
+        {%- endif -%}
+
+        {%- if product_resource.media.size > 1 -%}
+          <button
+            type="button"
+            class="ogee-product-buy__step ogee-product-buy__step--prev"
+            data-ogee-media-prev
+            aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+          >
+            {{ 'icon-chevron-left.svg' | inline_asset_content }}
+          </button>
+          <button
+            type="button"
+            class="ogee-product-buy__step ogee-product-buy__step--next"
+            data-ogee-media-next
+            aria-label="{{ 'accessibility.slideshow_next' | t }}"
+          >
+            {{ 'icon-chevron-right.svg' | inline_asset_content }}
+          </button>
+          <div class="ogee-product-buy__progress" aria-hidden="true">
+            <span data-ogee-media-progress></span>
+          </div>
+        {%- endif -%}
+      </div>
+    </ogee-product-media>
+
+    <div class="ogee-product-buy__details">
+      <div class="ogee-product-buy__header">
+        <div class="ogee-product-buy__title-wrap">
+          <h1 class="ogee-product-buy__title">{{ product_resource.title | escape }}</h1>
+          {%- if subtitle != blank -%}
+            <p class="ogee-product-buy__subtitle">{{ subtitle }}</p>
+          {%- endif -%}
+          <div class="ogee-product-buy__meta">
+            {%- if display_weight != blank -%}
+              <span>{{ display_weight }}</span>
+            {%- endif -%}
+            {%- if rating != blank and rating_count != blank -%}
+              <span class="ogee-product-buy__divider" aria-hidden="true"></span>
+              <span class="ogee-product-buy__rating" aria-label="{{ 'accessibility.rating' | t: rating: rating }}">
+                <span class="ogee-product-buy__stars" aria-hidden="true">
+                  {%- for star in (1..5) -%}
+                    <svg class="ogee-product-buy__star{% if star <= filled_stars %} is-filled{% endif %}" viewBox="0 0 32 32" focusable="false">
+                      <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                    </svg>
+                  {%- endfor -%}
+                </span>
+                <span>{{ rating_count }} {{ 'content.reviews' | t }}</span>
+              </span>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <product-price
+          class="ogee-product-buy__price"
+          data-block-id="ogee-product-buy-price-{{ section.id }}"
+          data-product-id="{{ product_resource.id }}"
+        >
+          {%- render 'price',
+            show_unit_price: true,
+            product_resource: product_resource,
+            show_sale_price_first: true
+          -%}
+        </product-price>
+      </div>
+
+      {%- unless product_resource.has_only_default_variant -%}
+        <variant-picker
+          class="ogee-product-buy__variant-picker"
+          data-section-id="{{ section.id }}"
+          data-product-id="{{ product_resource.id }}"
+          data-product-url="{{ product_resource.url }}"
+          data-template-product-match="true"
+          ref="mainVariantPicker"
+          {% if request.visual_preview_mode %}
+            data-shopify-visual-preview
+          {% endif %}
+        >
+          <form class="ogee-product-buy__variant-form">
+            {%- for product_option in product_resource.options_with_values -%}
+              {%- liquid
+                assign option_name_downcase = product_option.name | downcase
+                assign swatch_count = product_option.values | map: 'swatch' | compact | size
+                assign is_swatch_option = false
+                if swatch_count > 0
+                  assign is_swatch_option = true
+                endif
+                if option_name_downcase contains 'shade'
+                  assign is_swatch_option = true
+                endif
+                if option_name_downcase contains 'color'
+                  assign is_swatch_option = true
+                endif
+                if option_name_downcase contains 'colour'
+                  assign is_swatch_option = true
+                endif
+                assign fieldset_index = forloop.index0
+              -%}
+              <fieldset
+                class="ogee-product-buy__option{% if is_swatch_option %} ogee-product-buy__option--swatches{% endif %}"
+                data-fieldset-index="{{ fieldset_index }}"
+                ref="fieldsets[]"
+              >
+                {%- if is_swatch_option -%}
+                  <legend class="ogee-product-buy__shade-heading">
+                    <span>Select {{ product_option.name | downcase }} to view details</span>
+                    {%- if section.settings.shade_finder_link != blank -%}
+                      <a class="ogee-product-buy__shade-finder" href="{{ section.settings.shade_finder_link }}">
+                        Find my shades
+                      </a>
+                    {%- else -%}
+                      <button class="ogee-product-buy__shade-finder" type="button">
+                        Find my shades
+                      </button>
+                    {%- endif -%}
+                  </legend>
+
+                  <div class="ogee-product-buy__shade-summary">
+                    <span
+                      class="ogee-product-buy__shade-summary-swatch"
+                      data-ogee-shade-summary-swatch
+                      aria-hidden="true"
+                    >
+                      {%- for product_option_value in product_option.values -%}
+                        {%- if product_option_value.selected -%}
+                          {%- assign featured_media = product_option_value.variant.featured_media -%}
+                          {%- capture shade_color_override -%}
+                            {%- render 'ogee-shade-color',
+                              option_value: product_option_value,
+                              variant: product_option_value.variant
+                            -%}
+                          {%- endcapture -%}
+                          {%- assign shade_color_override = shade_color_override | strip -%}
+                          {%- render 'swatch',
+                            swatch: product_option_value.swatch,
+                            variant_image: featured_media,
+                            color_override: shade_color_override,
+                            mode: 'unscaled',
+                            label: product_option_value.name
+                          -%}
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </span>
+                    <span class="ogee-product-buy__shade-summary-copy">
+                      <span data-ogee-shade-summary-label>{{ product_option.selected_value | escape }}</span>
+                      {%- if shade_note != blank -%}
+                        <span>{{ shade_note }}</span>
+                      {%- endif -%}
+                    </span>
+                    <span class="ogee-product-buy__shade-summary-icon" aria-hidden="true">
+                      {{ 'icon-chevron-right.svg' | inline_asset_content }}
+                    </span>
+                  </div>
+
+                  <div class="ogee-product-buy__shade-tabs" aria-label="Shade families">
+                    <button type="button" class="is-active" aria-pressed="true">All</button>
+                    <button type="button" aria-pressed="false">Light</button>
+                    <button type="button" aria-pressed="false">Medium</button>
+                    <button type="button" aria-pressed="false">Deep</button>
+                  </div>
+                {%- else -%}
+                  <legend>
+                    <span>{{ product_option.name | escape }}</span>
+                    <span class="ogee-product-buy__selected-value">
+                      Selected: <span data-ogee-selected-value>{{ product_option.selected_value }}</span>
+                    </span>
+                  </legend>
+                {%- endif -%}
+
+                <div class="ogee-product-buy__option-values{% if is_swatch_option %} ogee-product-buy__option-values--swatches{% endif %}">
+                  {%- for product_option_value in product_option.values -%}
+                    <label class="ogee-product-buy__option-label{% if is_swatch_option %} ogee-product-buy__swatch-label{% endif %}">
+                      <input
+                        type="radio"
+                        name="{{ product_option.name | escape }}-{{ section.id }}-{{ product_resource.id }}"
+                        value="{{ product_option_value | escape }}"
+                        aria-label="{{ product_option_value.name | escape }}{% if product_option_value.available == false %} - {{ 'products.product.sold_out' | t }}{% endif %}"
+                        {% if product_option_value.available == false %}
+                          aria-disabled="true"
+                        {% endif %}
+                        data-previous-checked="false"
+                        data-fieldset-index="{{ fieldset_index }}"
+                        data-input-index="{{ forloop.index0 }}"
+                        data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                        data-option-value-id="{{ product_option_value.id }}"
+                        data-option-available="{{ product_option_value.available }}"
+                        data-connected-product-url="{{ product_option_value.product_url }}"
+                        {% if product_option_value.variant.id %}
+                          data-variant-id="{{ product_option_value.variant.id }}"
+                          data-ogee-variant-id="{{ product_option_value.variant.id }}"
+                        {% endif %}
+                        {% if product_option_value.variant.featured_media.id %}
+                          data-ogee-variant-media-id="{{ product_option_value.variant.featured_media.id }}"
+                        {% endif %}
+                        {% if product_option_value.selected %}
+                          data-current-checked="true"
+                          checked
+                        {% else %}
+                          data-current-checked="false"
+                        {% endif %}
+                      >
+                      {%- if is_swatch_option -%}
+                        {%- assign featured_media = product_option_value.variant.featured_media -%}
+                        {%- capture shade_color_override -%}
+                          {%- render 'ogee-shade-color',
+                            option_value: product_option_value,
+                            variant: product_option_value.variant
+                          -%}
+                        {%- endcapture -%}
+                        {%- assign shade_color_override = shade_color_override | strip -%}
+                        {%- render 'swatch',
+                          swatch: product_option_value.swatch,
+                          variant_image: featured_media,
+                          color_override: shade_color_override,
+                          mode: 'unscaled',
+                          label: product_option_value.name
+                        -%}
+                      {%- else -%}
+                        <span>{{ product_option_value | escape }}</span>
+                      {%- endif -%}
+                    </label>
+                  {%- endfor -%}
+                </div>
+              </fieldset>
+            {%- endfor -%}
+            <script type="application/json">
+              {{ current_variant | json }}
+            </script>
+          </form>
+        </variant-picker>
+      {%- endunless -%}
+
+      <product-form-component
+        id="OgeeProductBuyForm-{{ section.id }}"
+        class="ogee-product-buy__form"
+        data-section-id="{{ section.id }}"
+        data-product-id="{{ product_resource.id }}"
+        data-product-url="{{ product_resource.url }}"
+        data-quantity-default="{{ quantity_default }}"
+        data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+        on:submit="/handleSubmit"
+      >
+        <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
+        {%- assign product_form_id = 'OgeeProductBuy-ProductForm-' | append: section.id -%}
+        {%- assign submit_button_id = 'OgeeProductBuy-SubmitButton-' | append: section.id -%}
+        {%- form 'product', product_resource, id: product_form_id, data-type: 'add-to-cart-form' -%}
+          <input type="hidden" name="id" ref="variantId" value="{{ current_variant.id }}">
+
+          {%- if product_resource.selling_plan_groups.size > 0 -%}
+            <fieldset class="ogee-product-buy__purchase-options">
+              <legend>Purchase options</legend>
+              {%- unless product_resource.requires_selling_plan -%}
+                <label class="ogee-product-buy__purchase-option">
+                  <input type="radio" name="selling_plan" value="" checked>
+                  <span>One-time purchase</span>
+                </label>
+              {%- endunless -%}
+              {%- assign selling_plan_index = 0 -%}
+              {%- for selling_plan_group in product_resource.selling_plan_groups -%}
+                {%- for selling_plan in selling_plan_group.selling_plans -%}
+                  {%- assign selling_plan_index = selling_plan_index | plus: 1 -%}
+                  <label class="ogee-product-buy__purchase-option">
+                    <input
+                      type="radio"
+                      name="selling_plan"
+                      value="{{ selling_plan.id }}"
+                      {% if product_resource.requires_selling_plan %}
+                        {% if selling_plan_index == 1 %}
+                          checked
+                        {% endif %}
+                      {% endif %}
+                    >
+                    <span>{{ selling_plan.name | escape }}</span>
+                  </label>
+                {%- endfor -%}
+              {%- endfor -%}
+            </fieldset>
+          {%- else -%}
+            <div class="ogee-product-buy__subscription" aria-label="Subscription offer">
+              <span class="ogee-product-buy__subscription-box" aria-hidden="true"></span>
+              <span class="ogee-product-buy__subscription-copy">
+                <span>
+                  Subscribe
+                  <span class="ogee-product-buy__subscription-help" aria-hidden="true">?</span>
+                </span>
+                <span>Save 10% + free U.S. shipping</span>
+              </span>
+              {%- if current_variant_price != blank -%}
+                <span class="ogee-product-buy__subscription-price">
+                  <span>{{ subscription_price }}</span>
+                  <span>{{ current_variant_price }}</span>
+                </span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          <span class="ogee-product-buy__form-error hidden" ref="addToCartTextError">
+            <span class="svg-wrapper">{{ 'icon-error.svg' | inline_asset_content }}</span>
+          </span>
+
+          <div class="ogee-product-buy__buttons product-form-buttons" ref="productFormButtons">
+            {%- render 'add-to-cart-button',
+              id: submit_button_id,
+              class: 'ogee-product-buy__add-button',
+              can_add_to_cart: can_add_to_cart,
+              product: product_resource,
+              add_to_cart_text: add_to_cart_text,
+              data_testid: 'ogee-product-buy-add-to-cart'
+            -%}
+            {%- if current_variant_price != blank -%}
+              <span class="ogee-product-buy__button-price" aria-hidden="true">{{ current_variant_price }}</span>
+            {%- endif -%}
+          </div>
+        {%- endform -%}
+      </product-form-component>
+
+      {%- if delivery_intro != blank and delivery_date != blank -%}
+        <p class="ogee-product-buy__delivery">
+          {{ delivery_intro }}
+          <strong>{{ delivery_date }}</strong>
+        </p>
+      {%- endif -%}
+
+      {%- if trust_bullet_1 != blank or trust_bullet_2 != blank -%}
+        <div class="ogee-product-buy__trust">
+          {%- if trust_bullet_1 != blank -%}
+            <p>
+              <span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>
+              {{ trust_bullet_1 }}
+            </p>
+          {%- endif -%}
+          {%- if trust_bullet_2 != blank -%}
+            <p>
+              <span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>
+              {{ trust_bullet_2 }}
+            </p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if pairs_products != blank or fallback_pair_product != blank -%}
+        <section class="ogee-product-buy__pairs" aria-labelledby="OgeePairsHeading-{{ section.id }}">
+          <div class="ogee-product-buy__pairs-head">
+            <h2 id="OgeePairsHeading-{{ section.id }}">Pair it with</h2>
+            <span class="ogee-product-buy__pairs-arrows" aria-hidden="true">
+              {{ 'icon-chevron-left.svg' | inline_asset_content }}
+              {{ 'icon-chevron-right.svg' | inline_asset_content }}
+            </span>
+          </div>
+          <div class="ogee-product-buy__pairs-list">
+            {%- for pair_product in pairs_products limit: 4 -%}
+              {%- assign pair_subtitle = pair_product.metafields.custom.subtitle.value | default: pair_product.type -%}
+              <a class="ogee-product-buy__pair-card" href="{{ pair_product.url }}">
+                <span class="ogee-product-buy__pair-image">
+                  {%- if pair_product.featured_image -%}
+                    {%- assign pair_image_alt = pair_product.featured_image.alt | default: pair_product.title -%}
+                    {{
+                      pair_product.featured_image
+                      | image_url: width: 320
+                      | image_tag:
+                        widths: '147, 220, 320',
+                        sizes: '(min-width: 750px) 96px, 147px',
+                        loading: 'lazy',
+                        alt: pair_image_alt
+                    }}
+                  {%- else -%}
+                    {{ 'product-apparel-1' | placeholder_svg_tag }}
+                  {%- endif -%}
+                </span>
+                <span class="ogee-product-buy__pair-info">
+                  <span class="ogee-product-buy__pair-title">{{ pair_product.title | escape }}</span>
+                  {%- if pair_subtitle != blank -%}
+                    <span class="ogee-product-buy__pair-subtitle">{{ pair_subtitle }}</span>
+                  {%- endif -%}
+                  <span class="ogee-product-buy__pair-price">{%- render 'price', product_resource: pair_product, show_sale_price_first: true -%}</span>
+                </span>
+                <span class="ogee-product-buy__pair-check" aria-hidden="true"></span>
+              </a>
+            {%- endfor -%}
+            {%- if pairs_products == blank and fallback_pair_product != blank -%}
+              {%- assign pair_subtitle = fallback_pair_product.metafields.custom.subtitle.value | default: fallback_pair_product.type -%}
+              <a class="ogee-product-buy__pair-card" href="{{ fallback_pair_product.url }}">
+                <span class="ogee-product-buy__pair-image">
+                  {%- if fallback_pair_product.featured_image -%}
+                    {%- assign pair_image_alt = fallback_pair_product.featured_image.alt | default: fallback_pair_product.title -%}
+                    {{
+                      fallback_pair_product.featured_image
+                      | image_url: width: 320
+                      | image_tag:
+                        widths: '147, 220, 320',
+                        sizes: '(min-width: 750px) 96px, 147px',
+                        loading: 'lazy',
+                        alt: pair_image_alt
+                    }}
+                  {%- else -%}
+                    {{ 'product-apparel-1' | placeholder_svg_tag }}
+                  {%- endif -%}
+                </span>
+                <span class="ogee-product-buy__pair-info">
+                  <span class="ogee-product-buy__pair-title">{{ fallback_pair_product.title | escape }}</span>
+                  {%- if pair_subtitle != blank -%}
+                    <span class="ogee-product-buy__pair-subtitle">{{ pair_subtitle }}</span>
+                  {%- endif -%}
+                  <span class="ogee-product-buy__pair-price">{%- render 'price', product_resource: fallback_pair_product, show_sale_price_first: true -%}</span>
+                </span>
+                <span class="ogee-product-buy__pair-check" aria-hidden="true"></span>
+              </a>
+            {%- endif -%}
+          </div>
+        </section>
+      {%- endif -%}
+
+      {%- if certification_claims != blank or certification_claim_1 != blank or certification_claim_2 != blank or certification_claim_3 != blank or certification_claim_4 != blank -%}
+        <div class="ogee-product-buy__certifications">
+          <div class="ogee-product-buy__cert-copy">
+            {%- if certification_claims != blank -%}
+              {%- for certification_claim in certification_claims -%}
+                {%- assign certification_claim_label = certification_claim.label.value -%}
+                {%- if certification_claim_label != blank -%}<span>{{ certification_claim_label | escape }}</span>{%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- if certification_claim_1 != blank -%}<span>{{ certification_claim_1 | escape }}</span>{%- endif -%}
+              {%- if certification_claim_2 != blank -%}<span>{{ certification_claim_2 | escape }}</span>{%- endif -%}
+              {%- if certification_claim_3 != blank -%}<span>{{ certification_claim_3 | escape }}</span>{%- endif -%}
+              {%- if certification_claim_4 != blank -%}<span>{{ certification_claim_4 | escape }}</span>{%- endif -%}
+            {%- endif -%}
+          </div>
+          <div class="ogee-product-buy__cert-icons">
+            {%- if certification_claims != blank -%}
+              {%- for certification_claim in certification_claims -%}
+                {%- assign certification_claim_label = certification_claim.label.value -%}
+                {%- if certification_claim_label != blank -%}
+                  <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_label | escape }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              {%- if certification_claim_1 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_1 | escape }}</span>
+              {%- endif -%}
+              {%- if certification_claim_2 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_2 | escape }}</span>
+              {%- endif -%}
+              {%- if certification_claim_3 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_3 | escape }}</span>
+              {%- endif -%}
+              {%- if certification_claim_4 != blank -%}
+                <span><span class="svg-wrapper">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>{{ certification_claim_4 | escape }}</span>
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="ogee-product-buy__accordions">
+        <details class="ogee-product-buy__accordion">
+          <summary>Product details</summary>
+          <div class="rte">
+            {%- if product_resource.metafields.custom.product_details != blank -%}
+              {{ product_resource.metafields.custom.product_details | metafield_tag }}
+            {%- elsif product_resource.description != blank -%}
+              {{ product_resource.description }}
+            {%- else -%}
+              {{ section.settings.details_fallback }}
+            {%- endif -%}
+          </div>
+        </details>
+
+        <details class="ogee-product-buy__accordion">
+          <summary>High-performance ingredients</summary>
+          <div class="rte">
+            {%- if product_resource.metafields.custom.ingredients != blank -%}
+              {{ product_resource.metafields.custom.ingredients | metafield_tag }}
+            {%- else -%}
+              {{ section.settings.ingredients_fallback }}
+            {%- endif -%}
+          </div>
+        </details>
+
+        <details class="ogee-product-buy__accordion">
+          <summary>How to apply</summary>
+          <div class="rte">
+            {%- if product_resource.metafields.custom.how_to_use != blank -%}
+              {{ product_resource.metafields.custom.how_to_use | metafield_tag }}
+            {%- else -%}
+              {{ section.settings.how_to_use_fallback }}
+            {%- endif -%}
+          </div>
+        </details>
+
+        <details class="ogee-product-buy__accordion">
+          <summary>Drug facts</summary>
+          <div class="rte">
+            {%- if product_resource.metafields.custom.drug_facts != blank -%}
+              {{ product_resource.metafields.custom.drug_facts | metafield_tag }}
+            {%- elsif product_resource.metafields.custom.benefits != blank -%}
+              {{ product_resource.metafields.custom.benefits | metafield_tag }}
+            {%- else -%}
+              {{ section.settings.benefits_fallback }}
+            {%- endif -%}
+          </div>
+        </details>
+
+        <details class="ogee-product-buy__accordion">
+          <summary>Shipping &amp; refunds</summary>
+          <div class="rte">
+            {%- if product_resource.metafields.custom.shipping_returns != blank -%}
+              {{ product_resource.metafields.custom.shipping_returns | metafield_tag }}
+            {%- elsif section.settings.shipping_returns_fallback != blank -%}
+              {{ section.settings.shipping_returns_fallback }}
+            {%- elsif shop.shipping_policy.body != blank -%}
+              {{ shop.shipping_policy.body }}
+            {%- endif -%}
+          </div>
+        </details>
+      </div>
+
+      {%- if press_quote != blank -%}
+        <figure class="ogee-product-buy__press">
+          <blockquote>{{ press_quote }}</blockquote>
+          {%- if section.settings.press_logo != blank -%}
+            {{
+              section.settings.press_logo
+              | image_url: width: 160
+              | image_tag:
+                widths: '80, 160',
+                sizes: '60px',
+                loading: 'lazy',
+                alt: section.settings.press_logo.alt
+            }}
+          {%- else -%}
+            <span class="ogee-product-buy__press-logo">allure</span>
+          {%- endif -%}
+        </figure>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .ogee-product-buy {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  .ogee-product-buy__inner {
+    width: min(1200px, calc(100vw - 40px));
+    margin: 0 auto;
+    padding-block: 80px;
+    display: grid;
+    grid-template-columns: 690px 486px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .ogee-product-buy__gallery {
+    width: 690px;
+    box-sizing: border-box;
+    padding-inline-end: 16px;
+    display: grid;
+    grid-template-columns: 80px minmax(0, 578px);
+    gap: 16px;
+    align-items: start;
+    position: sticky;
+    top: calc(var(--header-height, 0px) + 24px);
+  }
+
+  .ogee-product-buy__thumbs {
+    display: grid;
+    gap: 8px;
+    max-height: 578px;
+    overflow: auto;
+    scrollbar-width: none;
+  }
+
+  .ogee-product-buy__thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ogee-product-buy__thumb {
+    width: 80px;
+    aspect-ratio: 1;
+    border: 1px solid transparent;
+    border-radius: 0;
+    padding: 0;
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+    cursor: pointer;
+  }
+
+  .ogee-product-buy__thumb.is-active {
+    border-color: currentcolor;
+  }
+
+  .ogee-product-buy__thumb img,
+  .ogee-product-buy__thumb svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ogee-product-buy__stage {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 0;
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+  }
+
+  .ogee-product-buy__media-panel,
+  .ogee-product-buy__media-panel .product-media,
+  .ogee-product-buy__media-panel .product-media__image,
+  .ogee-product-buy__placeholder {
+    width: 100%;
+    height: 100%;
+  }
+
+  .ogee-product-buy__media-panel .product-media {
+    aspect-ratio: 1;
+  }
+
+  .ogee-product-buy__media-panel .product-media__image {
+    object-fit: cover;
+  }
+
+  .ogee-product-buy__badge {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    min-height: 26px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0;
+    padding: 5px 13px;
+    background: #faf8f3;
+    color: var(--color-foreground);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__step,
+  .ogee-product-buy__progress {
+    display: none;
+  }
+
+  .ogee-product-buy__details {
+    width: 486px;
+    display: grid;
+    gap: 24px;
+  }
+
+  .ogee-product-buy__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .ogee-product-buy__title {
+    margin: 0;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 32px;
+    line-height: 1.1;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .ogee-product-buy__subtitle {
+    margin: 10px 0 0;
+    color: rgb(var(--color-foreground-rgb) / 0.56);
+    font-size: 14px;
+    line-height: 1.35;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__meta {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.2;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__divider {
+    width: 1px;
+    height: 12px;
+    background: currentcolor;
+    opacity: 0.35;
+  }
+
+  .ogee-product-buy__rating,
+  .ogee-product-buy__stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ogee-product-buy__rating > span:last-child {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .ogee-product-buy__star {
+    width: 14px;
+    height: 14px;
+    fill: transparent;
+    stroke: currentcolor;
+    stroke-width: 1.5;
+  }
+
+  .ogee-product-buy__star.is-filled {
+    fill: currentcolor;
+  }
+
+  .ogee-product-buy__price {
+    text-align: right;
+    font-size: 18px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .ogee-product-buy__price .price__sale,
+  .ogee-product-buy__price .price__regular {
+    justify-content: flex-end;
+  }
+
+  .ogee-product-buy__variant-picker {
+    display: block;
+  }
+
+  .ogee-product-buy__variant-form {
+    display: grid;
+    gap: 0;
+  }
+
+  .ogee-product-buy__option {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .ogee-product-buy__option legend {
+    width: 100%;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ogee-product-buy__selected-value {
+    color: rgb(var(--color-foreground-rgb) / 0.64);
+  }
+
+  .ogee-product-buy__option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .ogee-product-buy__option-values--swatches {
+    gap: 12px;
+  }
+
+  .ogee-product-buy__option-label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    min-width: 54px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.18);
+    border-radius: 999px;
+    padding: 0 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .ogee-product-buy__option-label input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .ogee-product-buy__option-label:has(input:checked) {
+    border-color: currentcolor;
+  }
+
+  .ogee-product-buy__option-label:has(input[aria-disabled='true']) {
+    opacity: 0.42;
+  }
+
+  .ogee-product-buy__swatch-label {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .ogee-product-buy__swatch-label .swatch {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ogee-product-buy__shade-heading {
+    align-items: center;
+    margin-bottom: 16px;
+    color: rgb(var(--color-foreground-rgb) / 0.62);
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .ogee-product-buy__shade-finder {
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid currentcolor;
+    border-radius: 0;
+    padding: 0 18px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.1px;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .ogee-product-buy__shade-summary {
+    min-height: 66px;
+    margin-bottom: 16px;
+    border: 1px solid #dfdfdf;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 20px;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .ogee-product-buy__shade-summary-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .ogee-product-buy__shade-summary-swatch .swatch {
+    width: 100%;
+    height: 100%;
+  }
+
+  .ogee-product-buy__shade-summary-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .ogee-product-buy__shade-summary-copy > span:first-child {
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__shade-summary-copy > span:last-child:not(:first-child) {
+    color: rgb(var(--color-foreground-rgb) / 0.58);
+    font-weight: 400;
+    text-transform: none;
+  }
+
+  .ogee-product-buy__shade-summary-icon {
+    display: grid;
+    place-items: center;
+    opacity: 0.7;
+    transform: rotate(90deg);
+  }
+
+  .ogee-product-buy__shade-summary-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .ogee-product-buy__shade-tabs {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .ogee-product-buy__shade-tabs button {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 4px 8px 5px;
+    background: transparent;
+    color: rgb(var(--color-foreground-rgb) / 0.62);
+    font: inherit;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .ogee-product-buy__shade-tabs button.is-active {
+    border-bottom-color: currentcolor;
+    color: var(--color-foreground);
+  }
+
+  .ogee-product-buy__form {
+    display: block;
+  }
+
+  .ogee-product-buy__purchase-options {
+    display: grid;
+    gap: 8px;
+    border: 0;
+    margin: 0 0 24px;
+    padding: 0;
+  }
+
+  .ogee-product-buy__purchase-options legend {
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+
+  .ogee-product-buy__purchase-option {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.18);
+    border-radius: 0;
+    padding: 0 14px;
+    cursor: pointer;
+  }
+
+  .ogee-product-buy__purchase-option:has(input:checked) {
+    border-color: currentcolor;
+  }
+
+  .ogee-product-buy__subscription {
+    min-height: 42px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .ogee-product-buy__subscription-box {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #dfdfdf;
+    margin-top: 1px;
+  }
+
+  .ogee-product-buy__subscription-copy,
+  .ogee-product-buy__subscription-price {
+    display: grid;
+    gap: 3px;
+  }
+
+  .ogee-product-buy__subscription-copy > span:first-child {
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__subscription-copy > span:last-child {
+    color: rgb(var(--color-foreground-rgb) / 0.62);
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__subscription-help {
+    width: 14px;
+    height: 14px;
+    margin-left: 2px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgb(var(--color-foreground-rgb) / 0.42);
+    color: var(--color-background);
+    font-size: 9px;
+    line-height: 1;
+    vertical-align: 1px;
+  }
+
+  .ogee-product-buy__subscription-price {
+    justify-items: end;
+    font-weight: 600;
+  }
+
+  .ogee-product-buy__subscription-price > span:last-child {
+    color: rgb(var(--color-foreground-rgb) / 0.58);
+    font-size: 12px;
+    text-decoration: line-through;
+  }
+
+  .ogee-product-buy__buttons {
+    position: relative;
+    display: block;
+  }
+
+  .ogee-product-buy__form-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-block-end: 10px;
+    color: var(--color-error);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .ogee-product-buy__form-error.hidden {
+    display: none;
+  }
+
+  .ogee-product-buy__form-error .svg-wrapper {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+  }
+
+  .ogee-product-buy__buttons add-to-cart-component {
+    display: block;
+    width: 100%;
+  }
+
+  .ogee-product-buy__buttons .add-to-cart-button {
+    min-height: 58px;
+    width: 100%;
+    border-radius: 0;
+    padding-inline-end: 104px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__buttons .add-to-cart-icon {
+    display: none;
+  }
+
+  .ogee-product-buy__button-price {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 78px;
+    display: grid;
+    place-items: center;
+    border-left: 1px solid rgb(255 255 255 / 0.5);
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 1.3px;
+    pointer-events: none;
+  }
+
+  .ogee-product-buy__delivery {
+    margin: -8px 0 -12px;
+    color: rgb(var(--color-foreground-rgb) / 0.62);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .ogee-product-buy__delivery strong {
+    color: var(--color-foreground);
+    font-weight: 600;
+  }
+
+  .ogee-product-buy__trust {
+    display: grid;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ogee-product-buy__trust p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ogee-product-buy__trust .svg-wrapper,
+  .ogee-product-buy__cert-icons .svg-wrapper {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+  }
+
+  .ogee-product-buy__pairs {
+    min-height: 168px;
+    border: 0;
+    border-radius: 0;
+    background: #faf8f3;
+    padding: 16px;
+  }
+
+  .ogee-product-buy__pairs-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .ogee-product-buy__pairs h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__pairs-arrows {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    color: rgb(var(--color-foreground-rgb) / 0.62);
+  }
+
+  .ogee-product-buy__pairs-arrows svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .ogee-product-buy__pairs-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .ogee-product-buy__pair-card {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) 18px;
+    gap: 12px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ogee-product-buy__pair-image {
+    aspect-ratio: 1;
+    border-radius: 0;
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+  }
+
+  .ogee-product-buy__pair-image img,
+  .ogee-product-buy__pair-image svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ogee-product-buy__pair-info {
+    display: grid;
+    gap: 4px;
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  .ogee-product-buy__pair-subtitle {
+    color: rgb(var(--color-foreground-rgb) / 0.56);
+    font-size: 12px;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__pair-price .price {
+    font-size: 14px;
+  }
+
+  .ogee-product-buy__pair-check {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #dfdfdf;
+    align-self: start;
+  }
+
+  .ogee-product-buy__certifications {
+    display: grid;
+    gap: 18px;
+  }
+
+  .ogee-product-buy__cert-copy {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    line-height: 1.45;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__cert-copy span:not(:last-child)::after {
+    content: "\2022";
+    margin-left: 8px;
+  }
+
+  .ogee-product-buy__cert-icons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 56px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__cert-icons > span {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .ogee-product-buy__cert-icons .svg-wrapper {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+  }
+
+  .ogee-product-buy__accordions {
+    display: grid;
+    border-top: 0;
+  }
+
+  .ogee-product-buy__accordion {
+    border-bottom: 1px solid #dfdfdf;
+  }
+
+  .ogee-product-buy__accordion summary {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    line-height: 1.2;
+    list-style: none;
+    text-transform: uppercase;
+  }
+
+  .ogee-product-buy__accordion summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ogee-product-buy__accordion summary::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid currentcolor;
+    border-bottom: 1px solid currentcolor;
+    transform: rotate(45deg);
+  }
+
+  .ogee-product-buy__accordion[open] summary::after {
+    transform: rotate(225deg);
+  }
+
+  .ogee-product-buy__accordion .rte {
+    padding-bottom: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .ogee-product-buy__press {
+    min-height: 62px;
+    margin: 0;
+    border-radius: 0;
+    background: #faf8f3;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .ogee-product-buy__press blockquote {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ogee-product-buy__press img {
+    width: 60px;
+    height: auto;
+    flex: 0 0 auto;
+  }
+
+  .ogee-product-buy__press-logo {
+    font-family: var(--font-heading--family);
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ogee-product-buy__inner {
+      width: min(720px, calc(100vw - 40px));
+      grid-template-columns: 1fr;
+      padding-block: 24px 48px;
+      gap: 12px;
+    }
+
+    .ogee-product-buy__gallery {
+      width: 100%;
+      padding-inline-end: 0;
+      position: relative;
+      top: auto;
+      grid-template-columns: 1fr;
+      order: 1;
+    }
+
+    .ogee-product-buy__thumbs {
+      display: none;
+    }
+
+    .ogee-product-buy__details {
+      width: 100%;
+      order: 0;
+      gap: 24px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ogee-product-buy__inner {
+      width: min(350px, calc(100vw - 40px));
+      padding-block: 24px 48px;
+      gap: 20px;
+    }
+
+    .ogee-product-buy__details {
+      display: contents;
+    }
+
+    .ogee-product-buy__details > * {
+      order: 2;
+    }
+
+    .ogee-product-buy__gallery {
+      order: 1;
+    }
+
+    .ogee-product-buy__header {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      order: 0;
+    }
+
+    .ogee-product-buy__title {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .ogee-product-buy__subtitle {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .ogee-product-buy__meta {
+      gap: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .ogee-product-buy__price {
+      font-size: 21px;
+    }
+
+    .ogee-product-buy__stage {
+      width: 100%;
+    }
+
+    .ogee-product-buy__step {
+      position: absolute;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--color-background);
+      color: var(--color-foreground);
+      transform: translateY(-50%);
+      padding: 0;
+      z-index: 2;
+    }
+
+    .ogee-product-buy__step svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .ogee-product-buy__step--prev {
+      left: -8px;
+    }
+
+    .ogee-product-buy__step--next {
+      right: -8px;
+    }
+
+    .ogee-product-buy__progress {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      display: block;
+      height: 1px;
+      background: rgb(var(--color-foreground-rgb) / 0.24);
+    }
+
+    .ogee-product-buy__progress span {
+      display: block;
+      width: var(--ogee-progress, 0%);
+      height: 100%;
+      background: currentcolor;
+      transition: width 0.2s ease;
+    }
+
+    .ogee-product-buy__variant-picker {
+      margin-top: 0;
+    }
+
+    .ogee-product-buy__option legend {
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .ogee-product-buy__shade-heading {
+      gap: 12px;
+      align-items: center;
+    }
+
+    .ogee-product-buy__shade-finder {
+      min-width: 128px;
+      min-height: 30px;
+      padding-inline: 12px;
+      font-size: 10px;
+    }
+
+    .ogee-product-buy__shade-summary {
+      min-height: 58px;
+      grid-template-columns: 30px minmax(0, 1fr) 16px;
+      gap: 12px;
+      padding: 10px;
+    }
+
+    .ogee-product-buy__shade-summary-swatch {
+      width: 30px;
+      height: 30px;
+    }
+
+    .ogee-product-buy__shade-tabs {
+      gap: 8px;
+      overflow: auto;
+    }
+
+    .ogee-product-buy__shade-tabs button {
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .ogee-product-buy__option-values {
+      gap: 8px 10px;
+    }
+
+    .ogee-product-buy__option-label {
+      min-height: 36px;
+      min-width: 46px;
+      padding-inline: 13px;
+      font-size: 12px;
+    }
+
+    .ogee-product-buy__swatch-label {
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0;
+    }
+
+    .ogee-product-buy__subscription {
+      grid-template-columns: 18px minmax(0, 1fr);
+    }
+
+    .ogee-product-buy__subscription-price {
+      grid-column: 2;
+      justify-items: start;
+    }
+
+    .ogee-product-buy__buttons .add-to-cart-button {
+      min-height: 52px;
+      border-radius: 10px;
+      padding-inline-end: 88px;
+      font-size: 12px;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .ogee-product-buy__button-price {
+      width: 70px;
+      font-size: 12px;
+      letter-spacing: 0.7px;
+    }
+
+    .ogee-product-buy__delivery {
+      font-size: 12px;
+    }
+
+    .ogee-product-buy__trust,
+    .ogee-product-buy__cert-copy,
+    .ogee-product-buy__cert-icons,
+    .ogee-product-buy__accordion .rte,
+    .ogee-product-buy__press blockquote {
+      font-size: 12px;
+    }
+
+    .ogee-product-buy__pairs {
+      margin-inline: -20px;
+      border-radius: 0;
+      padding: 16px 20px 28px;
+    }
+
+    .ogee-product-buy__pairs-list {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(150px, 160px);
+      grid-template-columns: none;
+      gap: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .ogee-product-buy__pairs-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ogee-product-buy__pair-card {
+      grid-template-columns: 1fr;
+      align-content: start;
+      gap: 12px;
+    }
+
+    .ogee-product-buy__pair-check {
+      display: none;
+    }
+
+    .ogee-product-buy__pair-image {
+      width: 100%;
+    }
+
+    .ogee-product-buy__cert-icons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .ogee-product-buy__accordion summary {
+      min-height: 40px;
+      font-size: 13px;
+    }
+
+    .ogee-product-buy__press {
+      min-height: 66px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class OgeeProductMedia extends HTMLElement {
+    connectedCallback() {
+      this.buttons = Array.from(this.querySelectorAll('[data-ogee-media-button]'));
+      this.panels = Array.from(this.querySelectorAll('[data-ogee-media-panel]'));
+      this.progress = this.querySelector('[data-ogee-media-progress]');
+      this.activeGalleryKey = this.dataset.ogeeInitialGalleryKey || this.panels[0]?.dataset.ogeeGalleryKey || 'base';
+      this.index = 0;
+      this.addEventListener('click', this.handleClick);
+      this.update();
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener('click', this.handleClick);
+    }
+
+    handleClick = (event) => {
+      const button = event.target.closest('[data-ogee-media-button]');
+      const previous = event.target.closest('[data-ogee-media-prev]');
+      const next = event.target.closest('[data-ogee-media-next]');
+
+      if (button) {
+        this.activeGalleryKey = button.dataset.ogeeGalleryKey || this.activeGalleryKey;
+        this.selectIndex(Number(button.dataset.ogeeMediaIndex) || 0);
+      }
+
+      if (previous) {
+        const panels = this.activePanels();
+        this.selectIndex((this.index - 1 + panels.length) % panels.length);
+      }
+
+      if (next) {
+        const panels = this.activePanels();
+        this.selectIndex((this.index + 1) % panels.length);
+      }
+    };
+
+    activePanels() {
+      return this.panels.filter((panel) => (panel.dataset.ogeeGalleryKey || 'base') === this.activeGalleryKey);
+    }
+
+    selectIndex(index) {
+      const panels = this.activePanels();
+
+      if (panels.length === 0) return;
+
+      this.index = Math.max(0, Math.min(index, panels.length - 1));
+      this.update();
+    }
+
+    selectMediaId(mediaId) {
+      const panel = this.panels.find((item) => item.dataset.ogeeMediaId === String(mediaId));
+
+      if (!panel) return false;
+
+      this.activeGalleryKey = panel.dataset.ogeeGalleryKey || this.activeGalleryKey;
+      this.selectIndex(Number(panel.dataset.ogeeMediaIndex) || 0);
+      return true;
+    }
+
+    selectVariantId(variantId) {
+      const panel = this.panels.find((item) => item.dataset.ogeeVariantId === String(variantId));
+
+      if (!panel) return false;
+
+      this.activeGalleryKey = panel.dataset.ogeeGalleryKey || `variant-${variantId}`;
+      this.selectIndex(Number(panel.dataset.ogeeMediaIndex) || 0);
+      return true;
+    }
+
+    update() {
+      const activePanels = this.activePanels();
+      const activePanel = activePanels[this.index] || activePanels[0];
+
+      if (!activePanel) return;
+
+      this.index = activePanels.indexOf(activePanel);
+
+      this.panels.forEach((panel) => {
+        panel.hidden = panel !== activePanel;
+      });
+
+      this.buttons.forEach((button) => {
+        const galleryMatches = (button.dataset.ogeeGalleryKey || 'base') === this.activeGalleryKey;
+        const active = galleryMatches && Number(button.dataset.ogeeMediaIndex) === this.index;
+        button.hidden = !galleryMatches;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+
+      if (this.progress && activePanels.length > 0) {
+        this.progress.style.setProperty('--ogee-progress', `${((this.index + 1) / activePanels.length) * 100}%`);
+      }
+    }
+  }
+
+  if (!customElements.get('ogee-product-media')) {
+    customElements.define('ogee-product-media', OgeeProductMedia);
+  }
+
+  document.addEventListener('change', (event) => {
+    const input = event.target.closest('.ogee-product-buy__option input[type="radio"]');
+
+    if (!input) return;
+
+    const fieldset = input.closest('.ogee-product-buy__option');
+    const selectedValue = fieldset.querySelector('[data-ogee-selected-value]');
+    const summaryLabel = fieldset.querySelector('[data-ogee-shade-summary-label]');
+    const summarySwatch = fieldset.querySelector('[data-ogee-shade-summary-swatch]');
+    const optionLabel = input.closest('.ogee-product-buy__option-label');
+    const swatch = optionLabel ? optionLabel.querySelector('.swatch') : null;
+
+    if (selectedValue) {
+      selectedValue.textContent = input.value;
+    }
+
+    if (summaryLabel) {
+      summaryLabel.textContent = input.value;
+    }
+
+    if (summarySwatch && swatch) {
+      summarySwatch.innerHTML = swatch.outerHTML;
+    }
+
+    const gallery = input.closest('.ogee-product-buy')?.querySelector('ogee-product-media');
+
+    if (!gallery) return;
+
+    if (input.dataset.ogeeVariantId && gallery.selectVariantId(input.dataset.ogeeVariantId)) {
+      return;
+    }
+
+    if (input.dataset.ogeeVariantMediaId) {
+      gallery.selectMediaId(input.dataset.ogeeVariantMediaId);
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    const tab = event.target.closest('.ogee-product-buy__shade-tabs button');
+
+    if (!tab) return;
+
+    tab.parentElement.querySelectorAll('button').forEach((button) => {
+      const active = button === tab;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Ogee product buy",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "hero_badge_label",
+      "label": "Hero badge label",
+      "default": "1 million sold"
+    },
+    {
+      "type": "url",
+      "id": "shade_finder_link",
+      "label": "Shade finder link"
+    },
+    {
+      "type": "text",
+      "id": "shade_note",
+      "label": "Selected shade note fallback"
+    },
+    {
+      "type": "product_list",
+      "id": "pairs_products",
+      "label": "Pairs well with products",
+      "limit": 4
+    },
+    {
+      "type": "header",
+      "content": "Delivery content"
+    },
+    {
+      "type": "text",
+      "id": "delivery_intro",
+      "label": "Delivery intro",
+      "default": "Buy it today, receive on"
+    },
+    {
+      "type": "range",
+      "id": "delivery_days",
+      "label": "Estimated delivery days",
+      "min": 1,
+      "max": 14,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "delivery_date",
+      "label": "Delivery date override"
+    },
+    {
+      "type": "header",
+      "content": "Trust content"
+    },
+    {
+      "type": "text",
+      "id": "trust_bullet_1",
+      "label": "Trust bullet 1",
+      "default": "Free shipping over $50"
+    },
+    {
+      "type": "text",
+      "id": "trust_bullet_2",
+      "label": "Trust bullet 2",
+      "default": "Free 30-day returns"
+    },
+    {
+      "type": "text",
+      "id": "certification_claim_1",
+      "label": "Fallback certification claim 1",
+      "default": "Organic ingredients"
+    },
+    {
+      "type": "text",
+      "id": "certification_claim_2",
+      "label": "Fallback certification claim 2",
+      "default": "Cruelty free"
+    },
+    {
+      "type": "text",
+      "id": "certification_claim_3",
+      "label": "Fallback certification claim 3",
+      "default": "Gluten free"
+    },
+    {
+      "type": "text",
+      "id": "certification_claim_4",
+      "label": "Fallback certification claim 4",
+      "default": "Beyond clean beauty"
+    },
+    {
+      "type": "header",
+      "content": "Accordion content"
+    },
+    {
+      "type": "richtext",
+      "id": "details_fallback",
+      "label": "Details fallback"
+    },
+    {
+      "type": "richtext",
+      "id": "ingredients_fallback",
+      "label": "Ingredients fallback"
+    },
+    {
+      "type": "richtext",
+      "id": "how_to_use_fallback",
+      "label": "How to use fallback"
+    },
+    {
+      "type": "richtext",
+      "id": "benefits_fallback",
+      "label": "Drug facts fallback"
+    },
+    {
+      "type": "richtext",
+      "id": "shipping_returns_fallback",
+      "label": "Shipping and returns fallback"
+    },
+    {
+      "type": "header",
+      "content": "Press content"
+    },
+    {
+      "type": "text",
+      "id": "press_quote",
+      "label": "Press quote",
+      "default": "Making its way into the hearts of skincare fanatics."
+    },
+    {
+      "type": "image_picker",
+      "id": "press_logo",
+      "label": "Press logo"
+    },
+    {
+      "type": "header",
+      "content": "Fallback content"
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating",
+      "label": "Fallback rating",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating_count",
+      "label": "t:settings.review_count",
+      "min": 0,
+      "max": 5000,
+      "step": 50,
+      "default": 500
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ogee product buy"
+    }
+  ]
+}
+{% endschema %}
