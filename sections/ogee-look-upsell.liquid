@@ -1,0 +1,998 @@
+{%- liquid
+  assign product_resource = product
+  if request.visual_preview_mode
+    if product_resource == blank
+      assign product_resource = collections.all.products.first
+    endif
+  endif
+
+  assign upsell_products = product_resource.metafields.custom.complete_the_look_products.value
+  if upsell_products == blank
+    assign upsell_products = product_resource.metafields.custom.look_upsell_products.value
+  endif
+  if upsell_products == blank
+    assign upsell_products = section.settings.products
+  endif
+  assign is_automatic_fallback = false
+  if upsell_products == blank
+    assign upsell_products = product_resource.metafields.custom.pairs_well_with.value
+    assign is_automatic_fallback = true
+  endif
+
+  assign fallback_products = blank
+  for product_collection in product_resource.collections
+    if product_collection.products != blank
+      assign fallback_products = product_collection.products
+      break
+    endif
+  endfor
+  if fallback_products != blank
+    if upsell_products == blank
+      assign upsell_products = fallback_products
+      assign is_automatic_fallback = true
+    endif
+  endif
+  assign fallback_product_handles_setting = section.settings.fallback_product_handles | default: 'complexion-perfecting-concealer,sculpted-complexion-foundation-stick,complexion-perfecting-tinted-serum,skin-enhancing-primer-spf-40'
+  assign fallback_product_handles = blank
+  if fallback_product_handles_setting != blank
+    assign fallback_product_handles = fallback_product_handles_setting | split: ','
+  endif
+  assign upsell_source_count = 0
+  if upsell_products.count != blank
+    assign upsell_source_count = upsell_products.count
+  elsif upsell_products.size != blank
+    assign upsell_source_count = upsell_products.size
+  endif
+  if is_automatic_fallback
+    if upsell_source_count < 4
+      if fallback_product_handles != blank
+        assign upsell_products = fallback_product_handles
+      elsif collections.all.products != blank
+        assign upsell_products = collections.all.products
+      endif
+    endif
+  endif
+  if upsell_products == blank
+    if request.visual_preview_mode
+      assign upsell_products = collections.all.products
+    endif
+  endif
+
+  assign discount_percent = section.settings.discount_percent
+  assign discount_multiplier = 100 | minus: discount_percent
+  assign total_price = 0
+  assign product_count = 0
+  assign rendered_product_ids = '|'
+-%}
+
+{%- liquid
+  assign product_label_token = '[product]'
+  assign count_label_token = '[count]'
+-%}
+
+{%- capture upsell_rows -%}
+  {%- for upsell_product in upsell_products limit: 20 -%}
+    {%- liquid
+      if product_count >= 4
+        break
+      endif
+      if upsell_product.id == blank
+        assign upsell_handle = upsell_product | strip
+        assign upsell_product = all_products[upsell_handle]
+      endif
+      if upsell_product == blank
+        continue
+      endif
+      if product_resource != blank
+        if upsell_product.id == product_resource.id
+          continue
+        endif
+      endif
+
+      assign upsell_id_token = upsell_product.id | append: '|'
+      assign upsell_id_token = upsell_id_token | prepend: '|'
+      if rendered_product_ids contains upsell_id_token
+        continue
+      endif
+      assign rendered_product_ids = rendered_product_ids | append: upsell_product.id | append: '|'
+
+      assign upsell_variant = upsell_product.selected_or_first_available_variant
+      assign quantity_default = 1
+      if upsell_variant.quantity_rule.min
+        assign quantity_default = upsell_variant.quantity_rule.min
+      endif
+
+      assign can_add = false
+      if upsell_variant.available
+        assign can_add = true
+      endif
+
+      assign item_price = upsell_variant.price | times: quantity_default
+      if can_add
+        assign total_price = total_price | plus: item_price
+      endif
+      assign product_count = product_count | plus: 1
+
+      assign subtitle = upsell_product.metafields.custom.subtitle.value
+      if subtitle == blank
+        assign subtitle = upsell_product.metafields.custom.short_description.value
+      endif
+      if subtitle == blank
+        assign subtitle = upsell_product.metafields.descriptors.subtitle.value
+      endif
+      if subtitle == blank
+        assign subtitle = upsell_product.type
+      endif
+
+      assign item_label = section.settings.add_to_cart_label
+      if upsell_product.variants_count > 1
+        assign item_label = section.settings.select_options_label
+      endif
+      unless can_add
+        assign item_label = section.settings.sold_out_label
+      endunless
+
+      assign checkbox_label = section.settings.checkbox_label | replace: product_label_token, upsell_product.title
+    -%}
+
+    <article
+      class="ogee-look-upsell__item{% unless can_add %} ogee-look-upsell__item--unavailable{% endunless %}"
+      data-ogee-look-item
+    >
+      <a
+        class="ogee-look-upsell__media"
+        href="{{ upsell_product.url }}"
+        aria-label="{{ upsell_product.title | escape }}"
+      >
+        {%- if upsell_product.featured_image -%}
+          {%- assign image_alt = upsell_product.featured_image.alt | default: upsell_product.title -%}
+          {{
+            upsell_product.featured_image
+            | image_url: width: 240
+            | image_tag:
+              widths: '96, 160, 240',
+              sizes: '96px',
+              loading: 'lazy',
+              alt: image_alt
+          }}
+        {%- else -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag }}
+        {%- endif -%}
+      </a>
+
+      <div class="ogee-look-upsell__content">
+        <div class="ogee-look-upsell__copy">
+          <h3 class="ogee-look-upsell__product-title">
+            <a href="{{ upsell_product.url }}">{{ upsell_product.title | escape }}</a>
+          </h3>
+          {%- if subtitle != blank -%}
+            <p class="ogee-look-upsell__subtitle">{{ subtitle | escape }}</p>
+          {%- endif -%}
+          <p class="ogee-look-upsell__price">{{ upsell_variant.price | money }}</p>
+        </div>
+
+        {%- if can_add and upsell_product.variants_count <= 1 -%}
+          <button
+            class="ogee-look-upsell__item-button"
+            type="button"
+            value="{{ upsell_variant.id }}"
+            data-ogee-look-single
+            data-quantity="{{ quantity_default }}"
+          >
+            {{ item_label }}
+          </button>
+        {%- else -%}
+          <a
+            class="ogee-look-upsell__item-button"
+            {% if can_add %}
+              href="{{ upsell_product.url }}"
+            {% else %}
+              role="link"
+              aria-disabled="true"
+            {% endif %}
+          >
+            {{ item_label }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      <label class="ogee-look-upsell__check">
+        <span class="visually-hidden">
+          {{ checkbox_label | escape }}
+        </span>
+        <input
+          type="checkbox"
+          value="{{ upsell_variant.id }}"
+          data-ogee-look-checkbox
+          data-price="{{ item_price }}"
+          data-quantity="{{ quantity_default }}"
+          {% if can_add %}
+            checked
+          {% else %}
+            disabled
+          {% endif %}
+        >
+        <span aria-hidden="true"></span>
+      </label>
+    </article>
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- liquid
+  assign discounted_total = total_price | times: discount_multiplier | divided_by: 100
+  assign should_render = false
+  if product_count > 0
+    assign should_render = true
+  elsif request.visual_preview_mode
+    assign should_render = true
+  endif
+-%}
+
+{%- if should_render -%}
+  <section
+    id="OgeeLookUpsell-{{ section.id }}"
+    class="ogee-look-upsell"
+    style="
+      --ogee-look-background: {{ section.settings.background_color }};
+      --ogee-look-text: {{ section.settings.text_color }};
+      --ogee-look-muted: {{ section.settings.muted_text_color }};
+      --ogee-look-border: {{ section.settings.border_color }};
+      --ogee-look-image-background: {{ section.settings.image_background_color }};
+      --ogee-look-button-background: {{ section.settings.button_background }};
+      --ogee-look-button-text: {{ section.settings.button_text_color }};
+      --ogee-look-padding-top: {{ section.settings.padding_top }}px;
+      --ogee-look-padding-bottom: {{ section.settings.padding_bottom }}px;
+      --ogee-look-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+      --ogee-look-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    "
+    data-section-id="{{ section.id }}"
+  >
+    <ogee-look-upsell
+      id="OgeeLookUpsellComponent-{{ section.id }}"
+      class="ogee-look-upsell__inner"
+      data-money-format="{{ shop.money_format | escape }}"
+      data-currency="{{ shop.currency | escape }}"
+      data-discount-percent="{{ discount_percent }}"
+      data-button-template="{{ section.settings.add_all_label | escape }}"
+      data-adding-text="{{ section.settings.adding_label | escape }}"
+      data-added-text="{{ section.settings.added_label | escape }}"
+      data-error-text="{{ section.settings.error_text | escape }}"
+    >
+      {%- if section.settings.heading != blank -%}
+        <h2 class="ogee-look-upsell__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if product_count > 0 -%}
+        <div class="ogee-look-upsell__list">
+          {{ upsell_rows }}
+        </div>
+
+        <div class="ogee-look-upsell__summary">
+          <p class="ogee-look-upsell__offer">
+            <span>{{ section.settings.offer_prefix | escape }}</span>
+            <strong>{{ discount_percent }}% {{ section.settings.offer_suffix | escape }}</strong>
+          </p>
+          <p class="ogee-look-upsell__totals">
+            <span data-ogee-look-total>{{ discounted_total | money }}</span>
+            <s
+              data-ogee-look-compare
+              {% if discount_percent <= 0 or discounted_total >= total_price %}
+                hidden
+              {% endif %}
+            >
+              {{ total_price | money }}
+            </s>
+          </p>
+          <button
+            class="ogee-look-upsell__button"
+            type="button"
+            data-ogee-look-add-all
+            {% if total_price <= 0 %}
+              disabled
+            {% endif %}
+          >
+            {%- assign add_all_label = section.settings.add_all_label | replace: count_label_token, product_count -%}
+            {{ add_all_label | escape }}
+          </button>
+          <p class="ogee-look-upsell__message" role="status" aria-live="polite" data-ogee-look-message></p>
+        </div>
+      {%- elsif section.settings.empty_text != blank -%}
+        <p class="ogee-look-upsell__empty">{{ section.settings.empty_text | escape }}</p>
+      {%- endif -%}
+    </ogee-look-upsell>
+  </section>
+{%- endif -%}
+
+{% stylesheet %}
+  .ogee-look-upsell {
+    padding-block: var(--ogee-look-padding-top) var(--ogee-look-padding-bottom);
+    background: var(--ogee-look-background);
+    color: var(--ogee-look-text);
+  }
+
+  .ogee-look-upsell__inner {
+    display: block;
+    width: min(588px, calc(100vw - 40px));
+    margin-inline: auto;
+  }
+
+  .ogee-look-upsell__heading {
+    margin: 0 0 32px;
+    color: var(--ogee-look-text);
+    font-family: "Chronicle Display", Georgia, "Times New Roman", var(--font-heading--family), serif;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.1;
+    text-align: center;
+    text-transform: capitalize;
+  }
+
+  .ogee-look-upsell__list {
+    display: grid;
+    gap: 32px;
+  }
+
+  .ogee-look-upsell__item {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) 21px;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .ogee-look-upsell__item--unavailable {
+    opacity: 0.55;
+  }
+
+  .ogee-look-upsell__media {
+    display: block;
+    width: 96px;
+    height: 96px;
+    overflow: hidden;
+    background: var(--ogee-look-image-background);
+  }
+
+  .ogee-look-upsell__media img,
+  .ogee-look-upsell__media svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ogee-look-upsell__content {
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+    gap: 16px;
+  }
+
+  .ogee-look-upsell__copy {
+    display: grid;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .ogee-look-upsell__product-title {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .ogee-look-upsell__product-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ogee-look-upsell__subtitle {
+    margin: 0;
+    color: var(--ogee-look-muted);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .ogee-look-upsell__price {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .ogee-look-upsell__check {
+    display: grid;
+    align-self: start;
+    place-items: center;
+    width: 21px;
+    height: 21px;
+    cursor: pointer;
+  }
+
+  .ogee-look-upsell__check input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ogee-look-upsell__check span[aria-hidden='true'] {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--ogee-look-border);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .ogee-look-upsell__check input:checked + span[aria-hidden='true'] {
+    border-color: var(--ogee-look-border);
+  }
+
+  .ogee-look-upsell__check input:focus-visible + span[aria-hidden='true'] {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .ogee-look-upsell__item-button {
+    display: none;
+  }
+
+  .ogee-look-upsell__summary {
+    display: grid;
+    gap: 8px;
+    margin-top: 24px;
+    padding-top: 8px;
+    border-top: 1px solid var(--ogee-look-border);
+    text-align: center;
+  }
+
+  .ogee-look-upsell__offer,
+  .ogee-look-upsell__totals,
+  .ogee-look-upsell__message,
+  .ogee-look-upsell__empty {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+  }
+
+  .ogee-look-upsell__offer {
+    padding-top: 8px;
+    color: var(--ogee-look-muted);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .ogee-look-upsell__offer strong {
+    font-weight: 700;
+  }
+
+  .ogee-look-upsell__totals {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .ogee-look-upsell__totals s {
+    color: var(--ogee-look-muted);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .ogee-look-upsell__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 42px;
+    margin-top: 4px;
+    border: 0;
+    border-radius: 0;
+    background: var(--ogee-look-button-background);
+    color: var(--ogee-look-button-text);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .ogee-look-upsell__button:disabled,
+  .ogee-look-upsell__item-button[disabled],
+  .ogee-look-upsell__item-button[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .ogee-look-upsell__message {
+    min-height: 1.3em;
+    color: var(--ogee-look-muted);
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .ogee-look-upsell__empty {
+    text-align: center;
+    color: var(--ogee-look-muted);
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ogee-look-upsell {
+      padding-block: var(--ogee-look-padding-top-mobile) var(--ogee-look-padding-bottom-mobile);
+    }
+
+    .ogee-look-upsell__inner {
+      width: min(350px, calc(100vw - 40px));
+    }
+
+    .ogee-look-upsell__heading {
+      margin-bottom: 16px;
+      padding-block: 8px;
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    .ogee-look-upsell__list {
+      gap: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--ogee-look-border);
+    }
+
+    .ogee-look-upsell__item {
+      grid-template-columns: 96px minmax(0, 1fr);
+      align-items: start;
+      gap: 16px;
+    }
+
+    .ogee-look-upsell__content {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ogee-look-upsell__product-title {
+      font-size: 14px;
+    }
+
+    .ogee-look-upsell__subtitle {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .ogee-look-upsell__price {
+      font-size: 14px;
+    }
+
+    .ogee-look-upsell__check {
+      display: none;
+    }
+
+    .ogee-look-upsell__item-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-width: 117px;
+      min-height: 30px;
+      padding: 0 16px;
+      border: 1px solid var(--ogee-look-text);
+      background: transparent;
+      color: var(--ogee-look-text);
+      font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .ogee-look-upsell__summary {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 0;
+    }
+
+    .ogee-look-upsell__offer {
+      padding-top: 8px;
+    }
+
+    .ogee-look-upsell__button {
+      margin-top: 4px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class OgeeLookUpsell extends HTMLElement {
+    connectedCallback() {
+      if (this.initialized) return;
+      this.initialized = true;
+
+      this.checkboxes = Array.from(this.querySelectorAll('[data-ogee-look-checkbox]'));
+      this.singleButtons = Array.from(this.querySelectorAll('[data-ogee-look-single]'));
+      this.addAllButton = this.querySelector('[data-ogee-look-add-all]');
+      this.totalElement = this.querySelector('[data-ogee-look-total]');
+      this.compareElement = this.querySelector('[data-ogee-look-compare]');
+      this.messageElement = this.querySelector('[data-ogee-look-message]');
+
+      this.checkboxes.forEach((checkbox) => checkbox.addEventListener('change', () => this.update()));
+      this.singleButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          this.addItems([{ id: button.value, quantity: Number(button.dataset.quantity) || 1 }], button);
+        });
+      });
+
+      if (this.addAllButton) {
+        this.addAllButton.addEventListener('click', () => this.addItems(this.selectedItems(), this.addAllButton));
+      }
+
+      this.update();
+    }
+
+    selectedItems() {
+      return this.checkboxes
+        .filter((checkbox) => checkbox.checked && !checkbox.disabled && checkbox.value)
+        .map((checkbox) => ({
+          id: checkbox.value,
+          quantity: Number(checkbox.dataset.quantity) || 1,
+        }));
+    }
+
+    selectedSubtotal() {
+      return this.checkboxes
+        .filter((checkbox) => checkbox.checked && !checkbox.disabled)
+        .reduce((sum, checkbox) => sum + (Number(checkbox.dataset.price) || 0), 0);
+    }
+
+    update() {
+      const count = this.selectedItems().length;
+      const subtotal = this.selectedSubtotal();
+      const discount = Number(this.dataset.discountPercent) || 0;
+      const discountedTotal = Math.round(subtotal * ((100 - discount) / 100));
+
+      if (this.totalElement) this.totalElement.textContent = this.formatMoney(discountedTotal);
+      if (this.compareElement) {
+        this.compareElement.textContent = this.formatMoney(subtotal);
+        this.compareElement.hidden = discount <= 0 || subtotal <= discountedTotal;
+      }
+
+      if (this.addAllButton) {
+        this.addAllButton.disabled = count === 0;
+        this.addAllButton.textContent = this.buttonText(count);
+      }
+    }
+
+    buttonText(count) {
+      const template = this.dataset.buttonTemplate || 'Add all [count] to cart';
+      return template.replace(/\[count\]/g, count);
+    }
+
+    formatMoney(cents) {
+      const format = this.dataset.moneyFormat || '${{amount}}';
+      const currency = (this.dataset.currency || 'USD').toUpperCase();
+      const zeroDecimalCurrencies = ['BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG', 'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF'];
+      const currencyPrecision = zeroDecimalCurrencies.includes(currency) ? 0 : 2;
+      const amount = this.formatCents(cents, ',', '.', currencyPrecision, currencyPrecision);
+      const withoutDecimals = this.formatCents(cents, ',', '.', 0, currencyPrecision);
+      const withCommas = this.formatCents(cents, '.', ',', currencyPrecision, currencyPrecision);
+
+      return format.replace(/{{\s*(\w+)\s*}}/g, (match, token) => {
+        if (token === 'amount') return amount;
+        if (token === 'amount_no_decimals') return withoutDecimals;
+        if (token === 'amount_with_comma_separator') return withCommas;
+        if (token === 'amount_no_decimals_with_comma_separator') return withoutDecimals;
+        if (token === 'currency') return currency;
+        return amount;
+      });
+    }
+
+    formatCents(cents, thousandsSeparator, decimalSeparator, displayPrecision, currencyPrecision) {
+      const divisor = Math.pow(10, currencyPrecision);
+      const rounded = (cents / divisor).toFixed(displayPrecision);
+      let [whole, fraction] = rounded.split('.');
+      whole = (whole || '0').replace(/\d(?=(\d\d\d)+(?!\d))/g, (digit) => digit + thousandsSeparator);
+      if (displayPrecision <= 0) return whole;
+      return `${whole}${decimalSeparator}${fraction || '00'}`;
+    }
+
+    async addItems(items, trigger) {
+      if (!items.length || trigger?.disabled) return;
+
+      const originalText = trigger?.textContent || '';
+      const quantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
+      if (trigger) {
+        trigger.disabled = true;
+        trigger.textContent = this.dataset.addingText || originalText;
+      }
+      this.setMessage('');
+
+      try {
+        const cartItemsComponents = Array.from(document.querySelectorAll('cart-items-component'));
+        const sections = cartItemsComponents
+          .map((item) => item instanceof HTMLElement ? item.dataset.sectionId : '')
+          .filter(Boolean)
+          .join(',');
+
+        const payload = {
+          items: items.map((item) => ({
+            id: Number(item.id),
+            quantity: item.quantity,
+          })),
+        };
+
+        if (sections) payload.sections = sections;
+
+        const response = await fetch(Theme.routes.cart_add_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+
+        if (!response.ok || data.status) {
+          throw new Error(data.message || this.dataset.errorText || 'Unable to add products to cart.');
+        }
+
+        const cart = await fetch('/cart.js').then((cartResponse) => cartResponse.json()).catch(() => null);
+
+        document.dispatchEvent(new CustomEvent('cart:update', {
+          bubbles: true,
+          detail: {
+            resource: cart || data,
+            sourceId: this.id,
+            data: {
+              source: 'product-form-component',
+              itemCount: quantity,
+              sections: data.sections,
+            },
+          },
+        }));
+
+        if (trigger) trigger.textContent = this.dataset.addedText || originalText;
+        this.setMessage(this.dataset.addedText || '');
+        window.setTimeout(() => {
+          if (trigger) {
+            trigger.disabled = false;
+            trigger.textContent = originalText || this.buttonText(this.selectedItems().length);
+          }
+          this.setMessage('');
+          this.update();
+        }, 1600);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : this.dataset.errorText;
+        this.setMessage(message || this.dataset.errorText || '');
+        if (trigger) {
+          trigger.disabled = false;
+          trigger.textContent = originalText || this.buttonText(this.selectedItems().length);
+        }
+
+        document.dispatchEvent(new CustomEvent('cart:error', {
+          bubbles: true,
+          detail: {
+            sourceId: this.id,
+            message,
+          },
+        }));
+      }
+    }
+
+    setMessage(message) {
+      if (this.messageElement) this.messageElement.textContent = message;
+    }
+  }
+
+  if (!customElements.get('ogee-look-upsell')) {
+    customElements.define('ogee-look-upsell', OgeeLookUpsell);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Ogee look upsell",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Complete The Look"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Fallback products",
+      "limit": 4
+    },
+    {
+      "type": "text",
+      "id": "fallback_product_handles",
+      "label": "Automatic fallback product handles",
+      "default": "complexion-perfecting-concealer,sculpted-complexion-foundation-stick,complexion-perfecting-tinted-serum,skin-enhancing-primer-spf-40"
+    },
+    {
+      "type": "range",
+      "id": "discount_percent",
+      "label": "Displayed discount percent",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "offer_prefix",
+      "label": "Offer prefix",
+      "default": "Add all to cart with"
+    },
+    {
+      "type": "text",
+      "id": "offer_suffix",
+      "label": "Offer suffix",
+      "default": "off"
+    },
+    {
+      "type": "text",
+      "id": "add_all_label",
+      "label": "Add all label",
+      "default": "Add all [count] to cart"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_label",
+      "label": "Single-variant item label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "select_options_label",
+      "label": "Multi-variant item label",
+      "default": "Select shade"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_label",
+      "label": "Sold out label",
+      "default": "Sold out"
+    },
+    {
+      "type": "text",
+      "id": "adding_label",
+      "label": "Adding state label",
+      "default": "Adding..."
+    },
+    {
+      "type": "text",
+      "id": "added_label",
+      "label": "Added state label",
+      "default": "Added"
+    },
+    {
+      "type": "text",
+      "id": "error_text",
+      "label": "Error text",
+      "default": "Unable to add products to cart."
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty state text",
+      "default": "Choose up to four products for this upsell."
+    },
+    {
+      "type": "text",
+      "id": "checkbox_label",
+      "label": "Checkbox accessibility label",
+      "default": "Include [product]"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#faf8f3"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#646464"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#dfdfdf"
+    },
+    {
+      "type": "color",
+      "id": "image_background_color",
+      "label": "Image background",
+      "default": "#f1f1f1"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ogee look upsell"
+    }
+  ]
+}
+{% endschema %}
