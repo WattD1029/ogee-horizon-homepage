@@ -205,30 +205,6 @@
         "button_color": "#ffffff"
       }
     },
-    "subscription_promotion_banner": {
-      "type": "subscription-promotion-banner",
-      "settings": {
-        "eyebrow": "Subscribe and Save Up to 10%",
-        "heading": "Glow Naturally. Replenish Regularly. Save Effortlessly.",
-        "subheading": "Unlock exclusive subscriber discounts",
-        "desktop_height": 220,
-        "mobile_height": 259,
-        "content_max_width": 848,
-        "mobile_content_width": 342,
-        "desktop_content_width": 1080,
-        "button_label": "Learn More",
-        "product": "",
-        "link": "",
-        "fallback_product_handle": "",
-        "open_in_new_tab": false,
-        "background_color": "#faf8f3",
-        "text_color": "#000000",
-        "muted_text_color": "#404040",
-        "subheading_color": "#333333",
-        "button_background": "#000000",
-        "button_color": "#ffffff"
-      }
-    },
     "promotion_blocks_QVGxNb": {
       "type": "promotion-blocks",
       "blocks": {
@@ -280,9 +256,8 @@
       "type": "story-split",
       "name": "Story split",
       "settings": {
-        "video_source": "uploaded",
-        "video": "shopify://files/videos/ogee-video1.mp4",
-        "theme_video_asset": "",
+        "video_source": "theme_asset",
+        "theme_video_asset": "ogee-storefront-explanation.mp4",
         "video_label": "Ogee brand story video",
         "media_title": "",
         "heading": "OGEE Is Where Certified Organic Skincare Meets High Performance. No Compromises.",
@@ -344,6 +319,59 @@
         "padding_bottom": 48,
         "padding_top_mobile": 36,
         "padding_bottom_mobile": 40
+      }
+    },
+    "quiz_cards_homepage": {
+      "type": "quiz-cards",
+      "blocks": {
+        "perfect_shade": {
+          "type": "quiz_card",
+          "settings": {
+            "bundled_image": "perfect_shade",
+            "image_position_desktop": "center center",
+            "image_position_mobile": "center center",
+            "overlay_strength": 58,
+            "time_label": "2 MINS",
+            "heading": "Find Your Perfect Shade",
+            "description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
+            "button_label": "START QUIZ",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        },
+        "skincare_routine": {
+          "type": "quiz_card",
+          "settings": {
+            "bundled_image": "skincare_routine",
+            "image_position_desktop": "center center",
+            "image_position_mobile": "center center",
+            "overlay_strength": 58,
+            "time_label": "2 MINS",
+            "heading": "Find Your Skincare Routine",
+            "description": "Discover the perfect skincare routine to nourish, hydrate, and illuminate your complexion.",
+            "button_label": "START QUIZ",
+            "link": "",
+            "open_in_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "perfect_shade",
+        "skincare_routine"
+      ],
+      "settings": {
+        "accessibility_heading": "Find your personalized Ogee quiz",
+        "max_width": 1080,
+        "desktop_height": 400,
+        "mobile_height": 360,
+        "gap": 8,
+        "mobile_gutter": 15,
+        "padding_top": 48,
+        "padding_bottom": 48,
+        "text_color": "#ffffff",
+        "overlay_color": "#000000",
+        "button_color": "#ffffff",
+        "button_border_color": "#ffffff"
       }
     },
     "all_skincare_carousel_homepage": {
@@ -437,59 +465,6 @@
         "padding_bottom_mobile": 28
       }
     },
-    "quiz_cards_homepage": {
-      "type": "quiz-cards",
-      "blocks": {
-        "perfect_shade": {
-          "type": "quiz_card",
-          "settings": {
-            "bundled_image": "perfect_shade",
-            "image_position_desktop": "center center",
-            "image_position_mobile": "center center",
-            "overlay_strength": 58,
-            "time_label": "2 MINS",
-            "heading": "Find Your Perfect Shade",
-            "description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
-            "button_label": "START QUIZ",
-            "link": "",
-            "open_in_new_tab": false
-          }
-        },
-        "skincare_routine": {
-          "type": "quiz_card",
-          "settings": {
-            "bundled_image": "skincare_routine",
-            "image_position_desktop": "center center",
-            "image_position_mobile": "center center",
-            "overlay_strength": 58,
-            "time_label": "2 MINS",
-            "heading": "Find Your Skincare Routine",
-            "description": "Discover the perfect skincare routine to nourish, hydrate, and illuminate your complexion.",
-            "button_label": "START QUIZ",
-            "link": "",
-            "open_in_new_tab": false
-          }
-        }
-      },
-      "block_order": [
-        "perfect_shade",
-        "skincare_routine"
-      ],
-      "settings": {
-        "accessibility_heading": "Find your personalized Ogee quiz",
-        "max_width": 1080,
-        "desktop_height": 400,
-        "mobile_height": 360,
-        "gap": 8,
-        "mobile_gutter": 15,
-        "padding_top": 48,
-        "padding_bottom": 48,
-        "text_color": "#ffffff",
-        "overlay_color": "#000000",
-        "button_color": "#ffffff",
-        "button_border_color": "#ffffff"
-      }
-    },
     "social_proof_homepage": {
       "type": "social-proof",
       "blocks": {
@@ -545,6 +520,62 @@
         "padding_bottom": 88,
         "padding_top_mobile": 48,
         "padding_bottom_mobile": 32
+      }
+    },
+    "result_proof_gVjHaF": {
+      "type": "result-proof",
+      "blocks": {
+        "stat_XQRhWc": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        },
+        "stat_EFqW8D": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        },
+        "stat_bmgimp": {
+          "type": "stat",
+          "settings": {
+            "value": "92%",
+            "caption": "said OGEE performed as well or better than non-organic contour products",
+            "progress": 92
+          }
+        }
+      },
+      "block_order": [
+        "stat_XQRhWc",
+        "stat_EFqW8D",
+        "stat_bmgimp"
+      ],
+      "name": "Result proof",
+      "settings": {
+        "eyebrow": "\"Natural is too gentle\" ?",
+        "heading": "Formulated For Results",
+        "description": "Certified by NSF Organic and powered by botanical actives, our formulas are clinically tested to deliver visible results--not just feel good on the skin.",
+        "quote": "\"It's rare to find a product that feels like skincare but performs like pro makeup. OGEE nailed it.\"",
+        "attribution": "- Amy Boyd, Age 32",
+        "stats_label": "Clinical results",
+        "composite_alt": "Before and after skin result from week 1 to week 12",
+        "before_label": "Week 1",
+        "after_label": "Week 12",
+        "slider_label": "Compare week 1 and week 12 results",
+        "desktop_content_width": 1080,
+        "padding_top": 96,
+        "padding_bottom": 48,
+        "background_color": "#fafafa",
+        "text_color": "#333333",
+        "muted_text_color": "#404040",
+        "rule_color": "#333333",
+        "accent_soft_color": "#f9f1dd",
+        "accent_color": "#f0dcab"
       }
     },
     "collection_card_section_CkHhCQ": {
@@ -622,6 +653,80 @@
         "padding_top": 48,
         "padding_bottom": 48
       }
+    },
+    "subscription_promotion_banner": {
+      "type": "subscription-promotion-banner",
+      "settings": {
+        "eyebrow": "Subscribe and Save Up to 10%",
+        "heading": "Glow Naturally. Replenish Regularly. Save Effortlessly.",
+        "subheading": "Unlock exclusive subscriber discounts",
+        "desktop_height": 220,
+        "mobile_height": 259,
+        "content_max_width": 848,
+        "mobile_content_width": 342,
+        "desktop_content_width": 1080,
+        "button_label": "Learn More",
+        "product": "",
+        "link": "",
+        "fallback_product_handle": "",
+        "open_in_new_tab": false,
+        "background_color": "#faf8f3",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "subheading_color": "#333333",
+        "button_background": "#000000",
+        "button_color": "#ffffff"
+      }
+    },
+    "featured_in_carousel_acpNhg": {
+      "type": "featured-in-carousel",
+      "blocks": {
+        "featured_in_press_slide_JDFyfh": {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "bundled_image": "vogue",
+            "logo_text": "VOGUE",
+            "logo_subtext": "",
+            "logo_style": "vogue",
+            "quote": "\"Ogee's <u>Sculpted Face Stick</u> is crafted with the brand's silky-smooth activated botanical primer, creating a smooth base for your products.\""
+          },
+          "blocks": {}
+        },
+        "featured_in_press_slide_gRYWgg": {
+          "type": "_featured-in-press-slide",
+          "settings": {
+            "bundled_image": "saatva",
+            "logo_text": "saatva",
+            "logo_subtext": "Smarter luxury sleep",
+            "logo_style": "saatva",
+            "quote": "\"Ogee's Ogee Hydraganics Indigo Dream Renewal Cream is The Best Overnight Beauty Treatments to Improve Your Skin and Hair While You Sleep.\""
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "featured_in_press_slide_JDFyfh",
+        "featured_in_press_slide_gRYWgg"
+      ],
+      "name": "Featured in carousel",
+      "settings": {
+        "accessible_heading": "Featured in press",
+        "eyebrow": "Featured In",
+        "button_label": "All Press",
+        "button_link": "",
+        "empty_text": "Add press slides to this section.",
+        "content_width": 1080,
+        "color_scheme": "",
+        "panel_background": "#FAFAFA",
+        "text_color": "#000000",
+        "muted_text_color": "#404040",
+        "button_background": "#000000",
+        "button_color": "#FFFFFF",
+        "padding_top": 96,
+        "padding_bottom": 96,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
+      }
     }
   },
   "order": [
@@ -631,10 +736,12 @@
     "promotion_blocks_QVGxNb",
     "story_split_jL7AGm",
     "all_makeup_carousel_homepage",
-    "all_skincare_carousel_homepage",
     "quiz_cards_homepage",
+    "all_skincare_carousel_homepage",
     "social_proof_homepage",
+    "result_proof_gVjHaF",
     "collection_card_section_CkHhCQ",
-    "subscription_promotion_banner"
+    "subscription_promotion_banner",
+    "featured_in_carousel_acpNhg"
   ]
 }
