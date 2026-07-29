@@ -9,3 +9,9 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-07-29][PLAN] Planned the PDP Beyond clean certification section from Figma desktop node `11348:1388` and mobile node `11348:1809`, using Figma-exported media and certification seal assets in a dedicated Shopify section.
+[2026-07-29][IMPLEMENT] Added `sections/beyond-clean-certification.liquid`, Figma-derived certification media assets, and PDP template placement before product recommendations.
+[2026-07-29][FIX] Matched Figma typography metadata for the certification heading/body and made `aria-labelledby` conditional when merchants clear the heading.
+[2026-07-29][FIX] Scoped the certification background to the centered Figma panel so the colored area is 1200px on desktop and 350px on mobile instead of full-bleed.
+[2026-07-29][VERIFY] Validated the certification section and product template with the Shopify Liquid validator revision 5, parsed JSON/schema locally, ran `git diff --check`, and captured desktop/tablet/mobile Playwright screenshots.
+[2026-07-29][COMPOUND] Captured the reusable PDP certification section pattern in `docs/solutions/design-patterns/2026-07-29-figma-pdp-certification-section.md`.
