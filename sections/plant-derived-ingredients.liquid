@@ -1,0 +1,679 @@
+<section
+  class="plant-ingredients color-{{ section.settings.color_scheme }}"
+  style="
+    --plant-ingredients-background: {{ section.settings.background_color }};
+    --plant-ingredients-heading: {{ section.settings.heading_color }};
+    --plant-ingredients-text: {{ section.settings.text_color }};
+    --plant-ingredients-card-text: {{ section.settings.card_text_color }};
+    --plant-ingredients-overlay-color: {{ section.settings.overlay_color }};
+    --plant-ingredients-progress: {{ section.settings.progress_color }};
+    --plant-ingredients-progress-muted: {{ section.settings.progress_muted_color }};
+    --plant-ingredients-content-width: {{ section.settings.desktop_content_width }}px;
+    --plant-ingredients-heading-width: {{ section.settings.heading_width }}px;
+    --plant-ingredients-card-height: {{ section.settings.desktop_card_height }}px;
+    --plant-ingredients-mobile-card-width: {{ section.settings.mobile_card_width }}px;
+    --plant-ingredients-mobile-card-height: {{ section.settings.mobile_card_height }}px;
+    --plant-ingredients-gap: {{ section.settings.desktop_gap }}px;
+    --plant-ingredients-mobile-gap: {{ section.settings.mobile_gap }}px;
+    --plant-ingredients-padding-top: {{ section.settings.padding_top }}px;
+    --plant-ingredients-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --plant-ingredients-mobile-padding-top: {{ section.settings.padding_top_mobile }}px;
+    --plant-ingredients-mobile-padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="plant-ingredients__inner">
+    <div class="plant-ingredients__header">
+      {% if section.settings.heading != blank %}
+        <h2 class="plant-ingredients__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+      {% endif %}
+
+      {% if section.settings.description != blank %}
+        <p class="plant-ingredients__description">{{ section.settings.description | escape | newline_to_br }}</p>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <plant-ingredients-scroll class="plant-ingredients__carousel">
+        <div class="plant-ingredients__viewport">
+          <div
+            class="plant-ingredients__track"
+            data-plant-ingredients-track
+            tabindex="0"
+            aria-label="{{ section.settings.heading | strip_html | strip_newlines | escape }}"
+          >
+            {% content_for 'blocks' %}
+          </div>
+
+          {% if section.blocks.size > 1 %}
+            <div class="plant-ingredients__arrows" aria-hidden="false">
+              <button
+                class="plant-ingredients__arrow plant-ingredients__arrow--previous"
+                type="button"
+                aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+                data-plant-ingredients-previous
+              >
+                <span class="svg-wrapper">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+              </button>
+
+              <button
+                class="plant-ingredients__arrow plant-ingredients__arrow--next"
+                type="button"
+                aria-label="{{ 'accessibility.slideshow_next' | t }}"
+                data-plant-ingredients-next
+              >
+                <span class="svg-wrapper">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+              </button>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if section.blocks.size > 1 %}
+          <div class="plant-ingredients__progress" aria-hidden="true">
+            {% for block in section.blocks %}
+              <button
+                class="plant-ingredients__progress-segment"
+                type="button"
+                tabindex="-1"
+                data-plant-ingredients-progress="{{ forloop.index0 }}"
+                {% if forloop.first %}
+                  aria-selected="true"
+                {% else %}
+                  aria-selected="false"
+                {% endif %}
+              >
+                <span></span>
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </plant-ingredients-scroll>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .plant-ingredients {
+    padding-block: var(--plant-ingredients-padding-top) var(--plant-ingredients-padding-bottom);
+    background: var(--plant-ingredients-background);
+    color: var(--plant-ingredients-text);
+  }
+
+  .plant-ingredients__inner {
+    display: flex;
+    width: 100%;
+    max-width: var(--plant-ingredients-content-width);
+    margin-inline: auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .plant-ingredients__header {
+    display: flex;
+    width: min(100%, var(--plant-ingredients-heading-width));
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .plant-ingredients__heading,
+  .plant-ingredients__description {
+    margin: 0;
+  }
+
+  .plant-ingredients__heading {
+    color: var(--plant-ingredients-heading);
+    font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  .plant-ingredients__description {
+    color: var(--plant-ingredients-text);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .plant-ingredients__carousel {
+    --plant-ingredients-card-width: calc((100% - (var(--plant-ingredients-gap) * 2)) / 3);
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+
+  .plant-ingredients__viewport {
+    position: relative;
+    width: 100%;
+  }
+
+  .plant-ingredients__track {
+    display: flex;
+    width: 100%;
+    gap: var(--plant-ingredients-gap);
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .plant-ingredients__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .plant-ingredients__track:focus-visible {
+    outline: 2px solid var(--plant-ingredients-progress);
+    outline-offset: 4px;
+  }
+
+  .plant-ingredients__arrows {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .plant-ingredients__arrow {
+    --icon-stroke-width: 1px;
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    padding: 4px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 0;
+    color: #333333;
+    background: rgb(255 255 255 / 0.7);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .plant-ingredients__arrow--previous {
+    margin-inline-start: 8px;
+  }
+
+  .plant-ingredients__arrow--next {
+    margin-inline-end: 8px;
+  }
+
+  .plant-ingredients__arrow--previous .svg-wrapper {
+    transform: scaleX(-1);
+  }
+
+  .plant-ingredients__arrow .svg-wrapper,
+  .plant-ingredients__arrow svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .plant-ingredients__arrow:disabled {
+    opacity: 0.2;
+    cursor: default;
+  }
+
+  .plant-ingredients__arrow:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .plant-ingredients__progress {
+    display: flex;
+    width: 100%;
+    height: 1px;
+    gap: 0;
+    margin-block-start: 32px;
+  }
+
+  .plant-ingredients__progress-segment {
+    display: flex;
+    flex: 1 1 0;
+    height: 1px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .plant-ingredients__progress-segment span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--plant-ingredients-progress-muted);
+  }
+
+  .plant-ingredients__progress-segment[aria-selected='true'] span {
+    background: var(--plant-ingredients-progress);
+  }
+
+  @media screen and (max-width: 749px) {
+    .plant-ingredients {
+      padding-block: var(--plant-ingredients-mobile-padding-top) var(--plant-ingredients-mobile-padding-bottom);
+      overflow: hidden;
+    }
+
+    .plant-ingredients__inner {
+      max-width: none;
+      gap: 24px;
+    }
+
+    .plant-ingredients__header {
+      width: min(350px, calc(100vw - 40px));
+    }
+
+    .plant-ingredients__heading {
+      width: min(335px, 100%);
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    .plant-ingredients__description {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .plant-ingredients__carousel {
+      width: 100%;
+    }
+
+    .plant-ingredients__track {
+      gap: var(--plant-ingredients-mobile-gap);
+      padding-inline: 20px;
+      scroll-padding-inline-start: 20px;
+    }
+
+    .plant-ingredients__arrow {
+      width: 32px;
+      height: 32px;
+      background: rgb(255 255 255 / 0.5);
+    }
+
+    .plant-ingredients__arrow--previous {
+      margin-inline-start: 12px;
+    }
+
+    .plant-ingredients__arrow--next {
+      margin-inline-end: 12px;
+    }
+
+    .plant-ingredients__progress {
+      position: absolute;
+      right: 36px;
+      bottom: 16px;
+      left: 36px;
+      z-index: 4;
+      width: auto;
+      margin: 0;
+    }
+
+    .plant-ingredients__progress-segment span {
+      background: rgb(255 255 255 / 0.3);
+    }
+
+    .plant-ingredients__progress-segment[aria-selected='true'] span {
+      background: #ffffff;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class PlantIngredientsScroll extends HTMLElement {
+    connectedCallback() {
+      this.track = this.querySelector('[data-plant-ingredients-track]');
+      this.previousButton = this.querySelector('[data-plant-ingredients-previous]');
+      this.nextButton = this.querySelector('[data-plant-ingredients-next]');
+      this.progressButtons = Array.from(this.querySelectorAll('[data-plant-ingredients-progress]'));
+
+      if (!this.track) return;
+
+      this.update = this.update.bind(this);
+      this.handlePrevious = this.handlePrevious.bind(this);
+      this.handleNext = this.handleNext.bind(this);
+      this.handleProgressClick = this.handleProgressClick.bind(this);
+
+      this.track.addEventListener('scroll', this.update, { passive: true });
+      this.previousButton?.addEventListener('click', this.handlePrevious);
+      this.nextButton?.addEventListener('click', this.handleNext);
+      this.addEventListener('click', this.handleProgressClick);
+
+      if ('ResizeObserver' in window) {
+        this.resizeObserver = new ResizeObserver(this.update);
+        this.resizeObserver.observe(this.track);
+      }
+
+      requestAnimationFrame(this.update);
+    }
+
+    disconnectedCallback() {
+      if (this.track) {
+        this.track.removeEventListener('scroll', this.update);
+      }
+
+      this.previousButton?.removeEventListener('click', this.handlePrevious);
+      this.nextButton?.removeEventListener('click', this.handleNext);
+      this.removeEventListener('click', this.handleProgressClick);
+
+      if (this.resizeObserver) {
+        this.resizeObserver.disconnect();
+      }
+    }
+
+    getCards() {
+      return Array.from(this.track.querySelectorAll('.plant-ingredient-card'));
+    }
+
+    getTrackStartOffset() {
+      const styles = getComputedStyle(this.track);
+      return parseFloat(styles.paddingInlineStart) || 0;
+    }
+
+    getCurrentIndex() {
+      const cards = this.getCards();
+      const trackLeft = this.track.getBoundingClientRect().left + this.getTrackStartOffset();
+      let currentIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      cards.forEach((card, index) => {
+        const distance = Math.abs(card.getBoundingClientRect().left - trackLeft);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          currentIndex = index;
+        }
+      });
+
+      return currentIndex;
+    }
+
+    scrollToIndex(index) {
+      const cards = this.getCards();
+      const card = cards[index];
+
+      if (!card) return;
+
+      this.track.scrollTo({
+        left: card.offsetLeft - this.track.offsetLeft - this.getTrackStartOffset(),
+        behavior: 'smooth',
+      });
+    }
+
+    handleProgressClick(event) {
+      if (!(event.target instanceof Element)) return;
+
+      const button = event.target.closest('[data-plant-ingredients-progress]');
+
+      if (!button) return;
+
+      this.scrollToIndex(Number(button.dataset.plantIngredientsProgress));
+    }
+
+    handlePrevious() {
+      this.scrollToIndex(Math.max(0, this.getCurrentIndex() - 1));
+    }
+
+    handleNext() {
+      const cards = this.getCards();
+      this.scrollToIndex(Math.min(cards.length - 1, this.getCurrentIndex() + 1));
+    }
+
+    update() {
+      const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+      const currentIndex = this.getCurrentIndex();
+
+      if (this.previousButton) {
+        this.previousButton.disabled = this.track.scrollLeft <= 1;
+      }
+
+      if (this.nextButton) {
+        this.nextButton.disabled = maxScroll <= 1 || this.track.scrollLeft >= maxScroll - 1;
+      }
+
+      this.progressButtons.forEach((button, index) => {
+        button.setAttribute('aria-selected', `${index === currentIndex}`);
+      });
+    }
+  }
+
+  if (!customElements.get('plant-ingredients-scroll')) {
+    customElements.define('plant-ingredients-scroll', PlantIngredientsScroll);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Plant-derived ingredients",
+  "tag": "section",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "_plant-ingredient-card"
+    }
+  ],
+  "max_blocks": 8,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Powered By High-Performance\nPlant-Derived Ingredients"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Each powerhouse product is formulated with science-backed benefits, sustainably sourced ingredients, and naturally derived alternatives, while avoiding plastics, silicones, petroleum, synthetic fragrances, harmful chemicals, and artificial additives."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#646464"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Card overlay",
+      "default": "#000000B3"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Progress",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "progress_muted_color",
+      "label": "Progress muted",
+      "default": "#00000033"
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "heading_width",
+      "label": "Heading width",
+      "min": 420,
+      "max": 760,
+      "step": 4,
+      "unit": "px",
+      "default": 588
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_height",
+      "label": "Desktop card height",
+      "min": 320,
+      "max": 520,
+      "step": 4,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Mobile card width",
+      "min": 280,
+      "max": 350,
+      "step": 5,
+      "unit": "px",
+      "default": 350
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_height",
+      "label": "Mobile card height",
+      "min": 300,
+      "max": 430,
+      "step": 5,
+      "unit": "px",
+      "default": 350
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "label": "Desktop card gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mobile_gap",
+      "label": "Mobile card gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Plant-derived ingredients",
+      "blocks": [
+        {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "butterfly_bush",
+            "image_position": "center center",
+            "metric": "60%",
+            "title": "BUTTERFLY BUSH EXTRACT",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          }
+        },
+        {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "yellow_flower",
+            "image_position": "center center",
+            "metric": "",
+            "title": "LOREM IPSUM DOLOR SIT AMET",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          }
+        },
+        {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "white_flower",
+            "image_position": "center center",
+            "metric": "",
+            "title": "ONSECTETUR ADIPISCING ELIT",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

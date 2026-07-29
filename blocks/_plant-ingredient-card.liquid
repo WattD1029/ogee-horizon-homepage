@@ -1,0 +1,278 @@
+{% doc %}
+  Renders one image-backed plant ingredient card.
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+  assign card_image = block_settings.image
+  assign bundled_image = block_settings.bundled_image | default: 'butterfly_bush'
+  assign bundled_asset = ''
+  assign bundled_width = 1500
+  assign bundled_height = 1101
+
+  case bundled_image
+    when 'butterfly_bush'
+      assign bundled_asset = 'plant-ingredient-butterfly-bush.png'
+    when 'yellow_flower'
+      assign bundled_asset = 'plant-ingredient-yellow-flower.png'
+      assign bundled_height = 1100
+    when 'white_flower'
+      assign bundled_asset = 'plant-ingredient-white-flower.png'
+  endcase
+
+  assign card_title = block_settings.title
+  assign image_alt = block_settings.image_alt
+
+  if image_alt == blank
+    assign image_alt = card_title
+  endif
+%}
+
+<article
+  class="plant-ingredient-card"
+  style="--plant-ingredient-image-position: {{ block_settings.image_position }};"
+  {{ block.shopify_attributes }}
+>
+  <div class="plant-ingredient-card__media">
+    {% if card_image != blank %}
+      {{
+        card_image
+        | image_url: width: 1500
+        | image_tag:
+          widths: '350, 700, 900, 1200, 1500',
+          sizes: '(min-width: 750px) 395px, 350px',
+          loading: 'lazy',
+          class: 'plant-ingredient-card__image',
+          alt: image_alt
+      }}
+    {% elsif bundled_asset != blank %}
+      <img
+        src="{{ bundled_asset | asset_url }}"
+        alt="{{ image_alt | escape }}"
+        class="plant-ingredient-card__image"
+        width="{{ bundled_width }}"
+        height="{{ bundled_height }}"
+        loading="lazy"
+      >
+    {% else %}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'plant-ingredient-card__image plant-ingredient-card__placeholder' }}
+    {% endif %}
+  </div>
+
+  <div class="plant-ingredient-card__overlay"></div>
+
+  <div class="plant-ingredient-card__content">
+    {% if block_settings.metric != blank %}
+      <p class="plant-ingredient-card__metric">{{ block_settings.metric | escape }}</p>
+    {% endif %}
+
+    {% if card_title != blank %}
+      <h3 class="plant-ingredient-card__title">{{ card_title | escape }}</h3>
+    {% endif %}
+
+    {% if block_settings.body != blank %}
+      <p class="plant-ingredient-card__body">{{ block_settings.body | escape | newline_to_br }}</p>
+    {% endif %}
+  </div>
+</article>
+
+{% stylesheet %}
+  .plant-ingredient-card {
+    position: relative;
+    display: flex;
+    flex: 0 0 var(--plant-ingredients-card-width);
+    width: var(--plant-ingredients-card-width);
+    height: var(--plant-ingredients-card-height);
+    min-width: 0;
+    overflow: hidden;
+    scroll-snap-align: start;
+    color: var(--plant-ingredients-card-text);
+    background: rgb(var(--color-foreground-rgb) / 0.08);
+  }
+
+  .plant-ingredient-card__media,
+  .plant-ingredient-card__image,
+  .plant-ingredient-card__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .plant-ingredient-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--plant-ingredient-image-position);
+  }
+
+  .plant-ingredient-card__placeholder {
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .plant-ingredient-card__overlay {
+    z-index: 1;
+    background: linear-gradient(180deg, rgb(102 102 102 / 0) 40%, var(--plant-ingredients-overlay-color) 100%);
+  }
+
+  .plant-ingredient-card__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-self: flex-end;
+    padding: 24px 24px 32px;
+    overflow-wrap: break-word;
+  }
+
+  .plant-ingredient-card__metric,
+  .plant-ingredient-card__title,
+  .plant-ingredient-card__body {
+    margin: 0;
+    color: inherit;
+  }
+
+  .plant-ingredient-card__metric {
+    font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+    font-size: 72px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  .plant-ingredient-card__title {
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .plant-ingredient-card__body {
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .plant-ingredient-card {
+      flex-basis: var(--plant-ingredients-mobile-card-width);
+      width: var(--plant-ingredients-mobile-card-width);
+      height: var(--plant-ingredients-mobile-card-height);
+    }
+
+    .plant-ingredient-card__content {
+      max-width: 316px;
+      padding: 24px 24px 52px;
+    }
+
+    .plant-ingredient-card__metric {
+      font-size: 60px;
+    }
+
+    .plant-ingredient-card__title {
+      font-size: 14px;
+    }
+
+    .plant-ingredient-card__body {
+      font-size: 10px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Plant ingredient card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image override"
+    },
+    {
+      "type": "select",
+      "id": "bundled_image",
+      "label": "Bundled image",
+      "options": [
+        {
+          "value": "butterfly_bush",
+          "label": "Butterfly bush"
+        },
+        {
+          "value": "yellow_flower",
+          "label": "Yellow flower"
+        },
+        {
+          "value": "white_flower",
+          "label": "White flower"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "butterfly_bush"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "center center",
+          "label": "Center"
+        },
+        {
+          "value": "left center",
+          "label": "Left"
+        },
+        {
+          "value": "right center",
+          "label": "Right"
+        },
+        {
+          "value": "center top",
+          "label": "Top"
+        },
+        {
+          "value": "center bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "text",
+      "id": "metric",
+      "label": "Metric",
+      "default": "60%"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "BUTTERFLY BUSH EXTRACT"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Text",
+      "default": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Plant ingredient card"
+    }
+  ]
+}
+{% endschema %}

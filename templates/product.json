@@ -37,6 +37,73 @@
         "fallback_rating_count": 500
       }
     },
+    "plant_derived_ingredients": {
+      "type": "plant-derived-ingredients",
+      "blocks": {
+        "butterfly_bush": {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "butterfly_bush",
+            "image_position": "center center",
+            "image_alt": "Butterfly bush extract flowers",
+            "metric": "60%",
+            "title": "BUTTERFLY BUSH EXTRACT",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          }
+        },
+        "yellow_flower": {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "yellow_flower",
+            "image_position": "center center",
+            "image_alt": "Yellow plant-derived ingredient flower",
+            "metric": "",
+            "title": "LOREM IPSUM DOLOR SIT AMET",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          }
+        },
+        "white_flower": {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "white_flower",
+            "image_position": "center center",
+            "image_alt": "White plant-derived ingredient flowers",
+            "metric": "",
+            "title": "ONSECTETUR ADIPISCING ELIT",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          }
+        }
+      },
+      "block_order": [
+        "butterfly_bush",
+        "yellow_flower",
+        "white_flower"
+      ],
+      "name": "Plant-derived ingredients",
+      "settings": {
+        "heading": "Powered By High-Performance\nPlant-Derived Ingredients",
+        "description": "Each powerhouse product is formulated with science-backed benefits, sustainably sourced ingredients, and naturally derived alternatives, while avoiding plastics, silicones, petroleum, synthetic fragrances, harmful chemicals, and artificial additives.",
+        "color_scheme": "scheme-1",
+        "background_color": "#ffffff",
+        "heading_color": "#000000",
+        "text_color": "#646464",
+        "card_text_color": "#ffffff",
+        "overlay_color": "#000000B3",
+        "progress_color": "#333333",
+        "progress_muted_color": "#00000033",
+        "desktop_content_width": 1200,
+        "heading_width": 588,
+        "desktop_card_height": 400,
+        "mobile_card_width": 350,
+        "mobile_card_height": 350,
+        "desktop_gap": 8,
+        "mobile_gap": 4,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
     "main": {
       "type": "product-information",
       "disabled": true,
@@ -441,6 +508,7 @@
   },
   "order": [
     "ogee_product_buy",
+    "plant_derived_ingredients",
     "main",
     "product_recommendations_qggXJq"
   ]
