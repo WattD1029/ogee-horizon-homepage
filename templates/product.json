@@ -297,6 +297,25 @@
         "padding-block-end": 0
       }
     },
+    "beyond_clean_certification": {
+      "type": "beyond-clean-certification",
+      "settings": {
+        "heading": "Uncompromising Standards\nThat Go Beyond Clean Beauty.",
+        "text": "We are committed to creating the ultimate certified organic collection of high-performance, multifunctional beauty. Our renowned NSF certification ensures that we adhere to the most stringent standards: utilizing a minimum percentage of 70% organic ingredients; the highest percentage in personal care.",
+        "media_asset": "ogee-certification-media.png",
+        "media_alt": "",
+        "seals_asset": "ogee-certification-seals.png",
+        "seals_alt": "Contains organic ingredients, cruelty-free, not tested on animals, Organic Farming Research Foundation",
+        "desktop_content_width": 1200,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "background_color": "#f9f8f3",
+        "heading_color": "#202426",
+        "text_color": "#414141"
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -442,6 +461,7 @@
   "order": [
     "ogee_product_buy",
     "main",
+    "beyond_clean_certification",
     "product_recommendations_qggXJq"
   ]
 }
