@@ -1,0 +1,378 @@
+{% liquid
+  assign section_settings = section.settings
+  assign heading_id = 'OgeeFaqHeading-' | append: section.id
+%}
+
+<section
+  class="ogee-faq"
+  {% if section_settings.heading != blank %}
+    aria-labelledby="{{ heading_id }}"
+  {% else %}
+    aria-label="FAQ"
+  {% endif %}
+  style="
+    --ogee-faq-background: {{ section_settings.background_color }};
+    --ogee-faq-heading: {{ section_settings.heading_color }};
+    --ogee-faq-question: {{ section_settings.question_color }};
+    --ogee-faq-answer: {{ section_settings.answer_color }};
+    --ogee-faq-divider: {{ section_settings.divider_color }};
+    --ogee-faq-content-width: {{ section_settings.content_width }}px;
+    --ogee-faq-padding-top: {{ section_settings.padding_top }}px;
+    --ogee-faq-padding-bottom: {{ section_settings.padding_bottom }}px;
+    --ogee-faq-mobile-padding-top: {{ section_settings.mobile_padding_top }}px;
+    --ogee-faq-mobile-padding-bottom: {{ section_settings.mobile_padding_bottom }}px;
+  "
+>
+  <div class="ogee-faq__inner">
+    {% if section_settings.heading != blank %}
+      <h2 id="{{ heading_id }}" class="ogee-faq__heading">
+        {{ section_settings.heading | escape }}
+      </h2>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="ogee-faq__list">
+        {% for block in section.blocks %}
+          {% if block.settings.question != blank %}
+            {% capture faq_row %}
+              <details
+                class="ogee-faq__item"
+                {% if block.settings.open_by_default %}
+                  open
+                {% endif %}
+                {{ block.shopify_attributes }}
+              >
+                <summary class="ogee-faq__summary">
+                  <span class="ogee-faq__question">
+                    {{ block.settings.question | escape }}
+                  </span>
+                  <span class="ogee-faq__chevron" aria-hidden="true"></span>
+                </summary>
+
+                {% if block.settings.answer != blank %}
+                  <div class="details-content ogee-faq__answer">
+                    {{ block.settings.answer }}
+                  </div>
+                {% endif %}
+              </details>
+            {% endcapture %}
+
+            {% render 'accordion-custom-component',
+              children: faq_row,
+              open_by_default_on_desktop: block.settings.open_by_default,
+              open_by_default_on_mobile: block.settings.open_by_default
+            %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .ogee-faq {
+    background: var(--ogee-faq-background);
+    color: var(--ogee-faq-question);
+  }
+
+  .ogee-faq__inner {
+    width: min(var(--ogee-faq-content-width), calc(100% - 80px));
+    margin-inline: auto;
+    padding-block: var(--ogee-faq-padding-top) var(--ogee-faq-padding-bottom);
+  }
+
+  .ogee-faq__heading {
+    margin: 0 0 32px;
+    color: var(--ogee-faq-heading);
+    font-family: 'Chronicle Display', 'Chronicle Display Light', Georgia, 'Times New Roman', serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+    font-synthesis: none;
+    text-rendering: geometricPrecision;
+  }
+
+  .ogee-faq__list {
+    border-block-start: 1px solid var(--ogee-faq-divider);
+  }
+
+  .ogee-faq__list accordion-custom {
+    display: block;
+  }
+
+  .ogee-faq__item {
+    border-block-end: 1px solid var(--ogee-faq-divider);
+  }
+
+  .ogee-faq__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 72px;
+    padding-block: 24px;
+    color: var(--ogee-faq-question);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .ogee-faq__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ogee-faq__question {
+    min-width: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .ogee-faq__chevron {
+    display: block;
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    border-inline-end: 1.5px solid currentcolor;
+    border-block-end: 1.5px solid currentcolor;
+    rotate: 45deg;
+    transition: rotate var(--animation-values);
+  }
+
+  .ogee-faq__item[open] .ogee-faq__chevron {
+    rotate: 225deg;
+  }
+
+  .ogee-faq__answer {
+    padding-block: 2px 30px;
+    padding-inline-end: 48px;
+    color: var(--ogee-faq-answer);
+    font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .ogee-faq__answer > * {
+    margin-block: 0;
+  }
+
+  .ogee-faq__answer > * + * {
+    margin-block-start: 1em;
+  }
+
+  .ogee-faq__summary:focus-visible {
+    outline: var(--focus-outline-width) solid currentcolor;
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ogee-faq__inner {
+      width: calc(100% - 40px);
+      padding-block: var(--ogee-faq-mobile-padding-top) var(--ogee-faq-mobile-padding-bottom);
+    }
+
+    .ogee-faq__heading {
+      display: none;
+    }
+
+    .ogee-faq__summary {
+      align-items: flex-start;
+      min-height: 66px;
+      padding-block: 18px;
+      gap: 18px;
+    }
+
+    .ogee-faq__question {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .ogee-faq__item[open] .ogee-faq__question {
+      font-weight: 700;
+    }
+
+    .ogee-faq__chevron {
+      width: 9px;
+      height: 9px;
+      flex-basis: 9px;
+      margin-block-start: 4px;
+    }
+
+    .ogee-faq__answer {
+      padding-block: 8px 28px;
+      padding-inline-end: 36px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ogee FAQ",
+  "tag": "section",
+  "class": "ogee-faq-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "FAQ"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content width",
+      "min": 720,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#21272a"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Question",
+      "default": "#21272a"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer",
+      "default": "#21272a"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider",
+      "default": "#dfdfdf"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Ogee FAQ",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "faq_item"
+        },
+        {
+          "type": "faq_item"
+        },
+        {
+          "type": "faq_item"
+        },
+        {
+          "type": "faq_item"
+        },
+        {
+          "type": "faq_item"
+        },
+        {
+          "type": "faq_item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

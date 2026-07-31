@@ -9,3 +9,10 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-07-31][PLAN] Planned an Ogee PDP FAQ section from the desktop Figma reference and mobile screenshots, targeting a dedicated merchant-editable Liquid section with exact light accordion styling and product-template placement.
+[2026-07-31][IMPLEMENT] Added `sections/ogee-faq.liquid` with merchant-editable FAQ blocks, scoped light PDP styling, desktop Figma geometry, and mobile expanded-row styling.
+[2026-07-31][FIX] Corrected the FAQ background default from black to white to match the actual Figma reference.
+[2026-07-31][UPDATE] Wired the Ogee FAQ section into `templates/product.json` after `ogee_product_buy` with six default FAQ items.
+[2026-07-31][FIX] Hardened the FAQ section review findings by falling back to `aria-label` when the heading is blank and skipping rows without question text.
+[2026-07-31][VERIFY] Validated the FAQ section and product template with the Shopify Liquid validator, parsed section schema and product JSON locally, and ran `git diff --check`.
+[2026-07-31][COMPOUND] Captured the reusable PDP FAQ section pattern in `docs/solutions/design-patterns/2026-07-31-figma-pdp-faq-section.md`.
