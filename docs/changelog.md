@@ -9,3 +9,10 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-07-31][PLAN] Planned a dedicated PDP How To Use media section from the R5 Figma desktop and mobile nodes, using the provided Figma image asset with merchant-editable copy and responsive layout.
+[2026-07-31][IMPLEMENT] Added `sections/how-to-use.liquid` with the optimized Figma poster fallback, exported play icon, editable copy, image override, optional video link, and PDP template placement.
+[2026-07-31][FIX] Corrected the How To Use tablet layout so the media remains a centered square instead of inheriting the fixed mobile media height.
+[2026-07-31][VERIFY] Validated the How To Use section and product template with Shopify Liquid validator revision 2, ran `git diff --check`, and captured desktop/tablet/mobile Playwright harness screenshots.
+[2026-07-31][REVIEW] Compound review found no remaining blocking issues after the tablet crop fix; residual launch checks are live Shopify preview and brand font availability.
+[2026-07-31][COMPOUND] Captured the reusable PDP Figma media-section pattern in `docs/solutions/design-patterns/2026-07-31-figma-pdp-how-to-use-media-section.md`.
+[2026-07-31][UPDATE] Added an uploaded Shopify video media option to the PDP How To Use section while preserving the Figma image fallback as the default template configuration.
