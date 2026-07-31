@@ -37,6 +37,27 @@
         "fallback_rating_count": 500
       }
     },
+    "how_to_use": {
+      "type": "how-to-use",
+      "settings": {
+        "media_type": "image",
+        "fallback_image_asset": "how-to-use-poster.jpg",
+        "image_alt": "Model applying an Ogee lip product",
+        "video_loop": false,
+        "video_label": "How to use video",
+        "show_play_icon": true,
+        "video_link": "",
+        "play_label": "Play how to use video",
+        "heading": "How to use",
+        "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",
+        "content_width": 1200,
+        "mobile_media_height": 350,
+        "color_scheme": "scheme-1",
+        "background_color": "#FAF8F3",
+        "heading_color": "#21272A",
+        "text_color": "#333333"
+      }
+    },
     "main": {
       "type": "product-information",
       "disabled": true,
@@ -441,6 +462,7 @@
   },
   "order": [
     "ogee_product_buy",
+    "how_to_use",
     "main",
     "product_recommendations_qggXJq"
   ]
