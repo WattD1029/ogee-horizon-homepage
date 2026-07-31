@@ -16,3 +16,4 @@
 [2026-07-31][COMPOUND] Captured the reusable PDP Result Stats card carousel pattern in `docs/solutions/design-patterns/2026-07-31-figma-pdp-result-stats-carousel.md`.
 [2026-07-31][UPDATE] Made Result Stats product-dynamic with `custom.result_stats_heading`, `custom.result_stats_description`, and `custom.result_stats` metafield overrides before section block fallback.
 [2026-07-31][IMPLEMENT] Created the Shopify Admin custom-data definitions for `Result statistic` metaobjects and pinned product Result Stats metafields in the connected store.
+[2026-07-31][FIX] Replaced the Result Stats dot-styled progress line with a scroll-position thumb that updates from the carousel scroller on desktop and mobile.

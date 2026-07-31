@@ -43,17 +43,9 @@
       {% render 'slideshow-arrow', action: 'next', icon_style: 'chevron', icon_shape: 'none' %}
     </div>
 
-    {% render 'slideshow-controls',
-      style: 'dots',
-      item_count: slide_count,
-      show_arrows: false,
-      arrows_on_media: false,
-      controls_on_media: false,
-      pagination_position: 'center',
-      icon_style: 'none',
-      shape: 'none',
-      class: 'result-stats__progress'
-    %}
+    <div class="result-stats__progress" data-result-stats-progress aria-hidden="true">
+      <span class="result-stats__progress-thumb" data-result-stats-progress-thumb></span>
+    </div>
   {% endcapture %}
 {% endif %}
 
@@ -230,16 +222,18 @@
     </div>
 
     {% if slide_count > 0 %}
-      {% render 'slideshow',
-        class: 'result-stats__slideshow',
-        controls: controls,
-        slides: slides,
-        slide_count: slide_count,
-        show_arrows: false,
-        autoplay: false,
-        infinite: false,
-        attributes: slideshow_attributes
-      %}
+      <result-stats-progress class="result-stats__carousel">
+        {% render 'slideshow',
+          class: 'result-stats__slideshow',
+          controls: controls,
+          slides: slides,
+          slide_count: slide_count,
+          show_arrows: false,
+          autoplay: false,
+          infinite: false,
+          attributes: slideshow_attributes
+        %}
+      </result-stats-progress>
     {% endif %}
   </div>
 </section>
@@ -309,6 +303,10 @@
     display: block;
   }
 
+  .result-stats__carousel {
+    display: block;
+  }
+
   .result-stats__slideshow slideshow-container,
   .result-stats__slideshow slideshow-slides,
   .result-stats__slideshow slideshow-slide {
@@ -319,7 +317,6 @@
     align-items: stretch;
     gap: var(--result-stats-gap);
     padding-bottom: 32px;
-    border-bottom: 1px solid var(--result-stats-border);
     scrollbar-width: none;
   }
 
@@ -425,26 +422,14 @@
 
   .result-stats__progress {
     position: relative;
-    display: flex;
-    width: 100%;
-    min-height: var(--minimum-touch-target);
-    margin-top: -1px;
-    color: var(--result-stats-progress);
-    mix-blend-mode: normal;
-  }
-
-  .result-stats__progress .slideshow-controls__dots {
-    position: relative;
-    display: flex;
+    display: block;
     width: 100%;
     height: var(--minimum-touch-target);
-    gap: 0;
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
+    margin-top: -1px;
+    color: var(--result-stats-progress);
   }
 
-  .result-stats__progress .slideshow-controls__dots::before {
+  .result-stats__progress::before {
     content: "";
     position: absolute;
     top: 50%;
@@ -455,38 +440,17 @@
     transform: translateY(-50%);
   }
 
-  .result-stats__progress .slideshow-controls__dots li {
-    display: flex;
-    flex: 1 1 0;
-  }
-
-  .result-stats__progress .slideshow-controls__dots button {
-    position: relative;
-    width: 100%;
-    height: var(--minimum-touch-target);
-    min-height: var(--minimum-touch-target);
-    margin: 0;
-    padding: 0;
-    font-size: 0;
-    border-radius: 0;
-  }
-
-  .result-stats__progress .slideshow-controls__dots button::after {
-    content: "";
+  .result-stats__progress-thumb {
     position: absolute;
     top: 50%;
     left: 0;
     display: block;
     width: 100%;
     height: 1px;
-    background: transparent;
-    border-radius: 0;
-    box-shadow: none;
-    transform: translateY(-50%);
-  }
-
-  .result-stats__progress .slideshow-controls__dots button[aria-selected="true"]::after {
+    min-width: 18px;
     background: var(--result-stats-progress);
+    transform: translateY(-50%);
+    will-change: margin-inline-start, width;
   }
 
   @media screen and (max-width: 989px) {
@@ -562,6 +526,61 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  class ResultStatsProgress extends HTMLElement {
+    connectedCallback() {
+      this.scroller = this.querySelector('slideshow-slides');
+      this.progress = this.querySelector('[data-result-stats-progress]');
+      this.thumb = this.querySelector('[data-result-stats-progress-thumb]');
+
+      if (!this.scroller || !this.progress || !this.thumb) return;
+
+      this.updateProgress = this.updateProgress.bind(this);
+      this.scroller.addEventListener('scroll', this.updateProgress, { passive: true });
+
+      if ('ResizeObserver' in window) {
+        this.resizeObserver = new ResizeObserver(this.updateProgress);
+        this.resizeObserver.observe(this.scroller);
+      }
+
+      requestAnimationFrame(this.updateProgress);
+    }
+
+    disconnectedCallback() {
+      if (this.scroller) {
+        this.scroller.removeEventListener('scroll', this.updateProgress);
+      }
+
+      if (this.resizeObserver) {
+        this.resizeObserver.disconnect();
+      }
+    }
+
+    updateProgress() {
+      const maxScroll = this.scroller.scrollWidth - this.scroller.clientWidth;
+
+      if (maxScroll <= 1) {
+        this.progress.hidden = true;
+        return;
+      }
+
+      this.progress.hidden = false;
+
+      const thumbWidth = Math.max(18, Math.min(100, (this.scroller.clientWidth / this.scroller.scrollWidth) * 100));
+      const travel = 100 - thumbWidth;
+      const scrollRatio = Math.max(0, Math.min(1, this.scroller.scrollLeft / maxScroll));
+      const left = scrollRatio * travel;
+
+      this.thumb.style.width = `${thumbWidth}%`;
+      this.thumb.style.marginInlineStart = `${left}%`;
+    }
+  }
+
+  if (!customElements.get('result-stats-progress')) {
+    customElements.define('result-stats-progress', ResultStatsProgress);
+  }
+{% endjavascript %}
 
 {% schema %}
 {

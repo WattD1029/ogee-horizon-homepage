@@ -54,6 +54,12 @@ A plain CSS overflow rail could match the still screenshots, but it would miss
 the existing Horizon slideshow behavior for selected slides, arrow actions,
 dot state, and consistent carousel controls.
 
+### Styling slideshow dots as the progress rail
+
+The initial implementation styled slideshow dots as a segmented bottom line.
+That looked close in a still screenshot, but manual drag, trackpad scroll, and
+mobile swipe need a progress indicator that follows the actual scroll offset.
+
 ### Referencing Figma MCP image URLs directly
 
 Figma MCP asset URLs expire. They are useful for implementation context and
@@ -86,15 +92,15 @@ The section owns:
 - A merchant image first, compressed Figma-derived fallback image second.
 - Desktop layout with four visible cards at the default 1200px rail.
 - Mobile layout with 300px cards, 88px image crop, 10px card gap, and a
-  segmented progress control.
-- Desktop arrows and progress styling over the existing Horizon slideshow
-  primitives.
+  scroll-position progress rail.
+- Desktop arrows over the existing Horizon slideshow primitive.
+- A section-local progress thumb updated from the slideshow scroller's
+  `scrollLeft`, `clientWidth`, and `scrollWidth`.
 
 The implementation reuses:
 
 - `snippets/slideshow.liquid`
 - `snippets/slideshow-slide.liquid`
-- `snippets/slideshow-controls.liquid`
 - `snippets/slideshow-arrow.liquid`
 - The theme slideshow runtime already used by other carousel sections.
 
@@ -148,8 +154,9 @@ touching unrelated proof media settings, while the fallback block content keeps
 the section usable before product metafields are populated.
 
 Reusing Horizon slideshow snippets keeps carousel interaction behavior aligned
-with the rest of the theme. Section-scoped CSS handles only the Figma-specific
-card sizing, typography, image crop, arrows, and progress presentation.
+with the rest of the theme. Section-scoped CSS handles the Figma-specific card
+sizing, typography, image crop, arrows, and progress presentation, while a
+small custom element maps actual scroll position to the progress thumb.
 
 Committing a compressed Figma-derived fallback image solves the asset lifetime
 problem while still letting merchant `image_picker` values override it through
@@ -166,6 +173,8 @@ and horizontal mobile cards, matching the Figma nodes without duplicating data.
 - Use dedicated sections when Figma modules share labels but not behavior.
 - Reuse the theme slideshow primitive for card rails when controls and selected
   state matter.
+- Use a scroll-position progress thumb, not dot state, when users need visual
+  feedback during manual drag, trackpad scroll, or mobile swipe.
 - Commit Figma-derived image assets or map them to merchant settings; do not
   leave expiring MCP URLs in theme code.
 - Compress raw Figma images before committing them to theme assets.
@@ -200,9 +209,10 @@ Work mode produced a new `result-stats` PDP section, a compressed
 Figma-derived fallback image, and product template wiring for five default
 stat cards. Review found and fixed an accessibility edge case around blank
 headings. A follow-up made the section dynamic from product metafields and
-created the matching Shopify Admin custom-data definitions. Shopify Liquid
-validation passed for the new section and product template using cached schema
-resources; `git diff --check` and JSONC parsing also passed. Remaining launch
-risk is visual: desktop, tablet, and mobile should still be checked in a real
-Shopify theme preview because local CLI preview was not available in this
-environment.
+created the matching Shopify Admin custom-data definitions. A later progress
+fix replaced dot-styled controls with a real scroll-position thumb for desktop
+and mobile. Shopify Liquid validation passed for the new section and product
+template using cached schema resources; `git diff --check` and JSONC parsing
+also passed. Remaining launch risk is visual: desktop, tablet, and mobile
+should still be checked in a real Shopify theme preview because local CLI
+preview was not available in this environment.
