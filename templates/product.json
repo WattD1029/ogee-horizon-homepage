@@ -297,6 +297,39 @@
         "padding-block-end": 0
       }
     },
+    "result_stats": {
+      "type": "result-stats",
+      "blocks": {
+        "stat_1": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_2": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_3": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_4": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_5": {
+          "type": "stat",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "stat_1",
+        "stat_2",
+        "stat_3",
+        "stat_4",
+        "stat_5"
+      ],
+      "settings": {}
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -442,6 +475,7 @@
   "order": [
     "ogee_product_buy",
     "main",
+    "result_stats",
     "product_recommendations_qggXJq"
   ]
 }
