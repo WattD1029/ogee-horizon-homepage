@@ -1,0 +1,768 @@
+{% liquid
+  assign section_settings = section.settings
+  assign product_resource = product
+  assign heading_id = 'ResultStatsHeading-' | append: section.id
+  assign result_stats = product_resource.metafields.custom.result_stats.value
+  assign result_stats_count = 0
+  assign uses_product_result_stats = false
+  assign heading = product_resource.metafields.custom.result_stats_heading.value | default: section_settings.heading
+  assign description = product_resource.metafields.custom.result_stats_description.value | default: section_settings.description
+  assign slide_count = section.blocks.size
+  assign loading = 'lazy'
+  assign fetch_priority = 'low'
+
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+    assign result_stats = product_resource.metafields.custom.result_stats.value
+    assign heading = product_resource.metafields.custom.result_stats_heading.value | default: section_settings.heading
+    assign description = product_resource.metafields.custom.result_stats_description.value | default: section_settings.description
+  endif
+
+  if result_stats != blank
+    assign result_stats_count = product_resource.metafields.custom.result_stats.value.count
+  endif
+
+  if result_stats_count > 0
+    assign uses_product_result_stats = true
+    assign slide_count = result_stats_count
+  endif
+
+  if section.index <= 3
+    assign loading = 'eager'
+  endif
+
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+%}
+
+{% if slide_count > 1 %}
+  {% capture controls %}
+    <div class="result-stats__desktop-arrows">
+      {% render 'slideshow-arrow', action: 'previous', icon_style: 'chevron', icon_shape: 'none' %}
+      {% render 'slideshow-arrow', action: 'next', icon_style: 'chevron', icon_shape: 'none' %}
+    </div>
+
+    <div class="result-stats__progress" data-result-stats-progress aria-hidden="true">
+      <span class="result-stats__progress-thumb" data-result-stats-progress-thumb></span>
+    </div>
+  {% endcapture %}
+{% endif %}
+
+{% capture slides %}
+  {% if uses_product_result_stats %}
+    {% for stat in result_stats %}
+      {% liquid
+        assign stat_image = stat.image.value
+        assign image_alt = stat.image_alt.value
+        assign stat_title = stat.title.value
+        assign stat_text = stat.text.value
+        assign slide_id = 'product-result-stat-' | append: forloop.index
+
+        if image_alt == blank and stat_image != blank
+          assign image_alt = stat_image.alt
+        endif
+
+        if image_alt == blank
+          assign image_alt = stat_title
+        endif
+      %}
+
+      {% capture card %}
+        <article class="result-stats-card">
+          <div class="result-stats-card__image-wrap">
+            {% if stat_image != blank %}
+              {{
+                stat_image
+                | image_url: width: 700
+                | image_tag:
+                  widths: '176, 352, 528, 700',
+                  sizes: '(min-width: 750px) 268px, 88px',
+                  loading: loading,
+                  fetchpriority: fetch_priority,
+                  alt: image_alt,
+                  class: 'result-stats-card__image'
+              }}
+            {% else %}
+              <img
+                src="{{ 'result-stats-model.jpg' | asset_url }}"
+                alt="{{ image_alt | escape }}"
+                class="result-stats-card__image"
+                width="1600"
+                height="2400"
+                loading="{{ loading }}"
+                fetchpriority="{{ fetch_priority }}"
+              >
+            {% endif %}
+          </div>
+
+          <div class="result-stats-card__text">
+            {% if stat_title != blank %}
+              <h3 class="result-stats-card__title">{{ stat_title | escape }}</h3>
+            {% endif %}
+
+            {% if stat_text != blank %}
+              <p class="result-stats-card__body">{{ stat_text | escape }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% endcapture %}
+
+      {% render 'slideshow-slide',
+        slide_id: slide_id,
+        index: forloop.index0,
+        class: 'result-stats__slide',
+        children: card
+      %}
+    {% endfor %}
+  {% else %}
+    {% for block in section.blocks %}
+      {% liquid
+        assign stat_image = block.settings.image
+        assign image_alt = block.settings.image_alt
+
+        if image_alt == blank and stat_image != blank
+          assign image_alt = stat_image.alt
+        endif
+
+        if image_alt == blank
+          assign image_alt = block.settings.title
+        endif
+      %}
+
+      {% capture card %}
+        <article class="result-stats-card" {{ block.shopify_attributes }}>
+          <div class="result-stats-card__image-wrap">
+            {% if stat_image != blank %}
+              {{
+                stat_image
+                | image_url: width: 700
+                | image_tag:
+                  widths: '176, 352, 528, 700',
+                  sizes: '(min-width: 750px) 268px, 88px',
+                  loading: loading,
+                  fetchpriority: fetch_priority,
+                  alt: image_alt,
+                  class: 'result-stats-card__image'
+              }}
+            {% else %}
+              <img
+                src="{{ 'result-stats-model.jpg' | asset_url }}"
+                alt="{{ image_alt | escape }}"
+                class="result-stats-card__image"
+                width="1600"
+                height="2400"
+                loading="{{ loading }}"
+                fetchpriority="{{ fetch_priority }}"
+              >
+            {% endif %}
+          </div>
+
+          <div class="result-stats-card__text">
+            {% if block.settings.title != blank %}
+              <h3 class="result-stats-card__title">{{ block.settings.title | escape }}</h3>
+            {% endif %}
+
+            {% if block.settings.text != blank %}
+              <p class="result-stats-card__body">{{ block.settings.text | escape }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% endcapture %}
+
+      {% render 'slideshow-slide',
+        slide_id: block.id,
+        index: forloop.index0,
+        class: 'result-stats__slide',
+        children: card
+      %}
+    {% endfor %}
+  {% endif %}
+{% endcapture %}
+
+{% capture slideshow_attributes %}
+  aria-label="{{ section_settings.carousel_label | escape }}"
+{% endcapture %}
+
+<section
+  class="result-stats"
+  {% if heading != blank %}
+    aria-labelledby="{{ heading_id }}"
+  {% elsif section_settings.carousel_label != blank %}
+    aria-label="{{ section_settings.carousel_label | escape }}"
+  {% endif %}
+  style="
+    --result-stats-background: {{ section_settings.background_color }};
+    --result-stats-text: {{ section_settings.text_color }};
+    --result-stats-muted: {{ section_settings.muted_text_color }};
+    --result-stats-border: {{ section_settings.border_color }};
+    --result-stats-progress: {{ section_settings.progress_color }};
+    --result-stats-progress-muted: {{ section_settings.progress_muted_color }};
+    --result-stats-content-width: {{ section_settings.desktop_content_width }}px;
+    --result-stats-padding-top: {{ section_settings.padding_top }}px;
+    --result-stats-padding-bottom: {{ section_settings.padding_bottom }}px;
+    --result-stats-padding-top-mobile: {{ section_settings.padding_top_mobile }}px;
+    --result-stats-padding-bottom-mobile: {{ section_settings.padding_bottom_mobile }}px;
+    --result-stats-cards-visible: {{ section_settings.cards_visible_desktop }};
+  "
+>
+  <div class="result-stats__inner">
+    <div class="result-stats__header">
+      {% if heading != blank %}
+        <h2 id="{{ heading_id }}" class="result-stats__heading">
+          {{ heading | escape }}
+        </h2>
+      {% endif %}
+
+      {% if description != blank %}
+        <p class="result-stats__description">
+          {{ description | escape }}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if slide_count > 0 %}
+      <result-stats-progress class="result-stats__carousel">
+        {% render 'slideshow',
+          class: 'result-stats__slideshow',
+          controls: controls,
+          slides: slides,
+          slide_count: slide_count,
+          show_arrows: false,
+          autoplay: false,
+          infinite: false,
+          attributes: slideshow_attributes
+        %}
+      </result-stats-progress>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .result-stats {
+    overflow: hidden;
+    padding-block: var(--result-stats-padding-top) var(--result-stats-padding-bottom);
+    background: var(--result-stats-background);
+    color: var(--result-stats-text);
+  }
+
+  .result-stats__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    max-width: var(--result-stats-content-width);
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .result-stats__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .result-stats__heading,
+  .result-stats__description,
+  .result-stats-card__title,
+  .result-stats-card__body {
+    margin: 0;
+  }
+
+  .result-stats__heading {
+    width: min(100%, 588px);
+    color: var(--result-stats-text);
+    font-family: "Chronicle Display", "Chronicle Display Light", Georgia, "Times New Roman", var(--font-heading--family), serif;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-transform: capitalize;
+  }
+
+  .result-stats__description {
+    width: min(100%, 588px);
+    color: var(--result-stats-text);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .result-stats__slideshow {
+    --result-stats-gap: 16px;
+    --slideshow-slide-width: calc(
+      (100% - (var(--result-stats-gap) * (var(--result-stats-cards-visible) - 1))) /
+        var(--result-stats-cards-visible)
+    );
+
+    position: relative;
+    display: block;
+  }
+
+  .result-stats__carousel {
+    display: block;
+  }
+
+  .result-stats__slideshow slideshow-container,
+  .result-stats__slideshow slideshow-slides,
+  .result-stats__slideshow slideshow-slide {
+    background: transparent;
+  }
+
+  .result-stats__slideshow slideshow-slides {
+    align-items: stretch;
+    gap: var(--result-stats-gap);
+    padding-bottom: 32px;
+    scrollbar-width: none;
+  }
+
+  .result-stats__slideshow slideshow-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .result-stats__slide {
+    flex: 0 0 var(--slideshow-slide-width);
+    scroll-snap-align: start;
+  }
+
+  .result-stats-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid var(--result-stats-border);
+    color: var(--result-stats-text);
+  }
+
+  .result-stats-card__image-wrap {
+    position: relative;
+    width: 100%;
+    height: 268px;
+    overflow: hidden;
+    background: #f7eeee;
+  }
+
+  .result-stats-card__image {
+    position: absolute;
+    top: -7%;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 150%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .result-stats-card__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .result-stats-card__title {
+    color: var(--result-stats-text);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .result-stats-card__body {
+    color: var(--result-stats-muted);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .result-stats__desktop-arrows {
+    position: absolute;
+    top: calc(50% - 34px);
+    right: 8px;
+    left: 8px;
+    z-index: var(--layer-raised);
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .result-stats__desktop-arrows .slideshow-control {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 4px;
+    background: rgb(255 255 255 / 0.7);
+    color: #333333;
+    pointer-events: auto;
+  }
+
+  .result-stats__desktop-arrows .slideshow-control[disabled] {
+    opacity: 0.2;
+  }
+
+  .result-stats__desktop-arrows .slideshow-control .svg-wrapper,
+  .result-stats__desktop-arrows .slideshow-control svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .result-stats__progress {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: var(--minimum-touch-target);
+    margin-top: -1px;
+    color: var(--result-stats-progress);
+  }
+
+  .result-stats__progress::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: var(--result-stats-progress-muted);
+    transform: translateY(-50%);
+  }
+
+  .result-stats__progress-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 1px;
+    min-width: 18px;
+    background: var(--result-stats-progress);
+    transform: translateY(-50%);
+    will-change: margin-inline-start, width;
+  }
+
+  @media screen and (max-width: 989px) {
+    .result-stats__slideshow {
+      --result-stats-cards-visible: 2;
+    }
+
+    .result-stats__desktop-arrows {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .result-stats {
+      padding-block: var(--result-stats-padding-top-mobile) var(--result-stats-padding-bottom-mobile);
+    }
+
+    .result-stats__inner {
+      gap: 16px;
+      max-width: none;
+      padding-inline: 20px;
+    }
+
+    .result-stats__heading {
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    .result-stats__description {
+      font-size: 14px;
+    }
+
+    .result-stats__slideshow {
+      --result-stats-gap: 10px;
+      --slideshow-slide-width: 300px;
+    }
+
+    .result-stats__slideshow slideshow-slides {
+      width: calc(100% + 20px);
+      padding-bottom: 16px;
+      padding-right: 20px;
+      border-bottom: 0;
+    }
+
+    .result-stats-card {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .result-stats-card__image-wrap {
+      flex: 0 0 88px;
+      width: 88px;
+      height: 88px;
+    }
+
+    .result-stats-card__image {
+      top: -8%;
+    }
+
+    .result-stats-card__text {
+      flex: 1 1 auto;
+    }
+
+    .result-stats-card__title {
+      font-size: 14px;
+      letter-spacing: 0.05em;
+    }
+
+    .result-stats-card__body {
+      font-size: 12px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ResultStatsProgress extends HTMLElement {
+    connectedCallback() {
+      this.scroller = this.querySelector('slideshow-slides');
+      this.progress = this.querySelector('[data-result-stats-progress]');
+      this.thumb = this.querySelector('[data-result-stats-progress-thumb]');
+
+      if (!this.scroller || !this.progress || !this.thumb) return;
+
+      this.updateProgress = this.updateProgress.bind(this);
+      this.scroller.addEventListener('scroll', this.updateProgress, { passive: true });
+
+      if ('ResizeObserver' in window) {
+        this.resizeObserver = new ResizeObserver(this.updateProgress);
+        this.resizeObserver.observe(this.scroller);
+      }
+
+      requestAnimationFrame(this.updateProgress);
+    }
+
+    disconnectedCallback() {
+      if (this.scroller) {
+        this.scroller.removeEventListener('scroll', this.updateProgress);
+      }
+
+      if (this.resizeObserver) {
+        this.resizeObserver.disconnect();
+      }
+    }
+
+    updateProgress() {
+      const maxScroll = this.scroller.scrollWidth - this.scroller.clientWidth;
+
+      if (maxScroll <= 1) {
+        this.progress.hidden = true;
+        return;
+      }
+
+      this.progress.hidden = false;
+
+      const thumbWidth = Math.max(18, Math.min(100, (this.scroller.clientWidth / this.scroller.scrollWidth) * 100));
+      const travel = 100 - thumbWidth;
+      const scrollRatio = Math.max(0, Math.min(1, this.scroller.scrollLeft / maxScroll));
+      const left = scrollRatio * travel;
+
+      this.thumb.style.width = `${thumbWidth}%`;
+      this.thumb.style.marginInlineStart = `${left}%`;
+    }
+  }
+
+  if (!customElements.get('result-stats-progress')) {
+    customElements.define('result-stats-progress', ResultStatsProgress);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Result stats",
+  "tag": "section",
+  "class": "result-stats-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Results"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed."
+    },
+    {
+      "type": "text",
+      "id": "carousel_label",
+      "label": "Carousel accessible label",
+      "default": "Product results statistics"
+    },
+    {
+      "type": "paragraph",
+      "content": "Product metafields override this section when populated: custom.result_stats_heading, custom.result_stats_description, and custom.result_stats."
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "cards_visible_desktop",
+      "label": "Visible cards on desktop",
+      "min": 3,
+      "max": 4,
+      "step": 0.5,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#21272A"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Card border",
+      "default": "#DDE1E6"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Active progress",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "progress_muted_color",
+      "label": "Inactive progress",
+      "default": "#CCCCCC"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Statistic",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image alt text",
+          "default": "Model wearing Ogee makeup"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "99% Agreed"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Id eros pellentesque facilisi id mollis faucibus commodo enim."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Result stats",
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "stat"
+        },
+        {
+          "type": "stat"
+        },
+        {
+          "type": "stat"
+        },
+        {
+          "type": "stat"
+        },
+        {
+          "type": "stat"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
