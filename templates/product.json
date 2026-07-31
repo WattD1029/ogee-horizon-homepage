@@ -297,6 +297,82 @@
         "padding-block-end": 0
       }
     },
+    "shop_social_media": {
+      "type": "shop-social-media",
+      "blocks": {
+        "post_products_1": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": true
+          }
+        },
+        "post_eye_balm_1": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_products_2": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_eye_balm_2": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_products_3": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        }
+      },
+      "block_order": [
+        "post_products_1",
+        "post_eye_balm_1",
+        "post_products_2",
+        "post_eye_balm_2",
+        "post_products_3"
+      ],
+      "settings": {
+        "heading": "Shop @Ogee",
+        "subheading": "# BeyoundCleanBeauty",
+        "button_label": "Shop",
+        "default_link": "https://www.instagram.com/ogee/",
+        "background_color": "#faf8f3",
+        "text_color": "#21272a",
+        "rail_color": "#333333",
+        "show_arrows": true,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -442,6 +518,7 @@
   "order": [
     "ogee_product_buy",
     "main",
+    "shop_social_media",
     "product_recommendations_qggXJq"
   ]
 }
