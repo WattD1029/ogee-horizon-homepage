@@ -9,3 +9,11 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-08-01][PLAN] Planned a full PDP customer reviews widget section matching the Ogee desktop and mobile Figma review layouts, with summary metrics, filters, sorting, review rows, and Shopify-safe fallback content.
+[2026-08-01][IMPLEMENT] Added `sections/ogee-customer-reviews.liquid` with aggregate review summary, rating histogram, effect scale, filter/sort controls, seeded review blocks, and show-more behavior.
+[2026-08-01][IMPLEMENT] Wired the Ogee customer reviews section into `templates/product.json` after the custom product buy section with six PDP review blocks matching the Figma reference content.
+[2026-08-01][FIX] Added a hidden fallback heading and synchronized dynamic aggregate counts so blank visual headings and product review metafields remain accessible and internally consistent.
+[2026-08-01][REVIEW] Compound review found no remaining blocking issues after the hidden-heading and dynamic-count fixes; residual risk is live Shopify preview/pixel tuning and real reviews-provider integration.
+[2026-08-01][VERIFY] Ran Shopify Liquid validation on the reviews section and product template, embedded JavaScript syntax check, and `git diff --check`; all passed, with validator docs loaded from cache after a network fetch miss.
+[2026-08-01][COMPOUND] Captured the reusable Figma PDP reviews widget pattern in `docs/solutions/design-patterns/2026-08-01-figma-pdp-customer-reviews-widget-section.md`.
+[2026-08-01][FIX] Changed the reviews section fallback review count from a 0-5000 range setting to text so Shopify upload accepts the schema's 101-step range limit.

@@ -1,0 +1,1750 @@
+{% liquid
+  assign section_settings = section.settings
+  assign product_resource = product
+  assign average_rating = section_settings.average_rating
+  assign reviews_text = section_settings.reviews_text
+  assign rating_count = section_settings.rating_count
+  assign review_count_display = section_settings.review_count_display
+
+  if section_settings.use_product_rating
+    if product_resource.metafields.reviews.rating.value.rating != blank
+      assign average_rating = product_resource.metafields.reviews.rating.value.rating
+    endif
+
+    if product_resource.metafields.reviews.rating_count != blank
+      assign rating_count = product_resource.metafields.reviews.rating_count
+      capture reviews_text
+        echo section_settings.reviews_prefix
+        echo ' '
+        echo rating_count
+        echo ' '
+        echo section_settings.reviews_suffix
+      endcapture
+      capture review_count_display
+        echo rating_count
+        echo ' '
+        echo section_settings.reviews_suffix
+      endcapture
+    endif
+  endif
+
+  assign rating_floor = average_rating | floor
+  assign rating_decimal = average_rating | modulo: 1
+  assign rounded_star = 0
+  if rating_decimal >= 0.5
+    assign rounded_star = 1
+  endif
+  assign filled_stars = rating_floor | plus: rounded_star
+
+  assign heading_id = 'OgeeCustomerReviewsHeading-' | append: section.id
+%}
+
+<section
+  class="ogee-customer-reviews"
+  aria-labelledby="{{ heading_id }}"
+  style="
+    --ogee-reviews-background: {{ section_settings.background_color }};
+    --ogee-reviews-text: {{ section_settings.text_color }};
+    --ogee-reviews-muted: {{ section_settings.muted_text_color }};
+    --ogee-reviews-rule: {{ section_settings.rule_color }};
+    --ogee-reviews-star: {{ section_settings.star_color }};
+    --ogee-reviews-accent: {{ section_settings.accent_color }};
+    --ogee-reviews-button-background: {{ section_settings.button_background_color }};
+    --ogee-reviews-button-text: {{ section_settings.button_text_color }};
+    --ogee-reviews-content-width: {{ section_settings.content_width }}px;
+    --ogee-reviews-padding-top: {{ section_settings.padding_top }}px;
+    --ogee-reviews-padding-bottom: {{ section_settings.padding_bottom }}px;
+    --ogee-reviews-padding-top-mobile: {{ section_settings.padding_top_mobile }}px;
+    --ogee-reviews-padding-bottom-mobile: {{ section_settings.padding_bottom_mobile }}px;
+  "
+>
+  <ogee-customer-reviews
+    class="ogee-customer-reviews__component"
+    data-initial-visible="{{ section_settings.initial_reviews }}"
+    data-reviews-per-page="{{ section_settings.reviews_per_page }}"
+  >
+    <div class="ogee-customer-reviews__inner">
+      {% if section_settings.heading != blank %}
+        <h2 id="{{ heading_id }}" class="ogee-customer-reviews__heading">
+          {{ section_settings.heading | escape }}
+        </h2>
+      {% else %}
+        <h2 id="{{ heading_id }}" class="visually-hidden">
+          {{ section_settings.hidden_heading | escape }}
+        </h2>
+      {% endif %}
+
+      <div class="ogee-customer-reviews__summary" aria-label="{{ section_settings.summary_label | escape }}">
+        <div class="ogee-customer-reviews__rating-summary">
+          <div class="ogee-customer-reviews__score-row">
+            <span class="ogee-customer-reviews__score">{{ average_rating | round: 1 }}</span>
+            <span class="ogee-customer-reviews__stars" aria-hidden="true">
+              {% for star in (1..5) %}
+                <svg
+                  class="ogee-customer-reviews__star{% if star <= filled_stars %} ogee-customer-reviews__star--filled{% endif %}"
+                  viewBox="0 0 32 32"
+                  focusable="false"
+                  aria-hidden="true"
+                >
+                  <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                </svg>
+              {% endfor %}
+            </span>
+            <span class="ogee-customer-reviews__based">{{ reviews_text | escape }}</span>
+          </div>
+
+          <div class="ogee-customer-reviews__distribution" aria-label="{{ section_settings.distribution_label | escape }}">
+            <div class="ogee-customer-reviews__distribution-row" style="--rating-fill: {{ section_settings.rating_5_percent }}%;">
+              <span class="ogee-customer-reviews__distribution-label">5</span>
+              <span class="ogee-customer-reviews__distribution-star" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                  <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                </svg>
+              </span>
+              <span class="ogee-customer-reviews__bar" aria-hidden="true"><span></span></span>
+              <span class="ogee-customer-reviews__distribution-count">{{ section_settings.rating_5_count_text | escape }}</span>
+            </div>
+            <div class="ogee-customer-reviews__distribution-row" style="--rating-fill: {{ section_settings.rating_4_percent }}%;">
+              <span class="ogee-customer-reviews__distribution-label">4</span>
+              <span class="ogee-customer-reviews__distribution-star" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                  <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                </svg>
+              </span>
+              <span class="ogee-customer-reviews__bar" aria-hidden="true"><span></span></span>
+              <span class="ogee-customer-reviews__distribution-count">{{ section_settings.rating_4_count_text | escape }}</span>
+            </div>
+            <div class="ogee-customer-reviews__distribution-row" style="--rating-fill: {{ section_settings.rating_3_percent }}%;">
+              <span class="ogee-customer-reviews__distribution-label">3</span>
+              <span class="ogee-customer-reviews__distribution-star" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                  <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                </svg>
+              </span>
+              <span class="ogee-customer-reviews__bar" aria-hidden="true"><span></span></span>
+              <span class="ogee-customer-reviews__distribution-count">{{ section_settings.rating_3_count_text | escape }}</span>
+            </div>
+            <div class="ogee-customer-reviews__distribution-row" style="--rating-fill: {{ section_settings.rating_2_percent }}%;">
+              <span class="ogee-customer-reviews__distribution-label">2</span>
+              <span class="ogee-customer-reviews__distribution-star" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                  <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                </svg>
+              </span>
+              <span class="ogee-customer-reviews__bar" aria-hidden="true"><span></span></span>
+              <span class="ogee-customer-reviews__distribution-count">{{ section_settings.rating_2_count_text | escape }}</span>
+            </div>
+            <div class="ogee-customer-reviews__distribution-row" style="--rating-fill: {{ section_settings.rating_1_percent }}%;">
+              <span class="ogee-customer-reviews__distribution-label">1</span>
+              <span class="ogee-customer-reviews__distribution-star" aria-hidden="true">
+                <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+                  <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                </svg>
+              </span>
+              <span class="ogee-customer-reviews__bar" aria-hidden="true"><span></span></span>
+              <span class="ogee-customer-reviews__distribution-count">{{ section_settings.rating_1_count_text | escape }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ogee-customer-reviews__fit-summary">
+          <p class="ogee-customer-reviews__recommendation">
+            <strong>{{ section_settings.recommendation_percent }}%</strong>
+            <span>{{ section_settings.recommendation_text | escape }}</span>
+          </p>
+
+          <div class="ogee-customer-reviews__scale" style="--scale-value: {{ section_settings.effect_value }}%;">
+            <p class="ogee-customer-reviews__scale-heading">{{ section_settings.effect_heading | escape }}</p>
+            <div
+              class="ogee-customer-reviews__scale-line"
+              role="img"
+              aria-label="{{ section_settings.effect_heading | escape }}: {{ section_settings.effect_value }}%"
+            >
+              <span class="ogee-customer-reviews__scale-marker"></span>
+              <span class="ogee-customer-reviews__scale-marker"></span>
+              <span class="ogee-customer-reviews__scale-marker"></span>
+              <span class="ogee-customer-reviews__scale-marker"></span>
+              <span class="ogee-customer-reviews__scale-marker"></span>
+              <span class="ogee-customer-reviews__scale-marker"></span>
+              <span class="ogee-customer-reviews__scale-active"></span>
+            </div>
+            <div class="ogee-customer-reviews__scale-labels">
+              <span>{{ section_settings.effect_min_label | escape }}</span>
+              <span>{{ section_settings.effect_max_label | escape }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ogee-customer-reviews__controls">
+        <details class="ogee-customer-reviews__filters" data-review-filters>
+          <summary class="ogee-customer-reviews__filter-button">
+            <span class="ogee-customer-reviews__filter-icon" aria-hidden="true">
+              {{ 'icon-filter.svg' | inline_asset_content }}
+            </span>
+            <span>{{ section_settings.filters_label | escape }}</span>
+          </summary>
+          <form class="ogee-customer-reviews__filter-panel" data-review-filter-form>
+            <fieldset>
+              <legend>{{ section_settings.filter_rating_label | escape }}</legend>
+              {% for rating_option in (1..5) reversed %}
+                <label>
+                  <input type="checkbox" value="{{ rating_option }}" data-rating-filter>
+                  <span>{{ rating_option }} {{ section_settings.filter_star_label | escape }}</span>
+                </label>
+              {% endfor %}
+            </fieldset>
+            <fieldset>
+              <legend>{{ section_settings.filter_recommend_label | escape }}</legend>
+              <label>
+                <input type="checkbox" data-recommend-filter>
+                <span>{{ section_settings.filter_recommend_option | escape }}</span>
+              </label>
+            </fieldset>
+            <button type="reset" class="ogee-customer-reviews__clear-filters">
+              {{ section_settings.clear_filters_label | escape }}
+            </button>
+          </form>
+        </details>
+
+        <p class="ogee-customer-reviews__review-count" aria-live="polite" data-review-count>
+          {{ review_count_display | escape }}
+        </p>
+
+        <label class="ogee-customer-reviews__sort" for="OgeeReviewsSort-{{ section.id }}">
+          <span>{{ section_settings.sort_label | escape }}</span>
+          <select id="OgeeReviewsSort-{{ section.id }}" data-review-sort>
+            <option value="recent">{{ section_settings.sort_recent_label | escape }}</option>
+            <option value="highest">{{ section_settings.sort_highest_label | escape }}</option>
+            <option value="lowest">{{ section_settings.sort_lowest_label | escape }}</option>
+            <option value="oldest">{{ section_settings.sort_oldest_label | escape }}</option>
+          </select>
+        </label>
+      </div>
+
+      <ul class="ogee-customer-reviews__list" data-review-list>
+        {% for block in section.blocks %}
+          {% liquid
+            assign block_settings = block.settings
+            assign review_rating = block_settings.rating
+            assign is_recommended = 'false'
+            if block_settings.recommends_product
+              assign is_recommended = 'true'
+            endif
+          %}
+
+          <li
+            class="ogee-customer-reviews__item"
+            data-review-item
+            data-review-rating="{{ review_rating }}"
+            data-review-recommend="{{ is_recommended }}"
+            data-review-index="{{ forloop.index0 }}"
+            {% if forloop.index > section_settings.initial_reviews %}
+              hidden
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <div class="ogee-customer-reviews__reviewer">
+              <p class="ogee-customer-reviews__author">
+                <strong>{{ block_settings.reviewer_name | escape }}</strong>
+                {% if block_settings.verified %}
+                  <span>{{ block_settings.verified_label | escape }}</span>
+                  <span class="ogee-customer-reviews__verified-icon" aria-hidden="true">
+                    {{ 'icon-checkmark.svg' | inline_asset_content }}
+                  </span>
+                {% endif %}
+              </p>
+
+              {% if block_settings.recommends_product %}
+                <p class="ogee-customer-reviews__recommends">
+                  <span aria-hidden="true">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>
+                  {{ block_settings.recommendation_label | escape }}
+                </p>
+              {% endif %}
+
+              {% if block_settings.skin_tone != blank %}
+                <p class="ogee-customer-reviews__attribute">
+                  <strong>{{ block_settings.skin_tone_label | escape }}</strong>
+                  <span>{{ block_settings.skin_tone | escape }}</span>
+                </p>
+              {% endif %}
+
+              {% if block_settings.skin_concern != blank %}
+                <p class="ogee-customer-reviews__attribute">
+                  <strong>{{ block_settings.skin_concern_label | escape }}</strong>
+                  <span>{{ block_settings.skin_concern | escape }}</span>
+                </p>
+              {% endif %}
+
+              {% if block_settings.values != blank %}
+                <p class="ogee-customer-reviews__attribute ogee-customer-reviews__attribute--stacked">
+                  <strong>{{ block_settings.values_label | escape }}</strong>
+                  <span>{{ block_settings.values | escape }}</span>
+                </p>
+              {% endif %}
+            </div>
+
+            <div class="ogee-customer-reviews__body">
+              <div class="ogee-customer-reviews__item-stars" aria-label="{{ section_settings.review_rating_label | escape }} {{ review_rating }}">
+                {% for star in (1..5) %}
+                  <svg
+                    class="ogee-customer-reviews__star{% if star <= review_rating %} ogee-customer-reviews__star--filled{% endif %}"
+                    viewBox="0 0 32 32"
+                    focusable="false"
+                    aria-hidden="true"
+                  >
+                    <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                  </svg>
+                {% endfor %}
+              </div>
+
+              {% if block_settings.title != blank %}
+                <h3 class="ogee-customer-reviews__title">{{ block_settings.title | escape }}</h3>
+              {% endif %}
+
+              {% if block_settings.body != blank %}
+                <p class="ogee-customer-reviews__copy">{{ block_settings.body | escape }}</p>
+              {% endif %}
+
+              <div class="ogee-customer-reviews__helpful">
+                <span>{{ section_settings.helpful_label | escape }}</span>
+                <span class="ogee-customer-reviews__vote" aria-label="{{ section_settings.helpful_yes_label | escape }}">
+                  <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                    <path d="M5.7 14H3.2A1.2 1.2 0 0 1 2 12.8V7.9c0-.66.54-1.2 1.2-1.2h2.5V14Zm1.1 0V6.6l2.3-4.5c.17-.33.52-.52.89-.48.59.06 1.01.59.93 1.18l-.47 3.24h2.25c.82 0 1.44.74 1.3 1.55l-.85 5.1A1.56 1.56 0 0 1 11.6 14H6.8Z"></path>
+                  </svg>
+                  {{ block_settings.helpful_yes | escape }}
+                </span>
+                <span class="ogee-customer-reviews__vote" aria-label="{{ section_settings.helpful_no_label | escape }}">
+                  <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                    <path d="M10.3 2h2.5A1.2 1.2 0 0 1 14 3.2v4.9c0 .66-.54 1.2-1.2 1.2h-2.5V2ZM9.2 2v7.4l-2.3 4.5c-.17.33-.52.52-.89.48-.59-.06-1.01-.59-.93-1.18l.47-3.24H3.3c-.82 0-1.44-.74-1.3-1.55l.85-5.1A1.56 1.56 0 0 1 4.4 2h4.8Z"></path>
+                  </svg>
+                  {{ block_settings.helpful_no | escape }}
+                </span>
+              </div>
+            </div>
+
+            <p class="ogee-customer-reviews__date">{{ block_settings.date_label | escape }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <p class="ogee-customer-reviews__empty" data-review-empty hidden>
+        {{ section_settings.empty_message | escape }}
+      </p>
+
+      {% if section.blocks.size > section_settings.initial_reviews %}
+        <div class="ogee-customer-reviews__show-more-wrap">
+          <button type="button" class="ogee-customer-reviews__show-more" data-review-show-more>
+            {{ section_settings.show_more_label | escape }}
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </ogee-customer-reviews>
+</section>
+
+{% stylesheet %}
+  .ogee-customer-reviews {
+    background: var(--ogee-reviews-background);
+    color: var(--ogee-reviews-text);
+    padding-block: var(--ogee-reviews-padding-top-mobile) var(--ogee-reviews-padding-bottom-mobile);
+  }
+
+  .ogee-customer-reviews__component,
+  .ogee-customer-reviews__inner {
+    display: block;
+  }
+
+  .ogee-customer-reviews__inner {
+    width: min(var(--ogee-reviews-content-width), calc(100vw - 30px));
+    margin-inline: auto;
+  }
+
+  .ogee-customer-reviews__heading {
+    margin: 0 0 28px;
+    color: var(--ogee-reviews-text);
+    font-family: 'Chronicle Display', 'Chronicle Display Light', Georgia, 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-align: center;
+  }
+
+  .ogee-customer-reviews__summary {
+    display: grid;
+    gap: 32px;
+  }
+
+  .ogee-customer-reviews__rating-summary {
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+  }
+
+  .ogee-customer-reviews__score-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 11px 18px;
+    color: var(--ogee-reviews-muted);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .ogee-customer-reviews__score {
+    color: var(--ogee-reviews-muted);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .ogee-customer-reviews__stars,
+  .ogee-customer-reviews__item-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .ogee-customer-reviews__star {
+    width: 20px;
+    height: 20px;
+    fill: rgb(0 0 0 / 0.15);
+  }
+
+  .ogee-customer-reviews__star--filled {
+    fill: var(--ogee-reviews-star);
+  }
+
+  .ogee-customer-reviews__based {
+    font-size: 17px;
+    letter-spacing: 0;
+  }
+
+  .ogee-customer-reviews__distribution {
+    display: grid;
+    width: min(100%, 520px);
+    gap: 11px;
+  }
+
+  .ogee-customer-reviews__distribution-row {
+    display: grid;
+    grid-template-columns: 20px 20px minmax(0, 1fr) 54px;
+    align-items: center;
+    gap: 8px;
+    color: var(--ogee-reviews-muted);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  .ogee-customer-reviews__distribution-star svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    fill: var(--ogee-reviews-star);
+  }
+
+  .ogee-customer-reviews__bar {
+    display: block;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.04);
+  }
+
+  .ogee-customer-reviews__bar span {
+    display: block;
+    width: var(--rating-fill);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ogee-reviews-muted);
+  }
+
+  .ogee-customer-reviews__distribution-count {
+    text-align: right;
+  }
+
+  .ogee-customer-reviews__fit-summary {
+    display: grid;
+    align-content: start;
+    gap: 30px;
+    color: var(--ogee-reviews-muted);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .ogee-customer-reviews__recommendation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 11px;
+    margin: 0;
+    color: var(--ogee-reviews-muted);
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .ogee-customer-reviews__recommendation strong {
+    color: var(--ogee-reviews-muted);
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .ogee-customer-reviews__scale {
+    display: grid;
+    gap: 15px;
+  }
+
+  .ogee-customer-reviews__scale-heading {
+    margin: 0;
+    color: var(--ogee-reviews-muted);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .ogee-customer-reviews__scale-line {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 18px;
+  }
+
+  .ogee-customer-reviews__scale-line::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    top: 50%;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--ogee-reviews-muted) 0,
+      var(--ogee-reviews-muted) var(--scale-value),
+      rgb(0 0 0 / 0.12) var(--scale-value),
+      rgb(0 0 0 / 0.12) 100%
+    );
+    transform: translateY(-50%);
+  }
+
+  .ogee-customer-reviews__scale-marker {
+    position: relative;
+    z-index: 1;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ogee-reviews-muted);
+  }
+
+  .ogee-customer-reviews__scale-active {
+    position: absolute;
+    left: var(--scale-value);
+    top: 50%;
+    z-index: 2;
+    width: 14px;
+    height: 14px;
+    border: 3px solid var(--ogee-reviews-accent);
+    border-radius: 50%;
+    background: var(--ogee-reviews-background);
+    transform: translate(-50%, -50%);
+  }
+
+  .ogee-customer-reviews__scale-labels {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ogee-reviews-muted);
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .ogee-customer-reviews__controls {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 48px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .ogee-customer-reviews__filters {
+    position: relative;
+    width: max-content;
+  }
+
+  .ogee-customer-reviews__filter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 128px;
+    gap: 8px;
+    padding: 12px 24px;
+    color: var(--ogee-reviews-button-text);
+    background: var(--ogee-reviews-button-background);
+    border: 1px solid var(--ogee-reviews-button-background);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 1.5px;
+    list-style: none;
+    text-transform: uppercase;
+  }
+
+  .ogee-customer-reviews__filter-button::-webkit-details-marker {
+    display: none;
+  }
+
+  .ogee-customer-reviews__filter-icon,
+  .ogee-customer-reviews__filter-icon svg {
+    display: block;
+    width: 12px;
+    height: 12px;
+  }
+
+  .ogee-customer-reviews__filter-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 3;
+    display: grid;
+    width: min(280px, calc(100vw - 30px));
+    gap: 18px;
+    padding: 18px;
+    color: var(--ogee-reviews-text);
+    background: var(--ogee-reviews-background);
+    border: 1px solid var(--ogee-reviews-rule);
+    box-shadow: 0 18px 42px rgb(0 0 0 / 0.08);
+  }
+
+  .ogee-customer-reviews__filter-panel fieldset {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .ogee-customer-reviews__filter-panel legend {
+    margin-bottom: 3px;
+    color: var(--ogee-reviews-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .ogee-customer-reviews__filter-panel label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ogee-reviews-muted);
+    font-size: 14px;
+    line-height: 1.35;
+    cursor: pointer;
+  }
+
+  .ogee-customer-reviews__filter-panel input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--ogee-reviews-text);
+  }
+
+  .ogee-customer-reviews__clear-filters {
+    min-height: 36px;
+    justify-self: start;
+    padding: 0;
+    color: var(--ogee-reviews-muted);
+    background: transparent;
+    border: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .ogee-customer-reviews__review-count,
+  .ogee-customer-reviews__sort {
+    margin: 0;
+    color: var(--ogee-reviews-muted);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .ogee-customer-reviews__sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 24px;
+    justify-self: start;
+    font-weight: 700;
+  }
+
+  .ogee-customer-reviews__sort select {
+    min-height: 44px;
+    padding: 0 28px 0 0;
+    color: var(--ogee-reviews-muted);
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .ogee-customer-reviews__list {
+    display: grid;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--ogee-reviews-rule);
+  }
+
+  .ogee-customer-reviews__item {
+    display: grid;
+    grid-template-columns: minmax(190px, 250px) minmax(0, 1fr);
+    gap: 26px;
+    padding: 24px 0;
+    border-top: 1px solid var(--ogee-reviews-rule);
+    color: var(--ogee-reviews-muted);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .ogee-customer-reviews__item[hidden] {
+    display: none;
+  }
+
+  .ogee-customer-reviews__reviewer {
+    display: grid;
+    align-content: start;
+    gap: 15px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .ogee-customer-reviews__author,
+  .ogee-customer-reviews__recommends,
+  .ogee-customer-reviews__attribute,
+  .ogee-customer-reviews__title,
+  .ogee-customer-reviews__copy,
+  .ogee-customer-reviews__helpful,
+  .ogee-customer-reviews__date,
+  .ogee-customer-reviews__empty {
+    margin: 0;
+  }
+
+  .ogee-customer-reviews__author {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ogee-customer-reviews__author strong,
+  .ogee-customer-reviews__attribute strong {
+    color: var(--ogee-reviews-muted);
+    font-weight: 700;
+  }
+
+  .ogee-customer-reviews__verified-icon,
+  .ogee-customer-reviews__recommends span {
+    display: inline-grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    color: var(--ogee-reviews-background);
+    background: var(--ogee-reviews-muted);
+  }
+
+  .ogee-customer-reviews__verified-icon svg,
+  .ogee-customer-reviews__recommends svg {
+    width: 9px;
+    height: 9px;
+  }
+
+  .ogee-customer-reviews__recommends {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ogee-customer-reviews__attribute {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 8px;
+  }
+
+  .ogee-customer-reviews__attribute--stacked {
+    display: grid;
+    gap: 3px;
+  }
+
+  .ogee-customer-reviews__body {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .ogee-customer-reviews__item-stars .ogee-customer-reviews__star {
+    width: 18px;
+    height: 18px;
+  }
+
+  .ogee-customer-reviews__title {
+    color: var(--ogee-reviews-text);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  .ogee-customer-reviews__copy {
+    color: var(--ogee-reviews-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ogee-customer-reviews__helpful {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-top: 5px;
+    color: var(--ogee-reviews-muted);
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .ogee-customer-reviews__vote {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: rgb(0 0 0 / 0.35);
+  }
+
+  .ogee-customer-reviews__vote svg {
+    width: 14px;
+    height: 14px;
+    fill: currentcolor;
+  }
+
+  .ogee-customer-reviews__date {
+    align-self: start;
+    color: var(--ogee-reviews-muted);
+    font-size: 14px;
+    line-height: 1.35;
+    text-align: left;
+  }
+
+  .ogee-customer-reviews__empty {
+    padding: 36px 0;
+    color: var(--ogee-reviews-muted);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .ogee-customer-reviews__show-more-wrap {
+    display: flex;
+    justify-content: center;
+    padding-top: 24px;
+  }
+
+  .ogee-customer-reviews__show-more {
+    min-height: 44px;
+    min-width: 130px;
+    padding: 13px 26px;
+    color: var(--ogee-reviews-button-text);
+    background: var(--ogee-reviews-button-background);
+    border: 1px solid var(--ogee-reviews-button-background);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .ogee-customer-reviews__filter-button:focus-visible,
+  .ogee-customer-reviews__clear-filters:focus-visible,
+  .ogee-customer-reviews__sort select:focus-visible,
+  .ogee-customer-reviews__show-more:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 3px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ogee-customer-reviews {
+      padding-block: var(--ogee-reviews-padding-top) var(--ogee-reviews-padding-bottom);
+    }
+
+    .ogee-customer-reviews__summary {
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.78fr);
+      align-items: start;
+      gap: 96px;
+    }
+
+    .ogee-customer-reviews__rating-summary {
+      justify-items: start;
+    }
+
+    .ogee-customer-reviews__score-row,
+    .ogee-customer-reviews__recommendation {
+      justify-content: flex-start;
+    }
+
+    .ogee-customer-reviews__fit-summary {
+      padding-top: 1px;
+    }
+
+    .ogee-customer-reviews__controls {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      margin-top: 64px;
+    }
+
+    .ogee-customer-reviews__review-count {
+      grid-column: 1 / 2;
+      margin-top: 28px;
+    }
+
+    .ogee-customer-reviews__sort {
+      grid-column: 3 / 4;
+      grid-row: 1 / span 2;
+      justify-self: end;
+      align-self: end;
+    }
+
+    .ogee-customer-reviews__list {
+      margin-top: 22px;
+    }
+
+    .ogee-customer-reviews__item {
+      grid-template-columns: minmax(200px, 250px) minmax(0, 1fr) minmax(90px, 120px);
+      gap: 56px;
+      padding: 28px 0;
+    }
+
+    .ogee-customer-reviews__date {
+      text-align: right;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .ogee-customer-reviews__inner {
+      width: min(var(--ogee-reviews-content-width), calc(100vw - 80px));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ogee-customer-reviews__inner {
+      width: min(390px, calc(100vw - 30px));
+    }
+
+    .ogee-customer-reviews__summary {
+      gap: 34px;
+    }
+
+    .ogee-customer-reviews__score-row {
+      gap: 8px 12px;
+    }
+
+    .ogee-customer-reviews__score,
+    .ogee-customer-reviews__recommendation strong {
+      font-size: 22px;
+    }
+
+    .ogee-customer-reviews__based,
+    .ogee-customer-reviews__recommendation,
+    .ogee-customer-reviews__scale-heading {
+      font-size: 15px;
+    }
+
+    .ogee-customer-reviews__distribution-row {
+      grid-template-columns: 18px 18px minmax(0, 1fr) 44px;
+      font-size: 15px;
+    }
+
+    .ogee-customer-reviews__controls {
+      margin-top: 42px;
+    }
+
+    .ogee-customer-reviews__filters {
+      width: 100%;
+    }
+
+    .ogee-customer-reviews__filter-button {
+      width: 100%;
+    }
+
+    .ogee-customer-reviews__filter-panel {
+      width: 100%;
+    }
+
+    .ogee-customer-reviews__sort {
+      justify-self: stretch;
+      justify-content: space-between;
+    }
+
+    .ogee-customer-reviews__item {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .ogee-customer-reviews__date {
+      order: -1;
+      color: rgb(0 0 0 / 0.52);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class OgeeCustomerReviews extends HTMLElement {
+    connectedCallback() {
+      this.items = Array.from(this.querySelectorAll('[data-review-item]'));
+      this.list = this.querySelector('[data-review-list]');
+      this.filterForm = this.querySelector('[data-review-filter-form]');
+      this.sortSelect = this.querySelector('[data-review-sort]');
+      this.showMoreButton = this.querySelector('[data-review-show-more]');
+      this.emptyMessage = this.querySelector('[data-review-empty]');
+      this.initialVisible = Number(this.dataset.initialVisible) || 5;
+      this.reviewsPerPage = Number(this.dataset.reviewsPerPage) || this.initialVisible;
+      this.visibleCount = this.initialVisible;
+
+      this.handleFilterChange = () => {
+        this.visibleCount = this.initialVisible;
+        this.update();
+      };
+      this.handleFilterReset = () => {
+        window.requestAnimationFrame(() => {
+          this.visibleCount = this.initialVisible;
+          this.update();
+        });
+      };
+      this.handleSortChange = () => {
+        this.visibleCount = this.initialVisible;
+        this.update();
+      };
+      this.handleShowMore = () => {
+        this.visibleCount += this.reviewsPerPage;
+        this.update();
+      };
+
+      this.filterForm?.addEventListener('change', this.handleFilterChange);
+      this.filterForm?.addEventListener('reset', this.handleFilterReset);
+      this.sortSelect?.addEventListener('change', this.handleSortChange);
+      this.showMoreButton?.addEventListener('click', this.handleShowMore);
+
+      this.update();
+    }
+
+    disconnectedCallback() {
+      this.filterForm?.removeEventListener('change', this.handleFilterChange);
+      this.filterForm?.removeEventListener('reset', this.handleFilterReset);
+      this.sortSelect?.removeEventListener('change', this.handleSortChange);
+      this.showMoreButton?.removeEventListener('click', this.handleShowMore);
+    }
+
+    getFilteredItems() {
+      const checkedRatings = Array.from(this.querySelectorAll('[data-rating-filter]:checked')).map((input) => input.value);
+      const recommendOnly = this.querySelector('[data-recommend-filter]')?.checked;
+
+      return this.items.filter((item) => {
+        const matchesRating = checkedRatings.length === 0 || checkedRatings.includes(item.dataset.reviewRating);
+        const matchesRecommendation = !recommendOnly || item.dataset.reviewRecommend === 'true';
+        return matchesRating && matchesRecommendation;
+      });
+    }
+
+    sortItems(items) {
+      const sortValue = this.sortSelect?.value || 'recent';
+      const sorted = [...items];
+
+      sorted.sort((first, second) => {
+        const firstRating = Number(first.dataset.reviewRating) || 0;
+        const secondRating = Number(second.dataset.reviewRating) || 0;
+        const firstIndex = Number(first.dataset.reviewIndex) || 0;
+        const secondIndex = Number(second.dataset.reviewIndex) || 0;
+
+        if (sortValue === 'highest') return secondRating - firstRating || firstIndex - secondIndex;
+        if (sortValue === 'lowest') return firstRating - secondRating || firstIndex - secondIndex;
+        if (sortValue === 'oldest') return secondIndex - firstIndex;
+        return firstIndex - secondIndex;
+      });
+
+      return sorted;
+    }
+
+    update() {
+      const visibleItems = this.sortItems(this.getFilteredItems());
+      const visibleSet = new Set(visibleItems.slice(0, this.visibleCount));
+
+      visibleItems.forEach((item) => this.list?.append(item));
+      this.items.forEach((item) => {
+        item.hidden = !visibleSet.has(item);
+      });
+
+      if (this.emptyMessage) {
+        this.emptyMessage.hidden = visibleItems.length !== 0;
+      }
+
+      if (this.showMoreButton) {
+        this.showMoreButton.hidden = this.visibleCount >= visibleItems.length;
+      }
+    }
+  }
+
+  if (!customElements.get('ogee-customer-reviews')) {
+    customElements.define('ogee-customer-reviews', OgeeCustomerReviews);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Ogee customer reviews",
+  "tag": "section",
+  "class": "ogee-customer-reviews-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "hidden_heading",
+      "label": "Hidden heading",
+      "default": "Customer reviews"
+    },
+    {
+      "type": "text",
+      "id": "summary_label",
+      "label": "Summary accessible label",
+      "default": "Customer reviews summary"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_product_rating",
+      "label": "Use product aggregate rating when available",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "average_rating",
+      "label": "Fallback average rating",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 4.8
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "label": "Fallback review count",
+      "default": "3696"
+    },
+    {
+      "type": "text",
+      "id": "reviews_text",
+      "label": "Fallback based on text",
+      "default": "Based on 3,696 reviews"
+    },
+    {
+      "type": "text",
+      "id": "reviews_prefix",
+      "label": "Dynamic count prefix",
+      "default": "Based on"
+    },
+    {
+      "type": "text",
+      "id": "reviews_suffix",
+      "label": "Dynamic count suffix",
+      "default": "reviews"
+    },
+    {
+      "type": "text",
+      "id": "distribution_label",
+      "label": "Distribution accessible label",
+      "default": "Rating distribution"
+    },
+    {
+      "type": "range",
+      "id": "rating_5_percent",
+      "label": "5 star fill",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 86
+    },
+    {
+      "type": "text",
+      "id": "rating_5_count_text",
+      "label": "5 star count",
+      "default": "3.2k"
+    },
+    {
+      "type": "range",
+      "id": "rating_4_percent",
+      "label": "4 star fill",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "rating_4_count_text",
+      "label": "4 star count",
+      "default": "352"
+    },
+    {
+      "type": "range",
+      "id": "rating_3_percent",
+      "label": "3 star fill",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "rating_3_count_text",
+      "label": "3 star count",
+      "default": "95"
+    },
+    {
+      "type": "range",
+      "id": "rating_2_percent",
+      "label": "2 star fill",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 1
+    },
+    {
+      "type": "text",
+      "id": "rating_2_count_text",
+      "label": "2 star count",
+      "default": "28"
+    },
+    {
+      "type": "range",
+      "id": "rating_1_percent",
+      "label": "1 star fill",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 1
+    },
+    {
+      "type": "text",
+      "id": "rating_1_count_text",
+      "label": "1 star count",
+      "default": "13"
+    },
+    {
+      "type": "range",
+      "id": "recommendation_percent",
+      "label": "Recommendation percent",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 96
+    },
+    {
+      "type": "text",
+      "id": "recommendation_text",
+      "label": "Recommendation text",
+      "default": "would recommend this product"
+    },
+    {
+      "type": "text",
+      "id": "effect_heading",
+      "label": "Effect scale heading",
+      "default": "How Did it Work"
+    },
+    {
+      "type": "range",
+      "id": "effect_value",
+      "label": "Effect scale value",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 92
+    },
+    {
+      "type": "text",
+      "id": "effect_min_label",
+      "label": "Effect scale minimum label",
+      "default": "No Difference"
+    },
+    {
+      "type": "text",
+      "id": "effect_max_label",
+      "label": "Effect scale maximum label",
+      "default": "Love It"
+    },
+    {
+      "type": "header",
+      "content": "Controls"
+    },
+    {
+      "type": "text",
+      "id": "filters_label",
+      "label": "Filters button label",
+      "default": "Filters"
+    },
+    {
+      "type": "text",
+      "id": "filter_rating_label",
+      "label": "Rating filter label",
+      "default": "Rating"
+    },
+    {
+      "type": "text",
+      "id": "filter_star_label",
+      "label": "Rating filter suffix",
+      "default": "stars"
+    },
+    {
+      "type": "text",
+      "id": "filter_recommend_label",
+      "label": "Recommendation filter label",
+      "default": "Recommendation"
+    },
+    {
+      "type": "text",
+      "id": "filter_recommend_option",
+      "label": "Recommendation filter option",
+      "default": "Recommended this product"
+    },
+    {
+      "type": "text",
+      "id": "clear_filters_label",
+      "label": "Clear filters label",
+      "default": "Clear filters"
+    },
+    {
+      "type": "text",
+      "id": "review_count_display",
+      "label": "Review count display",
+      "default": "3,696 reviews"
+    },
+    {
+      "type": "text",
+      "id": "sort_label",
+      "label": "Sort label",
+      "default": "Sort"
+    },
+    {
+      "type": "text",
+      "id": "sort_recent_label",
+      "label": "Recent sort label",
+      "default": "Most Recent"
+    },
+    {
+      "type": "text",
+      "id": "sort_highest_label",
+      "label": "Highest sort label",
+      "default": "Highest Rating"
+    },
+    {
+      "type": "text",
+      "id": "sort_lowest_label",
+      "label": "Lowest sort label",
+      "default": "Lowest Rating"
+    },
+    {
+      "type": "text",
+      "id": "sort_oldest_label",
+      "label": "Oldest sort label",
+      "default": "Oldest"
+    },
+    {
+      "type": "text",
+      "id": "show_more_label",
+      "label": "Show more label",
+      "default": "Show more"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Empty state message",
+      "default": "No reviews match these filters."
+    },
+    {
+      "type": "text",
+      "id": "helpful_label",
+      "label": "Helpful prompt",
+      "default": "Was this helpful?"
+    },
+    {
+      "type": "text",
+      "id": "helpful_yes_label",
+      "label": "Helpful yes accessible label",
+      "default": "Helpful yes"
+    },
+    {
+      "type": "text",
+      "id": "helpful_no_label",
+      "label": "Helpful no accessible label",
+      "default": "Helpful no"
+    },
+    {
+      "type": "text",
+      "id": "review_rating_label",
+      "label": "Review rating accessible label",
+      "default": "Review rating"
+    },
+    {
+      "type": "range",
+      "id": "initial_reviews",
+      "label": "Initial visible reviews",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "reviews_per_page",
+      "label": "Reviews shown per click",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1120
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "rule_color",
+      "label": "Rule",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Stars",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#e6c46b"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background",
+      "default": "#3f3f3f"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "reviewer_name",
+          "label": "Reviewer name",
+          "default": "Cam I."
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified buyer",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "verified_label",
+          "label": "Verified label",
+          "default": "Verified Buyer"
+        },
+        {
+          "type": "checkbox",
+          "id": "recommends_product",
+          "label": "Recommends product",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "recommendation_label",
+          "label": "Recommendation label",
+          "default": "I recommend this product"
+        },
+        {
+          "type": "text",
+          "id": "skin_tone_label",
+          "label": "Skin tone label",
+          "default": "Skin Tone"
+        },
+        {
+          "type": "text",
+          "id": "skin_tone",
+          "label": "Skin tone",
+          "default": "Medium"
+        },
+        {
+          "type": "text",
+          "id": "skin_concern_label",
+          "label": "Skin concern label",
+          "default": "Skin Concern"
+        },
+        {
+          "type": "text",
+          "id": "skin_concern",
+          "label": "Skin concern",
+          "default": "Damaged"
+        },
+        {
+          "type": "text",
+          "id": "values_label",
+          "label": "Values label",
+          "default": "Values"
+        },
+        {
+          "type": "textarea",
+          "id": "values",
+          "label": "Values",
+          "default": "Organic, Vegan, Cruelty Free, Not Tested on Animals, Natural"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Multiple Use"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Body",
+          "default": "I used mahogany as eye-shadow and added a touch of mascara. Perfect!"
+        },
+        {
+          "type": "text",
+          "id": "date_label",
+          "label": "Date label",
+          "default": "3 hours ago"
+        },
+        {
+          "type": "text",
+          "id": "helpful_yes",
+          "label": "Helpful yes count",
+          "default": "0"
+        },
+        {
+          "type": "text",
+          "id": "helpful_no",
+          "label": "Helpful no count",
+          "default": "0"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Ogee customer reviews",
+      "category": "t:categories.product",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Cam I.",
+            "skin_tone": "Medium",
+            "skin_concern": "Damaged",
+            "values": "Organic, Vegan, Cruelty Free, Not Tested on Animals, Natural",
+            "title": "Multiple Use",
+            "body": "I used mahogany as eye-shadow and added a touch of mascara. Perfect!",
+            "date_label": "3 hours ago",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Melanie P.",
+            "skin_tone": "Light",
+            "skin_concern": "Combination, Wrinkles",
+            "values": "Natural",
+            "title": "Love!",
+            "body": "It's the best full coverage makeup I have ever used, and I feel like I have tried just about everything!",
+            "date_label": "5 hours ago",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Debra F.",
+            "skin_tone": "Medium",
+            "skin_concern": "Dry, Normal, Wrinkles",
+            "values": "Natural, Not Tested on Animals",
+            "title": "Finally Found My Makeup Line!!",
+            "body": "I finally found my foundation makeup. The complexion stick goes on so easily. I love using Ogee for this and everything else. It took me years to find a makeup line to like.",
+            "date_label": "7 hours ago",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Karolyn S.",
+            "skin_tone": "Light",
+            "skin_concern": "Dry, Wrinkles, Rosacea, Damaged",
+            "values": "Natural",
+            "title": "Complexion Stick",
+            "body": "Smooth application, even coverage in a stick. No waste. Love it!",
+            "date_label": "Yesterday",
+            "helpful_yes": "0",
+            "helpful_no": "1"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Rita C.",
+            "skin_tone": "Medium",
+            "skin_concern": "Rosacea",
+            "values": "Organic, Natural, Not Tested on Animals, Cruelty Free, GMO Free",
+            "title": "Best Ever",
+            "body": "My goodness what a subtle and perfect difference this has made for evening out some redness or dark spots on my face. Wow I am just so impressed as someone with beloved freckles I do not like thick covering makeup that washes out my freckles. This is light or heavier if you want it to be and glides on smooth and blends perfectly. I get so many comments about glowing even if I am unrested and not feeling my best and it immediately perks me up knowing less than 10 min of touching up in the morning made such a big impact.",
+            "date_label": "Yesterday",
+            "helpful_yes": "1",
+            "helpful_no": "0"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Lynn M.",
+            "skin_tone": "Medium",
+            "skin_concern": "Dryness, Uneven tone",
+            "values": "Organic, Natural, Cruelty Free",
+            "title": "Beautiful Coverage",
+            "body": "This gives me the smooth natural finish I wanted without feeling heavy. It blends quickly and looks fresh all day.",
+            "date_label": "Yesterday",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

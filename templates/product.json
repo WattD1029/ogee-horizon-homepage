@@ -37,6 +37,117 @@
         "fallback_rating_count": 500
       }
     },
+    "ogee_customer_reviews": {
+      "type": "ogee-customer-reviews",
+      "blocks": {
+        "review_cam": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Cam I.",
+            "skin_tone": "Medium",
+            "skin_concern": "Damaged",
+            "values": "Organic, Vegan, Cruelty Free, Not Tested on Animals, Natural",
+            "title": "Multiple Use",
+            "body": "I used mahogany as eye-shadow and added a touch of mascara. Perfect!",
+            "date_label": "3 hours ago",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        },
+        "review_melanie": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Melanie P.",
+            "skin_tone": "Light",
+            "skin_concern": "Combination, Wrinkles",
+            "values": "Natural",
+            "title": "Love!",
+            "body": "It's the best full coverage makeup I have ever used, and I feel like I have tried just about everything!",
+            "date_label": "5 hours ago",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        },
+        "review_debra": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Debra F.",
+            "skin_tone": "Medium",
+            "skin_concern": "Dry, Normal, Wrinkles",
+            "values": "Natural, Not Tested on Animals",
+            "title": "Finally Found My Makeup Line!!",
+            "body": "I finally found my foundation makeup. The complexion stick goes on so easily. I love using Ogee for this and everything else. It took me years to find a makeup line to like.",
+            "date_label": "7 hours ago",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        },
+        "review_karolyn": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Karolyn S.",
+            "skin_tone": "Light",
+            "skin_concern": "Dry, Wrinkles, Rosacea, Damaged",
+            "values": "Natural",
+            "title": "Complexion Stick",
+            "body": "Smooth application, even coverage in a stick. No waste. Love it!",
+            "date_label": "Yesterday",
+            "helpful_yes": "0",
+            "helpful_no": "1"
+          }
+        },
+        "review_rita": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Rita C.",
+            "skin_tone": "Medium",
+            "skin_concern": "Rosacea",
+            "values": "Organic, Natural, Not Tested on Animals, Cruelty Free, GMO Free",
+            "title": "Best Ever",
+            "body": "My goodness what a subtle and perfect difference this has made for evening out some redness or dark spots on my face. Wow I am just so impressed as someone with beloved freckles I do not like thick covering makeup that washes out my freckles. This is light or heavier if you want it to be and glides on smooth and blends perfectly. I get so many comments about glowing even if I am unrested and not feeling my best and it immediately perks me up knowing less than 10 min of touching up in the morning made such a big impact.",
+            "date_label": "Yesterday",
+            "helpful_yes": "1",
+            "helpful_no": "0"
+          }
+        },
+        "review_lynn": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Lynn M.",
+            "skin_tone": "Medium",
+            "skin_concern": "Dryness, Uneven tone",
+            "values": "Organic, Natural, Cruelty Free",
+            "title": "Beautiful Coverage",
+            "body": "This gives me the smooth natural finish I wanted without feeling heavy. It blends quickly and looks fresh all day.",
+            "date_label": "Yesterday",
+            "helpful_yes": "0",
+            "helpful_no": "0"
+          }
+        }
+      },
+      "block_order": [
+        "review_cam",
+        "review_melanie",
+        "review_debra",
+        "review_karolyn",
+        "review_rita",
+        "review_lynn"
+      ],
+      "settings": {
+        "heading": "",
+        "use_product_rating": false,
+        "average_rating": 4.8,
+        "rating_count": "3696",
+        "reviews_text": "Based on 3,696 reviews",
+        "review_count_display": "3,696 reviews",
+        "recommendation_percent": 96,
+        "content_width": 1120,
+        "padding_top": 48,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 48
+      }
+    },
     "main": {
       "type": "product-information",
       "disabled": true,
@@ -441,6 +552,7 @@
   },
   "order": [
     "ogee_product_buy",
+    "ogee_customer_reviews",
     "main",
     "product_recommendations_qggXJq"
   ]
