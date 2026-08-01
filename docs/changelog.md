@@ -9,3 +9,8 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-08-01][PLAN] Planned a PDP positive reviews section from desktop and mobile Figma nodes, using merchant-owned product metafields for metric, label, quote, and author with theme-editor fallbacks.
+[2026-08-01][IMPLEMENT] Added `sections/positive-reviews.liquid` and placed it after `ogee-product-buy` in `templates/product.json`, reading product metafields before section fallbacks.
+[2026-08-01][VERIFY] Validated the positive reviews section and product template with the Shopify Liquid validator, parsed product JSON, and ran `git diff --check`.
+[2026-08-01][REVIEW] Compound review found no blocking issues; remaining launch checks are real Shopify preview tuning and creating the product metafield definitions and values in Admin.
+[2026-08-01][COMPOUND] Captured the PDP positive reviews metafield section pattern in `docs/solutions/design-patterns/2026-08-01-pdp-positive-reviews-metafield-section.md`.

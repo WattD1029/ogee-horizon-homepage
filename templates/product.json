@@ -37,6 +37,12 @@
         "fallback_rating_count": 500
       }
     },
+    "positive_reviews": {
+      "type": "positive-reviews",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    },
     "main": {
       "type": "product-information",
       "disabled": true,
@@ -441,6 +447,7 @@
   },
   "order": [
     "ogee_product_buy",
+    "positive_reviews",
     "main",
     "product_recommendations_qggXJq"
   ]
