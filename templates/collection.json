@@ -24,99 +24,13 @@
         "padding_top": 68,
         "padding_bottom": 32,
         "padding_top_mobile": 36,
-        "padding_bottom_mobile": 32
-      }
-    },
-    "subcollection_navigation": {
-      "type": "subcollection-navigation",
-      "name": "Subcollection navigation",
-      "blocks": {
-        "all": {
-          "type": "link",
-          "settings": {
-            "label": "All",
-            "mobile_label": "",
-            "collection": "all",
-            "link": ""
-          }
-        },
-        "bestsellers": {
-          "type": "link",
-          "settings": {
-            "label": "Bestseller",
-            "mobile_label": "Bestsellers",
-            "collection": "bestsellers",
-            "link": ""
-          }
-        },
-        "new": {
-          "type": "link",
-          "settings": {
-            "label": "New",
-            "mobile_label": "",
-            "collection": "new",
-            "link": ""
-          }
-        },
-        "makeup": {
-          "type": "link",
-          "settings": {
-            "label": "Makeup",
-            "mobile_label": "",
-            "collection": "makeup",
-            "link": ""
-          }
-        },
-        "skincare": {
-          "type": "link",
-          "settings": {
-            "label": "Skincare",
-            "mobile_label": "",
-            "collection": "skincare",
-            "link": ""
-          }
-        },
-        "bundles": {
-          "type": "link",
-          "settings": {
-            "label": "Bundles",
-            "mobile_label": "",
-            "collection": "bundles",
-            "link": ""
-          }
-        },
-        "accessories": {
-          "type": "link",
-          "settings": {
-            "label": "Accessories",
-            "mobile_label": "",
-            "collection": "accessories",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "all",
-        "bestsellers",
-        "new",
-        "makeup",
-        "skincare",
-        "bundles",
-        "accessories"
-      ],
-      "settings": {
-        "aria_label": "Collection categories",
-        "desktop_content_width": 1200,
-        "desktop_gutter": 0,
-        "mobile_gutter": 0,
-        "color_scheme": "scheme-1",
-        "text_color": "#333333",
-        "border_color": "#dfdfdf",
-        "active_border_color": "#000000",
-        "padding_top": 0,
-        "padding_bottom": 32,
-        "padding_top_mobile": 0,
-        "padding_bottom_mobile": 24
+        "padding_bottom_mobile": 24,
+        "navigation_aria_label": "Collection categories",
+        "navigation_text_color": "#333333",
+        "navigation_border_color": "#dfdfdf",
+        "navigation_active_border_color": "#000000",
+        "navigation_margin_top": 32,
+        "navigation_margin_top_mobile": 32
       }
     },
     "main": {
@@ -262,7 +176,6 @@
   },
   "order": [
     "section",
-    "subcollection_navigation",
     "main"
   ]
 }

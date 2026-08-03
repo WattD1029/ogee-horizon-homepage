@@ -1,5 +1,5 @@
 ---
-title: Build a Figma CLP Subcollection Navigation Section
+title: Build Upload-Safe Figma CLP Subcollection Navigation
 category: design-patterns
 date: 2026-08-03
 type: knowledge
@@ -13,7 +13,7 @@ tags:
   - mobile-scroll
 ---
 
-# Build a Figma CLP Subcollection Navigation Section
+# Build Upload-Safe Figma CLP Subcollection Navigation
 
 ## Problem
 
@@ -29,6 +29,12 @@ for spotlight/image collection linking and hover or scroll-driven selected
 state. This CLP navigation needed normal page links with a current-page state
 derived from the actual collection page.
 
+After the first pass, Shopify rejected `templates/collection.json` during
+upload because the template referenced `subcollection-navigation` and the
+target upload context did not have a matching section file available. The final
+implementation needed to keep the nav while avoiding a hard dependency on a
+brand-new section type.
+
 ## Symptoms
 
 - `sections/collection-links.liquid` renders `_collection-link` blocks and can
@@ -41,6 +47,9 @@ derived from the actual collection page.
   `Bestseller`, while mobile uses `Bestsellers`.
 - The mobile screenshot is intentionally scrollable, so the section must allow
   overflow instead of wrapping or shrinking labels.
+- Shopify upload reported that `templates/collection.json` referenced a
+  `subcollection-navigation` section type without a corresponding section file
+  in the upload target.
 
 ## What Didn't Work
 
@@ -63,17 +72,31 @@ The references use different desktop and mobile text for the bestseller link.
 Hardcoding one value would miss one viewport. Duplicating the whole block would
 create two links to the same destination and confuse keyboard users.
 
+### Shipping a brand-new section type as a separate template dependency
+
+A standalone `sections/subcollection-navigation.liquid` file is valid when the
+full theme payload includes the new file before or alongside the template
+change. It is brittle when the upload path applies `templates/collection.json`
+without that new section file. Shopify validates template section types against
+available section files, so the template failed before the nav could render.
+
 ## Solution
 
-Create a dedicated Shopify section:
+Extend the existing CLP intro section instead of adding a new template section
+type:
 
-- `sections/subcollection-navigation.liquid`
+- `sections/clp-intro.liquid`
 
-Wire it into:
+Keep the collection template on existing section types only:
 
 - `templates/collection.json`
 
-The section renders merchant-managed `link` blocks with:
+The CLP intro section now renders a built-in default navigation row below the
+intro copy. It also supports optional merchant-managed `navigation_link` blocks
+for future editing, but `templates/collection.json` does not need to reference
+those blocks for the default CLP route.
+
+Each configured block can provide:
 
 - desktop label
 - optional mobile label
@@ -112,7 +135,8 @@ horizontal scroller:
   'center' })`
 - leave active state untouched
 
-The collection template instance adds seven blocks:
+When no navigation blocks are configured, the section renders seven default
+links:
 
 - All
 - Bestseller / Bestsellers on mobile
@@ -122,12 +146,17 @@ The collection template instance adds seven blocks:
 - Bundles
 - Accessories
 
+The standalone `sections/subcollection-navigation.liquid` file was removed, and
+`templates/collection.json` no longer includes a `subcollection_navigation`
+section entry or `navigation_link` block entries. The template now only
+references the existing `clp-intro` and `main-collection` section types.
+
 ## Why This Works
 
-The section matches the Figma composition while keeping the interaction model
-simple: every visible item is a normal link to a collection page. Liquid owns
-the current-page state because Liquid has access to the active `collection`
-object.
+The CLP intro section matches the Figma composition while keeping the
+interaction model simple: every visible item is a normal link to a collection
+page. Liquid owns the current-page state because Liquid has access to the
+active `collection` object.
 
 Separating desktop and mobile label settings solves the one copy mismatch
 without duplicating links or adding viewport-specific markup in the template.
@@ -136,6 +165,10 @@ Keeping the overflow as native horizontal scrolling avoids importing carousel
 controls for a navigation row. The JavaScript enhancement is deliberately
 small: it improves initial mobile positioning for deeper categories such as
 Bundles and Accessories, but cannot change destinations or selected state.
+
+Keeping the template on the already-existing `clp-intro` section type avoids
+the Shopify upload failure class where a JSON template references a new section
+file that is missing from the target theme or upload payload.
 
 ## Prevention
 
@@ -146,8 +179,14 @@ Bundles and Accessories, but cannot change destinations or selected state.
 - When Figma has viewport-specific copy, add one optional viewport-specific
   label rather than duplicating links.
 - Let mobile nav rows overflow horizontally when the design shows clipping.
-- Validate both the section schema and the JSON template after adding a new
-  section type.
+- When a target upload path has already rejected a new section type, fold the
+  feature into an existing uploaded section or ensure the new section file is
+  uploaded first.
+- When upload safety matters more than merchant-managed template data, let the
+  section provide sensible defaults so the JSON template does not depend on new
+  local block types.
+- Validate both the existing section schema and the JSON template after moving
+  route-level UI into an existing section.
 - Review template placement so the nav belongs to the CLP hierarchy, not the
   filter/facet hierarchy.
 - Verify active-page behavior with at least the first, middle, and last
@@ -155,29 +194,32 @@ Bundles and Accessories, but cannot change destinations or selected state.
 
 ## Related Docs
 
-- [Subcollection navigation section](../../../sections/subcollection-navigation.liquid)
-- [Collection template](../../../templates/collection.json)
 - [CLP intro section](../../../sections/clp-intro.liquid)
+- [Collection template](../../../templates/collection.json)
 - [Collection card mobile scroll pattern](2026-07-05-figma-collection-card-section.md)
 - [Skincare carousel navigation contract](../ui-bugs/2026-07-13-all-skincare-carousel-cta-contract.md)
 
 ## Reusable Insight
 
-For Shopify collection page navigation, use a dedicated section when the design
-is route-oriented. Reuse collection resource settings and simple links, but do
-not inherit carousel or spotlight selected-state behavior that can decouple
-visual active state from the current page.
+For Shopify collection page navigation, keep active state route-oriented and
+server-rendered. A dedicated section is clean when the deployment path includes
+new files reliably; otherwise, extend the nearest existing section so the JSON
+template does not depend on a section type that may be absent from the target
+theme.
 
 ## Compound Summary
 
-The CLP subcollection navigation was implemented as a focused Shopify section
-and inserted between `clp-intro` and `main-collection` in the collection
-template. It matches the Figma desktop and mobile spacing, typography, border,
-and overflow behavior; supports a mobile-specific label for the bestseller
-copy mismatch; and keeps active state server-rendered from the current
-collection. Review found no actionable implementation issues. Verification
-passed with the Shopify Liquid validator for `sections/subcollection-navigation.liquid`
-and `templates/collection.json`, section schema JSON parsing, collection
-template JSON parsing, and `git diff --check`. The remaining launch dependency
-is visual QA in a Shopify preview because the local Shopify CLI is not
-available in this workspace.
+The CLP subcollection navigation now lives inside `sections/clp-intro.liquid`
+and renders from built-in defaults unless merchants add `navigation_link`
+blocks later. It matches the Figma desktop and mobile spacing, typography,
+border, and overflow behavior; supports a mobile-specific label for the
+bestseller copy mismatch; and keeps active state server-rendered from the
+current collection. The follow-up upload fix removed the standalone
+`sections/subcollection-navigation.liquid` file and removed all new section and
+block references from `templates/collection.json`, resolving Shopify's
+missing-section upload error while reducing the chance of a follow-up
+missing-block error. Verification passed with the Shopify Liquid validator for
+`sections/clp-intro.liquid` and `templates/collection.json`, section schema JSON
+parsing, collection template JSON parsing, a template dependency grep, and
+`git diff --check`. The remaining launch dependency is visual QA in a Shopify
+preview because the local Shopify CLI is not available in this workspace.

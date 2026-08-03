@@ -18,3 +18,7 @@
 [2026-08-03][REVIEW] Reviewed the CLP subcollection navigation for active-page state, mobile overflow behavior, template placement, and accidental coupling to `collection-links`; no actionable issues were found.
 [2026-08-03][VERIFY] Ran Shopify Liquid docs search, validated `sections/subcollection-navigation.liquid` and `templates/collection.json`, parsed the section schema and collection template JSON, and ran `git diff --check`.
 [2026-08-03][COMPOUND] Captured the route-oriented CLP subcollection navigation pattern in `docs/solutions/design-patterns/2026-08-03-figma-clp-subcollection-navigation.md`.
+[2026-08-03][FIX] Resolved the Shopify upload error by moving the subcollection navigation into the existing `clp-intro` section and removing the `subcollection-navigation` template section dependency.
+[2026-08-03][VERIFY] Revalidated `sections/clp-intro.liquid` and `templates/collection.json`, parsed both JSON bodies, and confirmed no template references remain to the missing `subcollection-navigation` section type.
+[2026-08-03][COMPOUND] Updated `docs/solutions/design-patterns/2026-08-03-figma-clp-subcollection-navigation.md` with the upload-safe implementation lesson.
+[2026-08-03][UPDATE] Hardened the CLP subcollection navigation defaults so `templates/collection.json` no longer depends on new `navigation_link` block entries.
