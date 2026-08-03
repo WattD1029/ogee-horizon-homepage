@@ -13,3 +13,8 @@
 [2026-08-03][IMPLEMENT] Added `sections/clp-intro.liquid` and wired it into `templates/collection.json` above `main-collection` so the collection page shows the Figma CLP intro with scoped Ogee typography.
 [2026-08-03][REVIEW] Compound review tightened the placeholder description fallback to the `all` collection handle so lorem copy does not leak to other blank-description collection pages.
 [2026-08-03][VERIFY] Validated `sections/clp-intro.liquid` and `templates/collection.json` with the Shopify Liquid validator, parsed the collection template body and section schema JSON, and checked for trailing whitespace.
+[2026-08-03][PLAN] Planned a dedicated CLP subcollection navigation section from the Figma desktop/mobile nodes, targeting the collection template between `clp-intro` and `main-collection` with collection-backed links, fixed active-page state, and mobile horizontal overflow verification.
+[2026-08-03][IMPLEMENT] Added `sections/subcollection-navigation.liquid` and wired it into `templates/collection.json` between `clp-intro` and `main-collection` with collection-backed links and Figma desktop/mobile spacing.
+[2026-08-03][REVIEW] Reviewed the CLP subcollection navigation for active-page state, mobile overflow behavior, template placement, and accidental coupling to `collection-links`; no actionable issues were found.
+[2026-08-03][VERIFY] Ran Shopify Liquid docs search, validated `sections/subcollection-navigation.liquid` and `templates/collection.json`, parsed the section schema and collection template JSON, and ran `git diff --check`.
+[2026-08-03][COMPOUND] Captured the route-oriented CLP subcollection navigation pattern in `docs/solutions/design-patterns/2026-08-03-figma-clp-subcollection-navigation.md`.
