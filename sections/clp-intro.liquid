@@ -1,0 +1,259 @@
+{% liquid
+  assign heading_text = section.settings.heading_override
+
+  if heading_text == blank
+    if collection != blank
+      assign heading_text = collection.title
+    endif
+  endif
+
+  if heading_text == blank
+    assign heading_text = 'placeholders.collection_title' | t
+  endif
+
+  assign description_text = ''
+  assign description_is_plain = false
+  assign can_use_description_fallback = false
+
+  if section.settings.description_override != blank
+    assign description_text = section.settings.description_override
+    assign description_is_plain = true
+  elsif collection != blank
+    if collection.description != blank
+      assign description_text = collection.description
+    endif
+  endif
+
+  if section.settings.description_fallback != blank
+    if section.settings.description_fallback_collection_handle == blank
+      assign can_use_description_fallback = true
+    elsif collection != blank
+      if collection.handle == section.settings.description_fallback_collection_handle
+        assign can_use_description_fallback = true
+      endif
+    endif
+  endif
+
+  if description_text == blank
+    if can_use_description_fallback
+      assign description_text = section.settings.description_fallback
+      assign description_is_plain = true
+    endif
+  endif
+%}
+
+<section
+  class="clp-intro color-{{ section.settings.color_scheme }}"
+  style="
+    --clp-intro-content-width: {{ section.settings.desktop_content_width }}px;
+    --clp-intro-desktop-gutter: {{ section.settings.desktop_gutter }}px;
+    --clp-intro-mobile-gutter: {{ section.settings.mobile_gutter }}px;
+    --clp-intro-padding-top: {{ section.settings.padding_top }}px;
+    --clp-intro-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --clp-intro-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --clp-intro-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="clp-intro__inner">
+    {% if heading_text != blank %}
+      <h1 class="clp-intro__heading">{{ heading_text | escape }}</h1>
+    {% endif %}
+
+    {% if description_text != blank %}
+      <div class="clp-intro__description">
+        {% if description_is_plain %}
+          {{ description_text | escape | newline_to_br }}
+        {% else %}
+          {{ description_text }}
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .clp-intro {
+    width: 100%;
+    box-sizing: border-box;
+    padding-block: var(--clp-intro-padding-top) var(--clp-intro-padding-bottom);
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  .clp-intro__inner {
+    display: flex;
+    width: min(
+      var(--clp-intro-content-width),
+      calc(100% - var(--clp-intro-desktop-gutter) - var(--clp-intro-desktop-gutter))
+    );
+    margin-inline: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .clp-intro__heading {
+    margin: 0;
+    color: var(--color-foreground-heading);
+    font-family: "Chronicle Display", Georgia, "Times New Roman", var(--font-heading--family), serif;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-transform: capitalize;
+  }
+
+  .clp-intro__description {
+    max-width: 815px;
+    color: var(--color-foreground);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .clp-intro__description,
+  .clp-intro__description > * {
+    margin: 0;
+  }
+
+  .clp-intro__description p {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .clp-intro {
+      padding-block: var(--clp-intro-padding-top-mobile) var(--clp-intro-padding-bottom-mobile);
+    }
+
+    .clp-intro__inner {
+      width: calc(100% - var(--clp-intro-mobile-gutter) - var(--clp-intro-mobile-gutter));
+    }
+
+    .clp-intro__heading {
+      font-size: 28px;
+    }
+
+    .clp-intro__description {
+      max-width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "CLP intro",
+  "tag": "section",
+  "class": "section-wrapper",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_override",
+      "label": "Heading override"
+    },
+    {
+      "type": "textarea",
+      "id": "description_override",
+      "label": "Description override"
+    },
+    {
+      "type": "textarea",
+      "id": "description_fallback",
+      "label": "Description fallback"
+    },
+    {
+      "type": "text",
+      "id": "description_fallback_collection_handle",
+      "label": "Fallback collection handle",
+      "default": "all"
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "desktop_gutter",
+      "label": "Desktop gutter",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_gutter",
+      "label": "Mobile gutter",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 68
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "CLP intro"
+    }
+  ]
+}
+{% endschema %}

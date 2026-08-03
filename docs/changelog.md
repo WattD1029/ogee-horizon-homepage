@@ -9,3 +9,7 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-08-03][PLAN] Planned the CLP intro hero from Figma desktop and mobile nodes, targeting the collection template heading above `main-collection` with responsive Ogee typography, collection-backed title/description content, and preview verification across desktop, tablet, and mobile.
+[2026-08-03][IMPLEMENT] Added `sections/clp-intro.liquid` and wired it into `templates/collection.json` above `main-collection` so the collection page shows the Figma CLP intro with scoped Ogee typography.
+[2026-08-03][REVIEW] Compound review tightened the placeholder description fallback to the `all` collection handle so lorem copy does not leak to other blank-description collection pages.
+[2026-08-03][VERIFY] Validated `sections/clp-intro.liquid` and `templates/collection.json` with the Shopify Liquid validator, parsed the collection template body and section schema JSON, and checked for trailing whitespace.
