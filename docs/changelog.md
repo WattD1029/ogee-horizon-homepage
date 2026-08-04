@@ -38,3 +38,10 @@
 [2026-08-04][VERIFY] Revalidated `blocks/filters.liquid`, `sections/clp-intro.liquid`, and `templates/collection.json` with the Shopify Liquid validator, parsed the collection template JSON, and reran `git diff --check` with only line-ending warnings.
 [2026-08-04][FIX] Collapsed the mobile Refine/View row during the floating category rail state so the rail no longer leaves ghost controls or extra whitespace above product cards.
 [2026-08-04][VERIFY] Revalidated `blocks/filters.liquid` with the Shopify Liquid validator and reran `git diff --check` with only line-ending warnings.
+[2026-08-04][PLAN] Planned the CLP filter drawer redesign from Figma desktop/mobile nodes, targeting the existing Horizon facets drawer with Figma chips, checkbox rows, pinned Apply/Clear actions, and preserved AJAX filter/sort behavior.
+[2026-08-04][IMPLEMENT] Restyled the CLP filter drawer on the existing Horizon facets drawer with Figma header results count, selected-filter chips, mobile Sort By row, checkbox list rows, and pinned Apply/Clear actions.
+[2026-08-04][FIX] Removed a CLP caret wrapper rotation that would have canceled the theme's existing open-state icon animation, and restored the mobile divider between Sort By and the first filter group.
+[2026-08-04][REVIEW] Compound review found no remaining code-level regressions after the caret/divider fix; residual risk is live Shopify preview pixel QA.
+[2026-08-04][VERIFY] Validated the changed drawer, filter, sorting, and locale files with the Shopify Liquid validator, parsed the English locale as JSONC, and reran `git diff --check` with only line-ending warnings.
+[2026-08-04][COMPOUND] Captured the CLP filter drawer-on-Horizon-facets pattern in `docs/solutions/design-patterns/2026-08-04-figma-clp-filter-drawer.md`.
+[2026-08-04][FIX] Docked the CLP filter drawer to the right edge and restored the selected-filter tab row on desktop by overriding the horizontal facets chip hide rule only inside the CLP drawer.

@@ -8,6 +8,7 @@
   @param {string} [sort_position] - { 'desktop' | 'mobile' } Used in a data-testID selector for automated testing
   @param {boolean} should_use_select_on_mobile - Whether to use a select element for the sorting component on mobile
   @param {boolean} [show_sort_prefix] - Whether to render the "Sort By:" label treatment
+  @param {string} [label_translation_key] - Optional translation key for the summary label
   @param {string} section_id - The section ID
 {%- enddoc -%}
 
@@ -22,6 +23,11 @@
 >
   {% liquid
     assign default_sort_by = results.default_sort_by
+    assign sort_label_translation_key = label_translation_key | default: 'actions.sort'
+    if show_sort_prefix and label_translation_key == blank
+      assign sort_label_translation_key = 'actions.sort_by'
+    endif
+
     for option in results.sort_options
       if option.value == sort_by
         assign status = option.name
@@ -34,7 +40,7 @@
       for="sort-select-{{ section_id }}"
       class="facets__label"
     >
-      {{- 'actions.sort' | t -}}
+      {{- sort_label_translation_key | t -}}
     </label>
     <div class="sorting-filter__select-wrapper">
       <select
@@ -89,11 +95,7 @@
           class="facets__label"
           id="sort-label-{{ section_id }}"
         >
-          {%- if show_sort_prefix -%}
-            {{- 'actions.sort_by' | t -}}
-          {%- else -%}
-            {{- 'actions.sort' | t -}}
-          {%- endif -%}
+          {{- sort_label_translation_key | t -}}
         </span>
         {% if show_sort_prefix %}
           <span class="sorting-filter__status">
