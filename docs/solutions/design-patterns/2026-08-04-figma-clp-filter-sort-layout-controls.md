@@ -153,6 +153,12 @@ labels and URLs without duplicating collection handles in the shared filters
 block. The behavior is guarded to desktop breakpoints, so the mobile
 `Refine | Products | View` toolbar remains unchanged.
 
+The final Figma dimension node set the floating state at 54px high with 1200px
+centered content, 16px navigation/action gaps, 13px uppercase navigation labels,
+and a 3-column product grid whose 394.67px cards require 8px gutters inside the
+1200px content area. The collection template therefore uses 8px horizontal and
+vertical product-grid gaps for this CLP.
+
 ## Prevention
 
 - Before redesigning filter controls, identify whether the current block owns
@@ -208,7 +214,9 @@ cascade position, desktop product count copy was scoped to `Products`, and the
 mobile layout control was tightened to the Figma-style `View` plus two-bar mark.
 A later desktop follow-up added a sticky floating state that clones the CLP
 intro navigation into the toolbar after scroll, hides the product count while
-floating, and keeps Filter/Sort available at the top of the product grid.
+floating, and keeps Filter/Sort available at the top of the product grid. The
+Figma dimension pass then aligned the floating nav typography, bar height, gaps,
+and product-grid gutter settings to the measured node.
 
 Verification passed with the Shopify Liquid validator for
 `blocks/filters.liquid`, `snippets/sorting.liquid`,

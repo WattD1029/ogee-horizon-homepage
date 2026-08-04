@@ -1615,8 +1615,8 @@
   .facets-block-wrapper--clp-floating .facets--clp-controls.facets--horizontal {
     @media screen and (min-width: 750px) {
       border-top: 0;
-      box-shadow: 0 1px 10px rgb(0 0 0 / 10%);
-      padding-block: 10px;
+      min-height: 54px;
+      padding-block: 0;
     }
   }
 
@@ -1641,7 +1641,7 @@
     @media screen and (min-width: 750px) {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 16px;
       min-width: 0;
       overflow-x: auto;
       scrollbar-width: none;
@@ -1659,14 +1659,14 @@
     @media screen and (min-width: 750px) {
       display: inline-flex;
       align-items: center;
-      min-height: 24px;
-      padding-block: 6px 5px;
+      min-height: 54px;
+      padding-block: 20px;
       border-bottom: 1px solid transparent;
-      color: #000;
+      color: #646464;
       font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 1px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.3px;
       line-height: 1.1;
       text-decoration: none;
       text-transform: uppercase;
@@ -1679,6 +1679,7 @@
   .facets-clp-floating-nav__link:focus-visible {
     @media screen and (min-width: 750px) {
       border-bottom-color: #000;
+      color: #333;
     }
   }
 
