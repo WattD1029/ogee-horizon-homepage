@@ -14,6 +14,7 @@
     "cart": "Cart",
     "cart_count": "Total items in cart",
     "close_dialog": "Close dialog",
+    "collection_navigation": "Collection navigation",
     "country_region": "Country/Region",
     "country_results_count": "{{ count }} results",
     "product_details": "Product details",
@@ -92,6 +93,7 @@
     // Button to remove applied filters from search/collection results
     "remove": "Remove",
     "remove_discount": "Remove discount {{ code }}",
+    "refine": "Refine",
     // Button to expand hidden product variant options
     "show_all_options": "Show all options",
     "see_items": {
@@ -117,7 +119,8 @@
     "sign_up": "Sign up",
     "submit": "Submit",
     "view_store_information": "View store information",
-    "sort": "Sort"
+    "sort": "Sort",
+    "sort_by": "Sort By:"
   },
   "blocks": {
     "contact_form": {
@@ -194,6 +197,7 @@
       "default_view": "Default",
       "grid_fieldset": "Column grid",
       "single_item": "Single",
+      "view": "View",
       "zoom_out": "Zoom out"
     },
     "inventory_low_stock_show_count": {
@@ -208,6 +212,10 @@
       "other": "{{ count }} items"
     },
     "item_count_cutoff": "More than {{ count }} items",
+    "collection_product_count": {
+      "one": "{{ count }} Product",
+      "other": "{{ count }} Products"
+    },
     "language": "Language",
     "localization_region_and_language": "Region and language",
     "no_products_found": "No products found.",

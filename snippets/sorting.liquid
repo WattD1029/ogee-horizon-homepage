@@ -7,6 +7,7 @@
   @param {string} [suffix] - { 'desktop' | 'mobile' | 'overflow' } Used on `form` attributes to connect inputs to a form[id]
   @param {string} [sort_position] - { 'desktop' | 'mobile' } Used in a data-testID selector for automated testing
   @param {boolean} should_use_select_on_mobile - Whether to use a select element for the sorting component on mobile
+  @param {boolean} [show_sort_prefix] - Whether to render the "Sort By:" label treatment
   @param {string} section_id - The section ID
 {%- enddoc -%}
 
@@ -88,13 +89,23 @@
           class="facets__label"
           id="sort-label-{{ section_id }}"
         >
-          {{- 'actions.sort' | t -}}
+          {%- if show_sort_prefix -%}
+            {{- 'actions.sort_by' | t -}}
+          {%- else -%}
+            {{- 'actions.sort' | t -}}
+          {%- endif -%}
         </span>
-        <span
-          class="facets__status h6 desktop:hidden"
-        >
-          {{- status -}}
-        </span>
+        {% if show_sort_prefix %}
+          <span class="sorting-filter__status">
+            {{- status -}}
+          </span>
+        {% else %}
+          <span
+            class="facets__status h6 desktop:hidden"
+          >
+            {{- status -}}
+          </span>
+        {% endif %}
         <span class="svg-wrapper icon-caret icon-animated">
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>

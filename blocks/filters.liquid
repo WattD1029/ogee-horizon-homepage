@@ -69,6 +69,13 @@
   if block_settings.enable_filtering == false and block_settings.enable_sorting
     assign should_use_select_on_mobile = false
   endif
+
+  assign use_clp_controls = false
+  if template.name == 'collection'
+    if block_settings.filter_style == 'horizontal'
+      assign use_clp_controls = true
+    endif
+  endif
 -%}
 
 {% if block_settings.enable_filtering or block_settings.enable_sorting or block_settings.enable_grid_density %}
@@ -113,13 +120,14 @@
     </div>
   {% endif %}
 
-  <div
+  <clp-floating-controls
     class="
       {% if should_show_pane == false %}
         hidden
       {% endif %}
       facets-block-wrapper
       facets-block-wrapper--{{ block_settings.filter_style }}
+      {%- if use_clp_controls %} facets-block-wrapper--clp-controls{% endif %}
       {%- if block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}
       {%- if block_settings.filter_width == 'full-width' %} facets-block-wrapper--full-width{% endif %}
     "
@@ -134,10 +142,21 @@
       --facets-inner-padding-block: {{ block_settings.padding-block-start }}px {{ block_settings.padding-block-end }}px;
       --facets-inner-padding-inline: var(--padding-lg);
     "
+    {% if use_clp_controls %}
+      data-clp-floating-controls
+    {% endif %}
     {{ block.shopify_attributes }}
   >
+    {% if use_clp_controls %}
+      <nav
+        class="facets-clp-floating-nav facets-clp-floating-nav--mobile"
+        aria-label="{{ 'accessibility.collection_navigation' | t }}"
+        data-clp-floating-nav="mobile"
+      ></nav>
+    {% endif %}
+
     <div
-      class="facets facets--{{ block_settings.filter_style }} spacing-style"
+      class="facets facets--{{ block_settings.filter_style }}{% if use_clp_controls %} facets--clp-controls{% endif %} spacing-style"
       style="{% render 'spacing-style', settings: block_settings %}{% if block_settings.text_label_case == 'uppercase' %} --facet-label-transform: uppercase;{% endif %}"
       aria-label="{{ 'accessibility.filters' | t }}"
     >
@@ -149,134 +168,204 @@
         <form
           action="{{ results_url }}"
           id="FacetFiltersForm--{{ section.id }}-desktop"
-          class="facets__form"
+          class="facets__form{% if use_clp_controls %} facets__form--clp-controls{% endif %}"
           ref="facetsForm"
         >
           {% if should_show_pane %}
-            {% render 'filter-remove-buttons',
-              filters: filters,
-              results_url: results_url,
-              show_filter_label: block_settings.show_filter_label,
-              should_show_clear_all: true
-            %}
+            {% if use_clp_controls %}
+              <nav
+                class="facets-clp-floating-nav facets-clp-floating-nav--desktop"
+                aria-label="{{ 'accessibility.collection_navigation' | t }}"
+                data-clp-floating-nav="desktop"
+              ></nav>
 
-            {% if block_settings.enable_filtering %}
-              {% assign total_active_values = 0 %}
-
-              {% capture rendered_filters %}
-                {%- for filter in filters -%}
-                  {% case filter.type %}
-                    {% when 'price_range' %}
-                      {%- liquid
-                        if filter.min_value.value != null or filter.max_value.value != null
-                          assign total_active_values = total_active_values | plus: 1
-                          assign is_active = true
-                        endif
-
-                        if block_settings.filter_style != 'vertical'
-                          assign should_render_clear = true
-                        else
-                          assign should_render_clear = false
-                        endif
-
-                        render 'price-filter', filter: filter, filter_style: block_settings.filter_style, should_render_clear: should_render_clear, id_prefix: 'horizontal'
-                      -%}
-                    {% else %}
-                      {% liquid
-                        if filter.active_values.size > 0
-                          assign is_active = true
-                        endif
-
-                        assign active_value_count = filter.active_values | size
-                        assign total_active_values = total_active_values | plus: active_value_count
-                        if block_settings.filter_style != 'vertical'
-                          assign should_render_clear = true
-                        else
-                          assign should_render_clear = false
-                        endif
-                        render 'list-filter', filter: filter, filter_style: block_settings.filter_style, active_value_count: active_value_count, should_render_clear: should_render_clear, show_swatch_label: block_settings.show_swatch_label, sectionId: section.id
-                      %}
-                  {% endcase %}
-                {%- endfor -%}
-              {% endcapture %}
-
-              <div class="facets__filters-wrapper">
-                {% if block_settings.filter_style == 'horizontal' %}
-                  {% liquid
-                    assign more_attributes = 'on:click="#filters-drawer/showDialog"'
-                    if block_settings.text_label_case == 'uppercase'
-                      assign more_attributes = more_attributes | append: ' style="--text-transform: uppercase;"'
-                    endif
-                  %}
-                  {% render 'overflow-list',
-                    class: 'facets__overflow-list',
-                    children: rendered_filters,
-                    more-attributes: more_attributes,
-                    more-button-attributes: 'aria-haspopup="dialog"',
-                    minimum-items: 2,
-                    data-testid: 'horizontal-filters-overflow-list'
-                  %}
-                {% else %}
-                  {{ rendered_filters }}
-                {% endif %}
-              </div>
-
-              {% if block_settings.filter_style == 'horizontal' %}
-                <facet-remove-component
-                  class="facets-horizontal-remove {% if is_active %}facets-horizontal-remove--active{% endif %}"
-                  active-class="facets__clear-all-link--active"
-                  data-url="{{ results_url }}"
-                >
-                  <button
-                    type="button"
-                    class="button-unstyled facets__clear-all-link facets__clear-all-link--horizontal {% if is_active %}facets__clear-all-link--active{% endif %}"
-                    ref="clearButton"
-                    on:click="/removeFilter?form="
-                    on:keydown="/removeFilter?form="
-                  >
-                    {{- 'actions.clear_all' | t -}}
-                  </button>
-                </facet-remove-component>
-              {% endif %}
-            {% endif %}
-            {% if block_settings.filter_style == 'horizontal' %}
               <div
-                class="products-count-wrapper"
+                class="products-count-wrapper products-count-wrapper--clp"
                 data-testid="products-count"
               >
                 <span role="status">
                   {% if products_count > 25000 %}
                     {{- 'content.item_count_cutoff' | t: count: 25000 -}}
                   {% else %}
-                    {{- 'content.item_count' | t: count: products_count -}}
+                    {{- 'content.collection_product_count' | t: count: products_count -}}
                   {% endif %}
                 </span>
               </div>
 
-              {% if block_settings.enable_sorting %}
-                {% render 'sorting',
-                  results: results,
-                  sort_by: sort_by,
-                  filter_style: block_settings.filter_style,
-                  suffix: 'desktop',
-                  sort_position: 'desktop',
-                  should_use_select_on_mobile: false,
-                  section_id: section.id
-                %}
-              {% endif %}
+              <div class="facets-clp-controls__actions">
+                {% if block_settings.enable_filtering %}
+                  <button
+                    type="button"
+                    class="button-unstyled facets-clp-controls__button"
+                    on:click="#filters-drawer/showDialog"
+                    aria-haspopup="dialog"
+                  >
+                    {{- 'actions.show_filters' | t -}}
+                    {% if total_active_values > 0 %}
+                      <span
+                        class="filter-count-bubble facets-clp-controls__count-bubble"
+                        aria-label="{{ 'accessibility.filter_count' | t: count: total_active_values }}"
+                      >
+                        <span class="filter-count-bubble__background"></span>
+                        <span
+                          class="filter-count-bubble__text"
+                          aria-hidden="true"
+                        >
+                          {{ total_active_values }}
+                        </span>
+                      </span>
+                    {% endif %}
+                  </button>
+                {% endif %}
 
-              {% if block_settings.enable_grid_density %}
-                {% render 'grid-density-controls', viewport: 'desktop' %}
+                {% if block_settings.enable_filtering %}
+                  {% if block_settings.enable_sorting %}
+                    <span
+                      class="facets-clp-controls__divider"
+                      aria-hidden="true"
+                    ></span>
+                  {% endif %}
+                {% endif %}
+
+                {% if block_settings.enable_sorting %}
+                  {% render 'sorting',
+                    results: results,
+                    sort_by: sort_by,
+                    filter_style: block_settings.filter_style,
+                    suffix: 'desktop',
+                    sort_position: 'desktop',
+                    should_use_select_on_mobile: false,
+                    show_sort_prefix: true,
+                    section_id: section.id
+                  %}
+                {% endif %}
+              </div>
+            {% else %}
+              {% render 'filter-remove-buttons',
+                filters: filters,
+                results_url: results_url,
+                show_filter_label: block_settings.show_filter_label,
+                should_show_clear_all: true
+              %}
+
+              {% if block_settings.enable_filtering %}
+                {% assign total_active_values = 0 %}
+
+                {% capture rendered_filters %}
+                  {%- for filter in filters -%}
+                    {% case filter.type %}
+                      {% when 'price_range' %}
+                        {%- liquid
+                          if filter.min_value.value != null or filter.max_value.value != null
+                            assign total_active_values = total_active_values | plus: 1
+                            assign is_active = true
+                          endif
+
+                          if block_settings.filter_style != 'vertical'
+                            assign should_render_clear = true
+                          else
+                            assign should_render_clear = false
+                          endif
+
+                          render 'price-filter', filter: filter, filter_style: block_settings.filter_style, should_render_clear: should_render_clear, id_prefix: 'horizontal'
+                        -%}
+                      {% else %}
+                        {% liquid
+                          if filter.active_values.size > 0
+                            assign is_active = true
+                          endif
+
+                          assign active_value_count = filter.active_values | size
+                          assign total_active_values = total_active_values | plus: active_value_count
+                          if block_settings.filter_style != 'vertical'
+                            assign should_render_clear = true
+                          else
+                            assign should_render_clear = false
+                          endif
+                          render 'list-filter', filter: filter, filter_style: block_settings.filter_style, active_value_count: active_value_count, should_render_clear: should_render_clear, show_swatch_label: block_settings.show_swatch_label, sectionId: section.id
+                        %}
+                    {% endcase %}
+                  {%- endfor -%}
+                {% endcapture %}
+
+                <div class="facets__filters-wrapper">
+                  {% if block_settings.filter_style == 'horizontal' %}
+                    {% liquid
+                      assign more_attributes = 'on:click="#filters-drawer/showDialog"'
+                      if block_settings.text_label_case == 'uppercase'
+                        assign more_attributes = more_attributes | append: ' style="--text-transform: uppercase;"'
+                      endif
+                    %}
+                    {% render 'overflow-list',
+                      class: 'facets__overflow-list',
+                      children: rendered_filters,
+                      more-attributes: more_attributes,
+                      more-button-attributes: 'aria-haspopup="dialog"',
+                      minimum-items: 2,
+                      data-testid: 'horizontal-filters-overflow-list'
+                    %}
+                  {% else %}
+                    {{ rendered_filters }}
+                  {% endif %}
+                </div>
+
+                {% if block_settings.filter_style == 'horizontal' %}
+                  <facet-remove-component
+                    class="facets-horizontal-remove {% if is_active %}facets-horizontal-remove--active{% endif %}"
+                    active-class="facets__clear-all-link--active"
+                    data-url="{{ results_url }}"
+                  >
+                    <button
+                      type="button"
+                      class="button-unstyled facets__clear-all-link facets__clear-all-link--horizontal {% if is_active %}facets__clear-all-link--active{% endif %}"
+                      ref="clearButton"
+                      on:click="/removeFilter?form="
+                      on:keydown="/removeFilter?form="
+                    >
+                      {{- 'actions.clear_all' | t -}}
+                    </button>
+                  </facet-remove-component>
+                {% endif %}
+              {% endif %}
+              {% if block_settings.filter_style == 'horizontal' %}
+                <div
+                  class="products-count-wrapper"
+                  data-testid="products-count"
+                >
+                  <span role="status">
+                    {% if products_count > 25000 %}
+                      {{- 'content.item_count_cutoff' | t: count: 25000 -}}
+                    {% else %}
+                      {{- 'content.item_count' | t: count: products_count -}}
+                    {% endif %}
+                  </span>
+                </div>
+
+                {% if block_settings.enable_sorting %}
+                  {% render 'sorting',
+                    results: results,
+                    sort_by: sort_by,
+                    filter_style: block_settings.filter_style,
+                    suffix: 'desktop',
+                    sort_position: 'desktop',
+                    should_use_select_on_mobile: false,
+                    section_id: section.id
+                  %}
+                {% endif %}
+
+                {% if block_settings.enable_grid_density %}
+                  {% render 'grid-density-controls', viewport: 'desktop' %}
+                {% endif %}
               {% endif %}
             {% endif %}
           {% endif %}
         </form>
       </facets-form-component>
     </div>
-  </div>
+  </clp-floating-controls>
 
   <div
-    class="facets-toggle{% if block_settings.enable_filtering == false %} facets-toggle--no-filters{% endif %}{% if block_settings.filter_style == 'horizontal' and block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}"
+    class="facets-toggle{% if use_clp_controls %} facets-toggle--clp-controls{% endif %}{% if block_settings.enable_filtering == false %} facets-toggle--no-filters{% endif %}{% if block_settings.filter_style == 'horizontal' and block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}"
     style="
       --facets-inner-padding-block: {{ block_settings.padding-block-start }}px {{ block_settings.padding-block-end }}px; --facets-inner-padding-inline: var(--padding-lg);
       {{ facets_margin_style }}
@@ -285,16 +374,23 @@
     {% if block_settings.enable_filtering %}
       <div class="facets-toggle__wrapper">
         <button
-          class="button facets-toggle__button button-unstyled button-unstyled--with-icon"
+          class="{% unless use_clp_controls %}button {% endunless %}facets-toggle__button button-unstyled button-unstyled--with-icon{% if use_clp_controls %} facets-toggle__button--clp{% endif %}"
           on:click="#filters-drawer/showDialog"
           type="button"
           aria-haspopup="dialog"
         >
-          <span class="svg-wrapper">
-            {{ 'icon-filter.svg' | inline_asset_content }}
-          </span>
+          {% if use_clp_controls %}
+            <span class="svg-wrapper facets-toggle__refine-icon">
+              {{ 'icon-caret.svg' | inline_asset_content }}
+            </span>
+            {{ 'actions.refine' | t }}
+          {% else %}
+            <span class="svg-wrapper">
+              {{ 'icon-filter.svg' | inline_asset_content }}
+            </span>
 
-          {{ 'actions.show_filters' | t }}
+            {{ 'actions.show_filters' | t }}
+          {% endif %}
 
           {% if total_active_values > 0 %}
             <div
@@ -314,6 +410,25 @@
             </div>
           {% endif %}
         </button>
+
+        {% if use_clp_controls %}
+          <span
+            class="facets-toggle__divider"
+            aria-hidden="true"
+          ></span>
+          <span
+            class="products-count-wrapper products-count-wrapper--mobile-clp"
+            data-testid="products-count-mobile"
+          >
+            <span role="status">
+              {% if products_count > 25000 %}
+                {{- 'content.item_count_cutoff' | t: count: 25000 -}}
+              {% else %}
+                {{- 'content.collection_product_count' | t: count: products_count -}}
+              {% endif %}
+            </span>
+          </span>
+        {% endif %}
       </div>
     {% endif %}
 
@@ -507,6 +622,14 @@
 
 {% stylesheet %}
   .facets-block-wrapper {
+    display: block;
+  }
+
+  .facets-clp-floating-nav {
+    display: none;
+  }
+
+  .facets-block-wrapper {
     @media screen and (min-width: 750px) {
       margin: var(--facets-margin);
       grid-column: var(--grid-column--desktop);
@@ -516,6 +639,138 @@
   .facets-block-wrapper--vertical {
     @media screen and (min-width: 750px) {
       grid-column: var(--grid-column--desktop);
+    }
+  }
+
+  .facets-block-wrapper--clp-controls {
+    @media screen and (min-width: 750px) {
+      grid-column: var(--full-width);
+      margin: 0;
+    }
+  }
+
+  .facets--clp-controls.facets--horizontal {
+    @media screen and (min-width: 750px) {
+      border-top: 1px solid #dfdfdf;
+      padding-block: 24px;
+      padding-inline: 0;
+    }
+  }
+
+  .facets__form--clp-controls {
+    @media screen and (min-width: 750px) {
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+  }
+
+  .facets--clp-controls .products-count-wrapper--clp {
+    @media screen and (min-width: 750px) {
+      display: flex;
+      height: auto;
+      margin-left: 0;
+    }
+  }
+
+  .products-count-wrapper--clp,
+  .products-count-wrapper--mobile-clp {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #333;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  .facets-clp-controls__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+    min-width: fit-content;
+  }
+
+  .facets-clp-controls__button,
+  .facets-toggle__button--clp {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 24px;
+    padding: 0;
+    color: #000;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.3px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .facets-clp-controls__divider,
+  .facets-toggle__divider {
+    display: block;
+    width: 1px;
+    height: 15px;
+    background: #dfdfdf;
+    flex: 0 0 1px;
+  }
+
+  .facets-clp-controls__count-bubble {
+    width: 18px;
+    border-color: transparent;
+  }
+
+  .facets-clp-controls__count-bubble .filter-count-bubble__text,
+  .facets-toggle__button--clp .filter-count-bubble__text {
+    letter-spacing: 0;
+  }
+
+  .facets--clp-controls .sorting-filter .facets__summary {
+    @media screen and (min-width: 750px) {
+      align-items: center;
+      gap: 4px;
+      height: auto;
+      min-height: 24px;
+    }
+  }
+
+  .facets--clp-controls .sorting-filter .facets__label {
+    @media screen and (min-width: 750px) {
+      margin-inline-end: 0;
+      color: #000;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.3px;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+  }
+
+  .facets--clp-controls .sorting-filter__status {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .facets--clp-controls .sorting-filter .icon-caret {
+    @media screen and (min-width: 750px) {
+      width: 24px;
+      height: 24px;
+      margin: 0;
+      color: #333;
+    }
+  }
+
+  .facets--clp-controls .sorting-filter__options {
+    @media screen and (min-width: 750px) {
+      top: calc(100% + 8px);
     }
   }
 
@@ -539,12 +794,50 @@
     margin-left: var(--icon-offset);
   }
 
+  .facets-toggle--clp-controls {
+    border-top: 1px solid #dfdfdf;
+    height: auto;
+    min-height: 54px;
+    margin: 0;
+    padding-block: 16px;
+    color: #333;
+  }
+
+  .facets-toggle--clp-controls .facets-toggle__wrapper {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    margin-left: 0;
+  }
+
   .facets-toggle__button {
     box-shadow: none;
 
     @media screen and (min-width: 750px) {
       display: none;
     }
+  }
+
+  .facets-toggle__button--clp {
+    box-shadow: none;
+  }
+
+  .facets-toggle__refine-icon {
+    width: 24px;
+    height: 24px;
+    transform: rotate(90deg);
+  }
+
+  .facets-toggle__refine-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .facets-toggle--clp-controls .products-count-wrapper--mobile-clp {
+    display: flex;
+    align-items: center;
+    min-width: 0;
   }
 
   .filter-count-bubble {
@@ -1307,7 +1600,397 @@
     height: var(--font-paragraph--size);
     position: absolute;
   }
+
+  .facets-block-wrapper--clp-controls {
+    @media screen and (max-width: 749px) {
+      margin: 0;
+      position: sticky;
+      top: var(--clp-floating-controls-top, 0);
+      z-index: var(--layer-sticky);
+      background: #fff;
+    }
+
+    @media screen and (min-width: 750px) {
+      grid-column: var(--centered);
+      position: sticky;
+      top: var(--clp-floating-controls-top, 0);
+      z-index: var(--layer-sticky);
+      background: #fff;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating {
+    @media screen and (max-width: 749px) {
+      background: #fff;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating + .facets-toggle--clp-controls {
+    @media screen and (max-width: 749px) {
+      display: none;
+    }
+  }
+
+  .facets--clp-controls.facets--horizontal {
+    @media screen and (min-width: 750px) {
+      border-top: 1px solid #dfdfdf;
+      padding-block: 24px 0;
+      padding-inline: 0;
+      width: 100%;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets--clp-controls.facets--horizontal {
+    @media screen and (min-width: 750px) {
+      border-top: 0;
+      min-height: 54px;
+      padding-block: 0;
+    }
+  }
+
+  .facets--clp-controls .facets__form--clp-controls {
+    @media screen and (min-width: 750px) {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets--clp-controls .facets__form--clp-controls {
+    @media screen and (min-width: 750px) {
+      gap: 24px;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--desktop {
+    @media screen and (min-width: 750px) {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 1 1 auto;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--desktop::-webkit-scrollbar {
+    @media screen and (min-width: 750px) {
+      display: none;
+    }
+  }
+
+  .facets-clp-floating-nav__link {
+    @media screen and (min-width: 750px) {
+      display: inline-flex;
+      align-items: center;
+      min-height: 54px;
+      padding-block: 20px;
+      border-bottom: 1px solid transparent;
+      color: #646464;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.3px;
+      line-height: 1.1;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+  }
+
+  .facets-clp-floating-nav__link[aria-current='page'],
+  .facets-clp-floating-nav__link:hover,
+  .facets-clp-floating-nav__link:focus-visible {
+    @media screen and (min-width: 750px) {
+      border-bottom-color: #000;
+      color: #333;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--mobile {
+    @media screen and (max-width: 749px) {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 32px;
+      padding-inline: 20px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+      background: #fff;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--mobile::-webkit-scrollbar {
+    @media screen and (max-width: 749px) {
+      display: none;
+    }
+  }
+
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link {
+    @media screen and (max-width: 749px) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 10px 0 9px;
+      border: 0;
+      border-bottom: 1px solid transparent;
+      color: #646464;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.3px;
+      line-height: 1.1;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+  }
+
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link[aria-current='page'],
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link:hover,
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link:focus-visible {
+    @media screen and (max-width: 749px) {
+      border-bottom-color: #000;
+      color: #333;
+    }
+  }
+
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link--has-image {
+    @media screen and (max-width: 749px) {
+      gap: 0;
+      min-width: auto;
+      padding: 10px 0 9px;
+    }
+  }
+
+  .facets-clp-floating-nav__image {
+    @media screen and (max-width: 749px) {
+      display: none;
+      width: 50px;
+      height: 50px;
+      flex: 0 0 50px;
+      overflow: hidden;
+    }
+  }
+
+  .facets-clp-floating-nav__image img {
+    @media screen and (max-width: 749px) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .facets--clp-controls .products-count-wrapper--clp {
+    @media screen and (min-width: 750px) {
+      display: flex;
+      align-items: center;
+      height: auto;
+      margin-left: 0;
+      flex: 0 0 auto;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets--clp-controls .products-count-wrapper--clp {
+    @media screen and (min-width: 750px) {
+      display: none;
+    }
+  }
+
+  .facets--clp-controls .facets-clp-controls__actions {
+    @media screen and (min-width: 750px) {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-left: auto;
+    }
+  }
+
+  .facets--clp-controls .facets-clp-controls__actions sorting-filter-component,
+  .facets--clp-controls .facets-clp-controls__actions accordion-custom,
+  .facets--clp-controls .facets-clp-controls__actions .sorting-filter,
+  .facets--clp-controls .facets-clp-controls__actions .facets__panel,
+  .facets--clp-controls .facets-clp-controls__actions .facets__summary {
+    @media screen and (min-width: 750px) {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .facets--clp-controls .facets-clp-controls__actions .facets__panel {
+    @media screen and (min-width: 750px) {
+      padding: 0;
+      position: relative;
+    }
+  }
+
+  .facets--clp-controls .facets-clp-controls__actions .facets__summary {
+    @media screen and (min-width: 750px) {
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      gap: 4px;
+      min-height: 24px;
+      height: auto;
+    }
+  }
+
+  .facets--clp-controls .sorting-filter__status {
+    @media screen and (min-width: 750px) {
+      display: inline-flex;
+      margin: 0;
+    }
+  }
+
+  .facets-toggle--clp-controls {
+    padding-inline: 16px;
+  }
+
+  .facets-toggle--clp-controls .facets-toggle__button--clp {
+    min-height: 24px;
+    gap: 0;
+  }
+
+  .facets-toggle--clp-controls .facets-toggle__refine-icon {
+    margin-inline-start: -8px;
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('clp-floating-controls')) {
+    class ClpFloatingControls extends HTMLElement {
+      connectedCallback() {
+        if (!this.hasAttribute('data-clp-floating-controls')) return;
+        if (this.isInitialized) return;
+
+        this.isInitialized = true;
+        this.navs = this.querySelectorAll('[data-clp-floating-nav]');
+        this.boundUpdate = this.updateFloatingState.bind(this);
+        this.boundResize = this.handleResize.bind(this);
+
+        this.copyNavigationLinks();
+
+        requestAnimationFrame(() => {
+          this.anchorScrollY = this.getBoundingClientRect().top + window.scrollY;
+          this.updateFloatingState();
+        });
+
+        window.addEventListener('scroll', this.boundUpdate, { passive: true });
+        window.addEventListener('resize', this.boundResize);
+      }
+
+      disconnectedCallback() {
+        if (!this.isInitialized) return;
+
+        window.removeEventListener('scroll', this.boundUpdate);
+        window.removeEventListener('resize', this.boundResize);
+
+        this.isInitialized = false;
+      }
+
+      copyNavigationLinks() {
+        const sourceNavigation = document.querySelector('[data-clp-subcollection-list]');
+
+        if (!this.navs.length || !sourceNavigation) return;
+
+        const sourceLinks = sourceNavigation.querySelectorAll('a.clp-intro__subcollection-link');
+
+        this.navs.forEach((nav) => {
+          const fragment = document.createDocumentFragment();
+          const labelSelector =
+            nav.dataset.clpFloatingNav === 'mobile'
+              ? '.clp-intro__subcollection-label--mobile'
+              : '.clp-intro__subcollection-label--desktop';
+
+          sourceLinks.forEach((sourceLink) => {
+            const sourceLabel =
+              sourceLink.querySelector(labelSelector) ||
+              sourceLink.querySelector('.clp-intro__subcollection-label--desktop') ||
+              sourceLink;
+            const label = sourceLabel.textContent.trim();
+
+            if (!label) return;
+
+            if (nav.dataset.clpFloatingNav === 'mobile') {
+              const normalizedLabel = label.toLowerCase().replace(/\s+/g, ' ');
+
+              if (
+                normalizedLabel === 'all' ||
+                normalizedLabel === 'all products' ||
+                normalizedLabel === 'bestseller' ||
+                normalizedLabel === 'bestsellers' ||
+                normalizedLabel === 'new'
+              ) {
+                return;
+              }
+            }
+
+            const floatingLink = document.createElement('a');
+            const sourceImage = sourceLink.querySelector('.clp-intro__subcollection-image img');
+
+            floatingLink.className = 'facets-clp-floating-nav__link';
+            floatingLink.href = sourceLink.href;
+
+            if (nav.dataset.clpFloatingNav === 'mobile' && sourceImage) {
+              const imageWrapper = document.createElement('span');
+              const image = sourceImage.cloneNode(false);
+
+              floatingLink.classList.add('facets-clp-floating-nav__link--has-image');
+              imageWrapper.className = 'facets-clp-floating-nav__image';
+              imageWrapper.setAttribute('aria-hidden', 'true');
+              image.alt = '';
+              imageWrapper.append(image);
+              floatingLink.append(imageWrapper);
+            }
+
+            const labelWrapper = document.createElement('span');
+
+            labelWrapper.textContent = label;
+            floatingLink.append(labelWrapper);
+
+            if (sourceLink.getAttribute('aria-current') === 'page') {
+              floatingLink.setAttribute('aria-current', 'page');
+            }
+
+            fragment.append(floatingLink);
+          });
+
+          nav.replaceChildren(fragment);
+        });
+      }
+
+      handleResize() {
+        this.copyNavigationLinks();
+
+        if (!this.classList.contains('facets-block-wrapper--clp-floating')) {
+          this.anchorScrollY = this.getBoundingClientRect().top + window.scrollY;
+        }
+
+        this.updateFloatingState();
+      }
+
+      updateFloatingState() {
+        const topOffset = Number.parseFloat(
+          getComputedStyle(this).getPropertyValue('--clp-floating-controls-top')
+        ) || 0;
+        const shouldFloat = typeof this.anchorScrollY === 'number' && window.scrollY > this.anchorScrollY - topOffset;
+
+        this.classList.toggle('facets-block-wrapper--clp-floating', shouldFloat);
+      }
+    }
+
+    customElements.define('clp-floating-controls', ClpFloatingControls);
+  }
+{% endjavascript %}
 
 {% schema %}
 {
