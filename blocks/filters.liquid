@@ -1604,6 +1604,9 @@
   .facets-block-wrapper--clp-controls {
     @media screen and (max-width: 749px) {
       margin: 0;
+      position: sticky;
+      top: var(--clp-floating-controls-top, 0);
+      z-index: var(--layer-sticky);
       background: #fff;
     }
 
@@ -1618,11 +1621,13 @@
 
   .facets-block-wrapper--clp-floating {
     @media screen and (max-width: 749px) {
-      position: fixed;
-      inset-block-start: var(--clp-floating-controls-top, 0);
-      inset-inline: 0;
-      z-index: var(--layer-sticky);
       background: #fff;
+    }
+  }
+
+  .collection-wrapper:has(.facets-block-wrapper--clp-floating) .main-collection-grid {
+    @media screen and (max-width: 749px) {
+      padding-block-start: 32px;
     }
   }
 
@@ -1660,7 +1665,7 @@
     }
   }
 
-  .facets-block-wrapper--clp-floating .facets-clp-floating-nav {
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--desktop {
     @media screen and (min-width: 750px) {
       display: flex;
       align-items: center;
@@ -1672,7 +1677,7 @@
     }
   }
 
-  .facets-block-wrapper--clp-floating .facets-clp-floating-nav::-webkit-scrollbar {
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--desktop::-webkit-scrollbar {
     @media screen and (min-width: 750px) {
       display: none;
     }
@@ -1709,8 +1714,9 @@
   .facets-block-wrapper--clp-floating .facets-clp-floating-nav--mobile {
     @media screen and (max-width: 749px) {
       display: flex;
-      align-items: stretch;
+      align-items: center;
       gap: 16px;
+      min-height: 32px;
       padding-inline: 20px;
       overflow-x: auto;
       overscroll-behavior-inline: contain;
@@ -1730,10 +1736,11 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 52px;
-      padding: 16px 32px;
-      border: 1px solid #dfdfdf;
-      color: #333;
+      min-height: 32px;
+      padding: 10px 0 9px;
+      border: 0;
+      border-bottom: 1px solid transparent;
+      color: #646464;
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 13px;
       font-weight: 500;
@@ -1750,22 +1757,22 @@
   .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link:hover,
   .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link:focus-visible {
     @media screen and (max-width: 749px) {
-      border-color: #000;
+      border-bottom-color: #000;
+      color: #333;
     }
   }
 
   .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link--has-image {
     @media screen and (max-width: 749px) {
-      justify-content: flex-start;
-      gap: 8px;
-      min-width: 140px;
-      padding: 0 20px 0 0;
+      gap: 0;
+      min-width: auto;
+      padding: 10px 0 9px;
     }
   }
 
   .facets-clp-floating-nav__image {
     @media screen and (max-width: 749px) {
-      display: block;
+      display: none;
       width: 50px;
       height: 50px;
       flex: 0 0 50px;
@@ -1912,6 +1919,20 @@
             const label = sourceLabel.textContent.trim();
 
             if (!label) return;
+
+            if (nav.dataset.clpFloatingNav === 'mobile') {
+              const normalizedLabel = label.toLowerCase().replace(/\s+/g, ' ');
+
+              if (
+                normalizedLabel === 'all' ||
+                normalizedLabel === 'all products' ||
+                normalizedLabel === 'bestseller' ||
+                normalizedLabel === 'bestsellers' ||
+                normalizedLabel === 'new'
+              ) {
+                return;
+              }
+            }
 
             const floatingLink = document.createElement('a');
             const sourceImage = sourceLink.querySelector('.clp-intro__subcollection-image img');

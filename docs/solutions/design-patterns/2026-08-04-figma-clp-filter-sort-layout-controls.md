@@ -161,10 +161,12 @@ vertical product-grid gaps for this CLP.
 
 The mobile floating subcollection follow-up uses the rendered CLP intro
 navigation as the source of truth too. The intro rail now exposes collection
-image thumbnails for mobile when collection images are available, and the
-floating controls clone those mobile labels and images into a fixed horizontal
-rail after scroll. The rail follows the mobile Figma dimensions: 20px viewport
-gutters, 16px item gaps, 50px thumbnails, 52px tiles, and 13px uppercase labels.
+image thumbnails for mobile when collection images are available, while the
+floating controls clone a compact, text-only, category-only label rail after
+scroll. The rail follows the mobile Figma composition with 20px viewport
+gutters, 16px item gaps, and 13px uppercase labels. When the mobile rail is in
+its floating state, the results grid receives a 32px top clearance so the first
+product row does not scroll underneath the sticky controls.
 
 ## Prevention
 
@@ -186,9 +188,12 @@ gutters, 16px item gaps, 50px thumbnails, 52px tiles, and 13px uppercase labels.
   order.
 - For sticky CLP controls, reuse rendered navigation as the source of truth
   instead of introducing a second hardcoded collection-link map.
-- For mobile subcollection rails, keep the image-backed cards optional and
-  collection-driven so missing collection images degrade to text tiles instead
-  of broken placeholders.
+- For mobile subcollection rails, keep intro thumbnails optional and
+  collection-driven, then use a compact text-only rail for the floating state so
+  product cards do not sit under oversized sticky tiles.
+- When a mobile sticky rail sits above the product grid, add an explicit
+  results-grid clearance tied to the floating state so the first product row
+  remains fully visible while scrolling.
 
 ## Related Docs
 
@@ -227,8 +232,10 @@ intro navigation into the toolbar after scroll, hides the product count while
 floating, and keeps Filter/Sort available at the top of the product grid. The
 Figma dimension pass then aligned the floating nav typography, bar height, gaps,
 and product-grid gutter settings to the measured node. The mobile follow-up
-extended the same source-navigation cloning pattern to an image-backed fixed
-subcollection rail using collection images where available.
+extended the same source-navigation cloning pattern to a compact category-only
+fixed rail, while keeping collection images available for the non-floating intro
+rail. The final mobile spacing pass adds floating-state grid clearance so the
+sticky rail no longer crops the first visible product row.
 
 Verification passed with the Shopify Liquid validator for
 `blocks/filters.liquid`, `snippets/sorting.liquid`,
