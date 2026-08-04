@@ -11,6 +11,8 @@ import { PaginatedListAspectRatioHelper } from '@theme/paginated-list-aspect-rat
  * @property {HTMLUListElement} [grid] - The grid element.
  * @property {HTMLSpanElement} [viewMorePrevious] - The view more previous button.
  * @property {HTMLSpanElement} [viewMoreNext] - The view more next button.
+ * @property {HTMLParagraphElement} [viewMoreStatus] - Manual load-more status.
+ * @property {HTMLButtonElement} [viewMoreNextButton] - Manual load-more button.
  * @property {HTMLElement[]} [cards] - The cards elements.
  *
  * @extends Component<Refs>
@@ -47,6 +49,7 @@ export default class PaginatedList extends Component {
     this.#fetchPage('next');
     this.#fetchPage('previous');
     this.#observeViewMore();
+    this.#updateManualLoadMoreState();
 
     // Listen for filter updates to clear cached pages
     document.addEventListener(ThemeEvents.FilterUpdate, this.#handleFilterUpdate);
@@ -167,11 +170,11 @@ export default class PaginatedList extends Component {
   async #renderNextPage() {
     const { grid } = this.refs;
 
-    if (!grid) return;
+    if (!grid) return false;
 
     const nextPage = this.#getPage('next');
 
-    if (!nextPage || !this.#shouldUsePage(nextPage)) return;
+    if (!nextPage || !this.#shouldUsePage(nextPage)) return false;
     let nextPageItemElements = this.#getGridForPage(nextPage.page);
 
     if (!nextPageItemElements) {
@@ -184,7 +187,7 @@ export default class PaginatedList extends Component {
 
       await promise;
       nextPageItemElements = this.#getGridForPage(nextPage.page);
-      if (!nextPageItemElements) return;
+      if (!nextPageItemElements) return false;
     }
 
     grid.append(...nextPageItemElements);
@@ -196,7 +199,34 @@ export default class PaginatedList extends Component {
     requestIdleCallback(() => {
       this.#fetchPage('next');
     });
+
+    return true;
   }
+
+  /**
+   * Handles the manual load-more button.
+   * @param {PointerEvent} event
+   */
+  loadMoreNext = async (event) => {
+    event.preventDefault();
+
+    const { viewMoreNextButton } = this.refs;
+    if (viewMoreNextButton) {
+      viewMoreNextButton.disabled = true;
+      viewMoreNextButton.setAttribute('aria-busy', 'true');
+    }
+
+    try {
+      await this.#renderNextPage();
+    } finally {
+      this.#updateManualLoadMoreState();
+
+      if (viewMoreNextButton && !viewMoreNextButton.hidden) {
+        viewMoreNextButton.disabled = false;
+        viewMoreNextButton.removeAttribute('aria-busy');
+      }
+    }
+  };
 
   async #renderPreviousPage() {
     const { grid } = this.refs;
@@ -252,8 +282,9 @@ export default class PaginatedList extends Component {
    * @returns {{ page: number, url: URL } | undefined}
    */
   #getPage(type) {
-    const { cards } = this.refs;
+    const { grid } = this.refs;
     const isPrevious = type === 'previous';
+    const cards = grid ? Array.from(grid.querySelectorAll(':scope > [ref="cards[]"]')) : this.refs.cards;
 
     if (!Array.isArray(cards)) return;
 
@@ -272,6 +303,38 @@ export default class PaginatedList extends Component {
       page,
       url,
     };
+  }
+
+  #updateManualLoadMoreState() {
+    const { grid, viewMoreStatus, viewMoreNextButton } = this.refs;
+
+    if (!grid) return;
+
+    const cards = Array.from(grid.querySelectorAll(':scope > [ref="cards[]"]'));
+    const totalItems = Number(grid.dataset.totalItems || cards.length);
+    const currentOffset = Number(grid.dataset.currentOffset || 0);
+    const visibleCount = currentOffset + cards.length;
+
+    if (viewMoreStatus) {
+      const template = viewMoreStatus.dataset.showingTemplate;
+      if (template) {
+        viewMoreStatus.textContent = template
+          .replace('[count]', visibleCount.toString())
+          .replace('[total]', totalItems.toString());
+      }
+    }
+
+    if (!viewMoreNextButton) return;
+
+    const nextPage = this.#getPage('next');
+    const hasNextPage = Boolean(nextPage && this.#shouldUsePage(nextPage));
+    const allItemsVisible = totalItems > 0 && visibleCount >= totalItems;
+
+    if (!hasNextPage || allItemsVisible) {
+      viewMoreNextButton.hidden = true;
+      viewMoreNextButton.disabled = true;
+      viewMoreNextButton.removeAttribute('aria-busy');
+    }
   }
 
   /**
@@ -329,6 +392,7 @@ export default class PaginatedList extends Component {
 
         // Now the DOM has been updated with the new filtered content
         this.#observeViewMore();
+        this.#updateManualLoadMoreState();
 
         // Fetch the next page
         this.#fetchPage('next');

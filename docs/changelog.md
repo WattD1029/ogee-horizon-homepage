@@ -38,3 +38,20 @@
 [2026-08-04][VERIFY] Revalidated `blocks/filters.liquid`, `sections/clp-intro.liquid`, and `templates/collection.json` with the Shopify Liquid validator, parsed the collection template JSON, and reran `git diff --check` with only line-ending warnings.
 [2026-08-04][FIX] Collapsed the mobile Refine/View row during the floating category rail state so the rail no longer leaves ghost controls or extra whitespace above product cards.
 [2026-08-04][VERIFY] Revalidated `blocks/filters.liquid` with the Shopify Liquid validator and reran `git diff --check` with only line-ending warnings.
+[2026-08-04][PLAN] Planned the CLP product grid and product card pass from Figma desktop, mobile double-column, and mobile single-column nodes, targeting the existing `main-collection` grid, static `_product-card` block composition, card media/details/actions, and load-more behavior while preserving Horizon filtering, sorting, quick-add, and variant swatch contracts.
+[2026-08-04][IMPLEMENT] Added a CLP product subtitle block, collection card composition updates, square media, review stars, scoped product-card styling, contextual quick-add CTAs, and manual load-more pagination on the existing paginated-list renderer.
+[2026-08-04][REVIEW] Compound review found and fixed two issues before finalization: first detail spacing needed to account for the hidden zoom-out node, and manual load-more status needed to include the pagination offset for page-entry URLs.
+[2026-08-04][VERIFY] Parsed changed JSON and schema blocks, ran `node --check assets/paginated-list.js`, and confirmed official Shopify CLI/Theme Check are unavailable on PATH in this workspace.
+[2026-08-04][COMPOUND] Captured the reusable Horizon CLP product-grid/product-card pattern in `docs/solutions/design-patterns/2026-08-04-figma-clp-product-grid-product-cards.md`.
+[2026-08-05][UPDATE] Applied the desktop close-up product-card reference details that match the CLP schema: data-driven badge chips, wishlist hearts, and split hover CTA styling while keeping the light mobile double-column treatment scoped.
+[2026-08-05][VERIFY] Rechecked `assets/paginated-list.js`, parsed `locales/en.default.json`, parsed `_product-card-gallery` schema JSON, and ran `git diff --check` with only line-ending warnings.
+[2026-08-05][FIX] Corrected the CLP desktop output back to the Figma schema by forcing the collection grid to 3 desktop columns with a section-scoped override and targeting the rendered product-title anchor instead of a non-existent `product-title` element.
+[2026-08-05][FIX] Restored visible CLP card swatches and review stars when live products lack Shopify native swatch metadata or review metafields, keeping fallbacks scoped to collection product cards.
+[2026-08-05][FIX] Reinstated the desktop CLP black product-card band schema with constrained card widths, muted detail typography, and smaller round swatches to match the close-up Figma reference.
+[2026-08-05][FIX] Capped the desktop CLP product grid to the Figma component width and forced CLP card media to contain so product imagery no longer balloons across full-width columns.
+[2026-08-05][FIX] Restored the CLP mobile quick-add visibility contract so single-variant products show only Add to cart and multi-variant products show only Select shade.
+[2026-08-05][FIX] Corrected the desktop CLP proportions by widening the 3-column grid back to the theme content rail and increasing the dark card band height.
+[2026-08-05][FIX] Fixed CLP mobile Add to cart sizing by making the add-to-cart component wrapper fill the card column like the Select shade button.
+[2026-08-05][FIX] Removed the desktop CLP black grid/card background so desktop product details render on the light page background while mobile single-column keeps its dark treatment.
+[2026-08-05][FIX] Removed the mobile single-column CLP black background and white text override so one-column cards also render on the light page background.
+[2026-08-05][FIX] Made CLP shade swatches horizontally scrollable with previous/next arrow controls so long variant ranges are accessible instead of clipped.

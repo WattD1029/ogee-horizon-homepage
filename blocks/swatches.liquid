@@ -1,12 +1,45 @@
 {%- liquid
   assign block_settings = block.settings
-  for product_option in closest.product.options_with_values
+  assign product = closest.product
+  assign product_has_swatches = false
+  assign clp_fallback_product_option = blank
+  assign is_clp_collection_card = false
+
+  if template.name == 'collection'
+    assign is_clp_collection_card = true
+  endif
+
+  for product_option in product.options_with_values
     assign swatch_count = product_option.values | map: 'swatch' | compact | size
 
     if swatch_count > 0
       assign product_has_swatches = true
+      break
+    endif
+
+    if is_clp_collection_card
+      if clp_fallback_product_option == blank
+        assign option_name = product_option.name | downcase
+
+        if product_option.values.size > 1
+          if option_name contains 'shade'
+            assign clp_fallback_product_option = product_option
+          elsif option_name contains 'color'
+            assign clp_fallback_product_option = product_option
+          elsif option_name contains 'colour'
+            assign clp_fallback_product_option = product_option
+          endif
+        endif
+      endif
     endif
   endfor
+
+  assign should_render_product_swatches = product_has_swatches
+  if should_render_product_swatches == false
+    if clp_fallback_product_option != blank
+      assign should_render_product_swatches = true
+    endif
+  endif
 -%}
 
 {% stylesheet %}
@@ -18,10 +51,248 @@
     gap: 0;
     flex-shrink: 0;
   }
+
+  .product-card__clp-swatches {
+    overflow: visible;
+  }
+
+  .product-card__clp-swatch-scroll {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .product-card__clp-swatch-track {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .product-card__clp-swatch-button {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: currentColor;
+    cursor: pointer;
+    display: grid;
+    flex: 0 0 auto;
+    height: 22px;
+    justify-items: center;
+    opacity: 0.72;
+    padding: 0;
+    width: 12px;
+  }
+
+  .product-card__clp-swatch-button[hidden] {
+    display: none;
+  }
+
+  .product-card__clp-swatch-button:disabled {
+    cursor: default;
+    opacity: 0.24;
+  }
+
+  .product-card__clp-swatch-button svg {
+    display: block;
+    height: 10px;
+    width: 10px;
+  }
+
+  .product-card__clp-swatches swatches-variant-picker-component,
+  .product-card__clp-swatches swatches-variant-picker-component form,
+  .product-card__clp-swatches swatches-variant-picker-component fieldset,
+  .product-card__clp-swatches swatches-variant-picker-component overflow-list {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .product-card__clp-swatches swatches-variant-picker-component {
+    justify-content: flex-start;
+  }
+
+  .product-card__clp-swatches swatches-variant-picker-component overflow-list::part(list) {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+  }
+
+  .product-card__clp-swatches .variant-option__swatch {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .product-card__clp-fallback-swatches {
+    --variant-picker-swatch-width: 16px;
+    --variant-picker-swatch-height: 16px;
+    --variant-picker-swatch-radius: 999px;
+    align-items: center;
+    display: flex;
+    gap: 5px;
+    justify-content: var(--product-swatches-alignment-mobile);
+    list-style: none;
+    margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+    padding-block: var(--product-swatches-padding-block-start) var(--product-swatches-padding-block-end);
+    padding-inline: var(--product-swatches-padding-inline-start) var(--product-swatches-padding-inline-end);
+  }
+
+  .product-card__clp-swatches .product-card__clp-fallback-swatches {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .product-card__clp-swatches .product-card__clp-fallback-swatches::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-card__clp-fallback-swatch {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 999px;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    flex: 0 0 auto;
+    height: 18px;
+    justify-content: center;
+    padding: 0;
+    width: 18px;
+  }
+
+  .product-card__clp-fallback-swatches li {
+    display: flex;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .product-card__clp-fallback-swatch .swatch {
+    pointer-events: none;
+  }
+
+  .product-card__clp-fallback-swatch:hover .swatch,
+  .product-card__clp-fallback-swatch:focus-visible .swatch {
+    --color-border: currentColor;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-card__clp-fallback-swatches {
+      justify-content: var(--product-swatches-alignment);
+    }
+  }
 {% endstylesheet %}
 
-{% if product_has_swatches %}
+{% if should_render_product_swatches %}
+  {% capture swatches_content %}
+    {% if product_has_swatches %}
+      {% render 'variant-swatches', product_resource: closest.product %}
+    {% else %}
+      <ul
+        class="product-card__clp-fallback-swatches"
+        aria-label="{{ clp_fallback_product_option.name | escape }}"
+      >
+        {% liquid
+          assign swatch_option_key = 'option' | append: clp_fallback_product_option.position
+        %}
+
+        {% for product_option_value in clp_fallback_product_option.values %}
+          {% liquid
+            assign shade_variant = product_option_value.variant
+            assign featured_media = shade_variant.featured_media
+
+            case forloop.index
+              when 1
+                assign shade_fallback = '#f3d8cb'
+              when 2
+                assign shade_fallback = '#e8e1d8'
+              when 3
+                assign shade_fallback = '#f6e7d8'
+              when 4
+                assign shade_fallback = '#e4ccb6'
+              when 5
+                assign shade_fallback = '#d1a884'
+              when 6
+                assign shade_fallback = '#b97b50'
+              when 7
+                assign shade_fallback = '#93562d'
+              when 8
+                assign shade_fallback = '#6f3e25'
+              when 9
+                assign shade_fallback = '#b8a092'
+              when 10
+                assign shade_fallback = '#f0e5d8'
+              when 11
+                assign shade_fallback = '#fffaf4'
+              when 12
+                assign shade_fallback = '#e2c6ad'
+              when 13
+                assign shade_fallback = '#c99a78'
+              else
+                assign shade_fallback = '#d7b89f'
+            endcase
+
+            for variant_item in product.variants
+              if variant_item[swatch_option_key] == product_option_value.name
+                if shade_variant == blank
+                  assign shade_variant = variant_item
+                endif
+
+                if featured_media == blank
+                  if variant_item.featured_media
+                    assign featured_media = variant_item.featured_media
+                  endif
+                endif
+
+                if featured_media
+                  break
+                endif
+              endif
+            endfor
+
+            assign shade_metafield_color = shade_variant.metafields.custom.shade_hex.value
+            if shade_metafield_color != blank
+              assign shade_fallback = shade_metafield_color
+            endif
+          %}
+
+          <li>
+            <button
+              type="button"
+              class="product-card__clp-fallback-swatch"
+              aria-label="{{ product_option_value.name | escape }}"
+              aria-pressed="{% if product_option_value.selected %}true{% else %}false{% endif %}"
+              data-option-value-id="{{ product_option_value.id }}"
+              data-variant-id="{{ shade_variant.id }}"
+              {% if featured_media %}
+                on:pointerenter="product-card/previewVariant/{{ featured_media.id }}"
+                on:pointerleave="product-card/resetVariant"
+              {% endif %}
+            >
+              {% render 'swatch',
+                swatch: product_option_value.swatch,
+                variant_image: featured_media,
+                color_override: shade_fallback,
+                label: product_option_value.name
+              %}
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endcapture %}
+
   <product-swatches
+    class="{% if is_clp_collection_card %}product-card__clp-swatches{% endif %}"
     data-product-id="{{ closest.product.id }}"
     data-product-url="{{ closest.product.url }}"
     style="
@@ -36,9 +307,175 @@
     "
     {{ block.shopify_attributes }}
   >
-    {% render 'variant-swatches', product_resource: closest.product %}
+    {% if is_clp_collection_card %}
+      <clp-swatch-scroll class="product-card__clp-swatch-scroll">
+        <button
+          type="button"
+          class="product-card__clp-swatch-button product-card__clp-swatch-button--previous"
+          aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+          data-clp-swatch-scroll="previous"
+          hidden
+        >
+          <svg viewBox="0 0 10 10" focusable="false" aria-hidden="true">
+            <path d="M6.4 1.2 2.8 5l3.6 3.8" fill="none" stroke="currentColor" stroke-width="1.1"></path>
+          </svg>
+        </button>
+
+        <div class="product-card__clp-swatch-track" data-clp-swatch-track>
+          {{ swatches_content }}
+        </div>
+
+        <button
+          type="button"
+          class="product-card__clp-swatch-button product-card__clp-swatch-button--next"
+          aria-label="{{ 'accessibility.slideshow_next' | t }}"
+          data-clp-swatch-scroll="next"
+          hidden
+        >
+          <svg viewBox="0 0 10 10" focusable="false" aria-hidden="true">
+            <path d="M3.6 1.2 7.2 5 3.6 8.8" fill="none" stroke="currentColor" stroke-width="1.1"></path>
+          </svg>
+        </button>
+      </clp-swatch-scroll>
+    {% else %}
+      {{ swatches_content }}
+    {% endif %}
   </product-swatches>
 {% endif %}
+
+{% javascript %}
+  class ClpSwatchScroll extends HTMLElement {
+    connectedCallback() {
+      this.previousButton = this.querySelector('[data-clp-swatch-scroll="previous"]');
+      this.nextButton = this.querySelector('[data-clp-swatch-scroll="next"]');
+      this.bindAttempts = 0;
+      this.showAllAttempts = 0;
+      this.resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(() => this.updateState()) : null;
+
+      this.previousButton?.addEventListener('click', () => this.scroll('previous'));
+      this.nextButton?.addEventListener('click', () => this.scroll('next'));
+
+      this.prepareNativeOverflowList();
+      this.bindScroller();
+      window.addEventListener('resize', this.handleResize, { passive: true });
+    }
+
+    disconnectedCallback() {
+      this.scroller?.removeEventListener('scroll', this.handleScroll);
+      this.resizeObserver?.disconnect();
+      window.removeEventListener('resize', this.handleResize);
+    }
+
+    handleScroll = () => {
+      this.updateState();
+    };
+
+    handleResize = () => {
+      this.updateState();
+    };
+
+    prepareNativeOverflowList() {
+      const overflowList = this.querySelector('overflow-list');
+      if (!overflowList) return;
+
+      const showAll = () => {
+        if (!this.isConnected) return;
+
+        try {
+          if (typeof overflowList.showAll === 'function') {
+            overflowList.showAll();
+          }
+          this.bindScroller();
+        } catch (error) {
+          this.showAllAttempts += 1;
+
+          if (this.showAllAttempts < 20) {
+            setTimeout(showAll, 50);
+          }
+        }
+      };
+
+      if (customElements.get('overflow-list')) {
+        showAll();
+      } else {
+        customElements.whenDefined('overflow-list').then(showAll);
+      }
+    }
+
+    bindScroller() {
+      if (!this.isConnected) return;
+
+      const scroller = this.getScroller();
+      if (!scroller) {
+        this.bindAttempts += 1;
+
+        if (this.bindAttempts < 20) {
+          setTimeout(() => this.bindScroller(), 50);
+        }
+
+        return;
+      }
+
+      this.bindAttempts = 0;
+
+      if (this.scroller !== scroller) {
+        this.scroller?.removeEventListener('scroll', this.handleScroll);
+        this.resizeObserver?.disconnect();
+        this.scroller = scroller;
+        this.scroller.addEventListener('scroll', this.handleScroll, { passive: true });
+        this.resizeObserver?.observe(this.scroller);
+      }
+
+      this.updateState();
+    }
+
+    getScroller() {
+      const fallbackList = this.querySelector('.product-card__clp-fallback-swatches');
+      if (fallbackList instanceof HTMLElement) return fallbackList;
+
+      const overflowList = this.querySelector('overflow-list');
+      const shadowList = overflowList?.shadowRoot?.querySelector('[part="list"]');
+      return shadowList instanceof HTMLElement ? shadowList : null;
+    }
+
+    scroll(direction) {
+      const scroller = this.scroller || this.getScroller();
+      if (!scroller) return;
+
+      const firstItem = scroller.querySelector('li');
+      const styles = window.getComputedStyle(scroller);
+      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+      const step = ((firstItem && firstItem.getBoundingClientRect().width) || 18) + gap;
+      const multiplier = direction === 'previous' ? -1 : 1;
+
+      scroller.scrollBy({
+        left: multiplier * step * 5,
+        behavior: 'smooth',
+      });
+    }
+
+    updateState() {
+      const scroller = this.scroller || this.getScroller();
+      const previousButton = this.previousButton;
+      const nextButton = this.nextButton;
+      if (!scroller || !previousButton || !nextButton) return;
+
+      const maxScroll = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      const canScroll = maxScroll > 1;
+      previousButton.hidden = !canScroll;
+      nextButton.hidden = !canScroll;
+
+      if (!canScroll) return;
+
+      previousButton.disabled = scroller.scrollLeft <= 1;
+      nextButton.disabled = scroller.scrollLeft >= maxScroll - 1;
+    }
+  }
+
+  if (!customElements.get('clp-swatch-scroll')) {
+    customElements.define('clp-swatch-scroll', ClpSwatchScroll);
+  }
+{% endjavascript %}
 
 {% schema %}
 {
