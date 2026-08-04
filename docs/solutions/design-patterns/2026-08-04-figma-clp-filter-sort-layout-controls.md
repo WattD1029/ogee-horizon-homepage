@@ -165,8 +165,8 @@ image thumbnails for mobile when collection images are available, while the
 floating controls clone a compact, text-only, category-only label rail after
 scroll. The rail follows the mobile Figma composition with 20px viewport
 gutters, 16px item gaps, and 13px uppercase labels. When the mobile rail is in
-its floating state, the results grid receives a 32px top clearance so the first
-product row does not scroll underneath the sticky controls.
+its floating state, the regular mobile Refine/View row collapses so the product
+grid sits directly under the compact category labels.
 
 ## Prevention
 
@@ -191,9 +191,9 @@ product row does not scroll underneath the sticky controls.
 - For mobile subcollection rails, keep intro thumbnails optional and
   collection-driven, then use a compact text-only rail for the floating state so
   product cards do not sit under oversized sticky tiles.
-- When a mobile sticky rail sits above the product grid, add an explicit
-  results-grid clearance tied to the floating state so the first product row
-  remains fully visible while scrolling.
+- When a mobile sticky rail replaces an existing control row, collapse the
+  displaced mobile controls in the floating state so ghost controls and extra
+  whitespace do not appear above the product grid.
 
 ## Related Docs
 
@@ -234,8 +234,9 @@ Figma dimension pass then aligned the floating nav typography, bar height, gaps,
 and product-grid gutter settings to the measured node. The mobile follow-up
 extended the same source-navigation cloning pattern to a compact category-only
 fixed rail, while keeping collection images available for the non-floating intro
-rail. The final mobile spacing pass adds floating-state grid clearance so the
-sticky rail no longer crops the first visible product row.
+rail. The final mobile spacing pass collapses the standard Refine/View row in
+the floating state so only the compact category labels sit above the product
+grid.
 
 Verification passed with the Shopify Liquid validator for
 `blocks/filters.liquid`, `snippets/sorting.liquid`,
