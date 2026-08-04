@@ -19,7 +19,7 @@
         "description_fallback_collection_handle": "all",
         "desktop_content_width": 1200,
         "desktop_gutter": 0,
-        "mobile_gutter": 0,
+        "mobile_gutter": 20,
         "color_scheme": "scheme-1",
         "padding_top": 68,
         "padding_bottom": 32,

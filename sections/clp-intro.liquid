@@ -121,6 +121,16 @@
                       endif
                     endif
                   endif
+
+                  assign navigation_image = blank
+
+                  unless forloop.first
+                    if target_collection != blank
+                      if target_collection.image != blank
+                        assign navigation_image = target_collection.image
+                      endif
+                    endif
+                  endunless
                 %}
 
                 {% if link_label != blank %}
@@ -130,12 +140,21 @@
                   >
                     {% if link_url != blank %}
                       <a
-                        class="clp-intro__subcollection-link"
+                        class="clp-intro__subcollection-link{% if navigation_image != blank %} clp-intro__subcollection-link--has-image{% endif %}"
                         href="{{ link_url }}"
                         {% if is_current %}
                           aria-current="page"
                         {% endif %}
                       >
+                        {% if navigation_image != blank %}
+                          <span
+                            class="clp-intro__subcollection-image"
+                            aria-hidden="true"
+                          >
+                            {{ navigation_image | image_url: width: 100, height: 100 | image_tag: loading: 'lazy', alt: '' }}
+                          </span>
+                        {% endif %}
+
                         <span class="clp-intro__subcollection-label clp-intro__subcollection-label--desktop">
                           {{- link_label | escape -}}
                         </span>
@@ -145,9 +164,18 @@
                       </a>
                     {% else %}
                       <span
-                        class="clp-intro__subcollection-link"
+                        class="clp-intro__subcollection-link{% if navigation_image != blank %} clp-intro__subcollection-link--has-image{% endif %}"
                         aria-disabled="true"
                       >
+                        {% if navigation_image != blank %}
+                          <span
+                            class="clp-intro__subcollection-image"
+                            aria-hidden="true"
+                          >
+                            {{ navigation_image | image_url: width: 100, height: 100 | image_tag: loading: 'lazy', alt: '' }}
+                          </span>
+                        {% endif %}
+
                         <span class="clp-intro__subcollection-label clp-intro__subcollection-label--desktop">
                           {{- link_label | escape -}}
                         </span>
@@ -165,7 +193,7 @@
                   case fallback_index
                     when 1
                       assign link_label = 'All'
-                      assign mobile_label = 'All'
+                      assign mobile_label = 'All Products'
                       assign fallback_collection_handle = 'all'
                     when 2
                       assign link_label = 'Bestseller'
@@ -211,17 +239,36 @@
                       endif
                     endif
                   endif
+
+                  assign navigation_image = blank
+
+                  if fallback_index != 1
+                    if target_collection != blank
+                      if target_collection.image != blank
+                        assign navigation_image = target_collection.image
+                      endif
+                    endif
+                  endif
                 %}
 
                 <li class="clp-intro__subcollection-item">
                   {% if link_url != blank %}
                     <a
-                      class="clp-intro__subcollection-link"
+                      class="clp-intro__subcollection-link{% if navigation_image != blank %} clp-intro__subcollection-link--has-image{% endif %}"
                       href="{{ link_url }}"
                       {% if is_current %}
                         aria-current="page"
                       {% endif %}
                     >
+                      {% if navigation_image != blank %}
+                        <span
+                          class="clp-intro__subcollection-image"
+                          aria-hidden="true"
+                        >
+                          {{ navigation_image | image_url: width: 100, height: 100 | image_tag: loading: 'lazy', alt: '' }}
+                        </span>
+                      {% endif %}
+
                       <span class="clp-intro__subcollection-label clp-intro__subcollection-label--desktop">
                         {{- link_label | escape -}}
                       </span>
@@ -231,9 +278,18 @@
                     </a>
                   {% else %}
                     <span
-                      class="clp-intro__subcollection-link"
+                      class="clp-intro__subcollection-link{% if navigation_image != blank %} clp-intro__subcollection-link--has-image{% endif %}"
                       aria-disabled="true"
                     >
+                      {% if navigation_image != blank %}
+                        <span
+                          class="clp-intro__subcollection-image"
+                          aria-hidden="true"
+                        >
+                          {{ navigation_image | image_url: width: 100, height: 100 | image_tag: loading: 'lazy', alt: '' }}
+                        </span>
+                      {% endif %}
+
                       <span class="clp-intro__subcollection-label clp-intro__subcollection-label--desktop">
                         {{- link_label | escape -}}
                       </span>
@@ -385,6 +441,10 @@
     display: none;
   }
 
+  .clp-intro__subcollection-image {
+    display: none;
+  }
+
   @media screen and (max-width: 749px) {
     .clp-intro {
       padding-block: var(--clp-intro-padding-top-mobile) var(--clp-intro-padding-bottom-mobile);
@@ -407,13 +467,35 @@
     }
 
     .clp-intro__subcollection-list {
-      gap: 8px;
+      gap: 16px;
       scroll-padding-inline: var(--clp-intro-mobile-gutter);
     }
 
     .clp-intro__subcollection-link {
-      min-height: 40px;
-      padding: 12px 16px;
+      min-height: 52px;
+      padding: 16px 32px;
+    }
+
+    .clp-intro__subcollection-link--has-image {
+      justify-content: flex-start;
+      gap: 8px;
+      min-width: 140px;
+      padding: 0 20px 0 0;
+    }
+
+    .clp-intro__subcollection-image {
+      display: block;
+      width: 50px;
+      height: 50px;
+      flex: 0 0 50px;
+      overflow: hidden;
+    }
+
+    .clp-intro__subcollection-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .clp-intro__subcollection-label--desktop {

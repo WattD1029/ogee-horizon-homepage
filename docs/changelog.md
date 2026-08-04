@@ -34,3 +34,5 @@
 [2026-08-04][REVIEW] Compound review found the floating behavior remains scoped to horizontal collection facets, clones the existing CLP intro navigation instead of duplicating URLs, and leaves mobile Refine/View controls unchanged.
 [2026-08-04][VERIFY] Revalidated `blocks/filters.liquid` and `locales/en.default.json` with the Shopify Liquid validator, parsed the locale JSON, and reran `git diff --check` with only line-ending warnings.
 [2026-08-04][UPDATE] Tuned the desktop floating CLP bar to the Figma dimension node: 54px bar height, 16px nav/action gaps, 13px uppercase navigation labels, and 8px product-grid gutters.
+[2026-08-04][UPDATE] Added the mobile floating subcollection rail using the mobile Figma dimensions: 20px gutters, 16px gaps, 50px category thumbnails, and 52px category tiles.
+[2026-08-04][VERIFY] Revalidated `blocks/filters.liquid`, `sections/clp-intro.liquid`, and `templates/collection.json` with the Shopify Liquid validator, parsed the collection template JSON, and reran `git diff --check` with only line-ending warnings.

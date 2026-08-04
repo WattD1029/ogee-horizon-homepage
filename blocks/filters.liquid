@@ -147,6 +147,14 @@
     {% endif %}
     {{ block.shopify_attributes }}
   >
+    {% if use_clp_controls %}
+      <nav
+        class="facets-clp-floating-nav facets-clp-floating-nav--mobile"
+        aria-label="{{ 'accessibility.collection_navigation' | t }}"
+        data-clp-floating-nav="mobile"
+      ></nav>
+    {% endif %}
+
     <div
       class="facets facets--{{ block_settings.filter_style }}{% if use_clp_controls %} facets--clp-controls{% endif %} spacing-style"
       style="{% render 'spacing-style', settings: block_settings %}{% if block_settings.text_label_case == 'uppercase' %} --facet-label-transform: uppercase;{% endif %}"
@@ -166,9 +174,9 @@
           {% if should_show_pane %}
             {% if use_clp_controls %}
               <nav
-                class="facets-clp-floating-nav"
+                class="facets-clp-floating-nav facets-clp-floating-nav--desktop"
                 aria-label="{{ 'accessibility.collection_navigation' | t }}"
-                data-clp-floating-nav
+                data-clp-floating-nav="desktop"
               ></nav>
 
               <div
@@ -1594,10 +1602,25 @@
   }
 
   .facets-block-wrapper--clp-controls {
+    @media screen and (max-width: 749px) {
+      margin: 0;
+      background: #fff;
+    }
+
     @media screen and (min-width: 750px) {
       grid-column: var(--centered);
       position: sticky;
       top: var(--clp-floating-controls-top, 0);
+      z-index: var(--layer-sticky);
+      background: #fff;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating {
+    @media screen and (max-width: 749px) {
+      position: fixed;
+      inset-block-start: var(--clp-floating-controls-top, 0);
+      inset-inline: 0;
       z-index: var(--layer-sticky);
       background: #fff;
     }
@@ -1680,6 +1703,82 @@
     @media screen and (min-width: 750px) {
       border-bottom-color: #000;
       color: #333;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--mobile {
+    @media screen and (max-width: 749px) {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      padding-inline: 20px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+      background: #fff;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav--mobile::-webkit-scrollbar {
+    @media screen and (max-width: 749px) {
+      display: none;
+    }
+  }
+
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link {
+    @media screen and (max-width: 749px) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 16px 32px;
+      border: 1px solid #dfdfdf;
+      color: #333;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.3px;
+      line-height: 1.1;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+  }
+
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link[aria-current='page'],
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link:hover,
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link:focus-visible {
+    @media screen and (max-width: 749px) {
+      border-color: #000;
+    }
+  }
+
+  .facets-clp-floating-nav--mobile .facets-clp-floating-nav__link--has-image {
+    @media screen and (max-width: 749px) {
+      justify-content: flex-start;
+      gap: 8px;
+      min-width: 140px;
+      padding: 0 20px 0 0;
+    }
+  }
+
+  .facets-clp-floating-nav__image {
+    @media screen and (max-width: 749px) {
+      display: block;
+      width: 50px;
+      height: 50px;
+      flex: 0 0 50px;
+      overflow: hidden;
+    }
+  }
+
+  .facets-clp-floating-nav__image img {
+    @media screen and (max-width: 749px) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
 
@@ -1767,11 +1866,9 @@
         if (this.isInitialized) return;
 
         this.isInitialized = true;
-        this.nav = this.querySelector('[data-clp-floating-nav]');
-        this.mediaQuery = window.matchMedia('(min-width: 750px)');
+        this.navs = this.querySelectorAll('[data-clp-floating-nav]');
         this.boundUpdate = this.updateFloatingState.bind(this);
         this.boundResize = this.handleResize.bind(this);
-        this.boundMediaChange = this.handleResize.bind(this);
 
         this.copyNavigationLinks();
 
@@ -1782,12 +1879,6 @@
 
         window.addEventListener('scroll', this.boundUpdate, { passive: true });
         window.addEventListener('resize', this.boundResize);
-
-        if (this.mediaQuery.addEventListener) {
-          this.mediaQuery.addEventListener('change', this.boundMediaChange);
-        } else {
-          this.mediaQuery.addListener(this.boundMediaChange);
-        }
       }
 
       disconnectedCallback() {
@@ -1796,42 +1887,64 @@
         window.removeEventListener('scroll', this.boundUpdate);
         window.removeEventListener('resize', this.boundResize);
 
-        if (this.mediaQuery.addEventListener) {
-          this.mediaQuery.removeEventListener('change', this.boundMediaChange);
-        } else {
-          this.mediaQuery.removeListener(this.boundMediaChange);
-        }
-
         this.isInitialized = false;
       }
 
       copyNavigationLinks() {
         const sourceNavigation = document.querySelector('[data-clp-subcollection-list]');
 
-        if (!this.nav || !sourceNavigation) return;
+        if (!this.navs.length || !sourceNavigation) return;
 
         const sourceLinks = sourceNavigation.querySelectorAll('a.clp-intro__subcollection-link');
-        const fragment = document.createDocumentFragment();
 
-        sourceLinks.forEach((sourceLink) => {
-          const sourceLabel = sourceLink.querySelector('.clp-intro__subcollection-label--desktop') || sourceLink;
-          const label = sourceLabel.textContent.trim();
+        this.navs.forEach((nav) => {
+          const fragment = document.createDocumentFragment();
+          const labelSelector =
+            nav.dataset.clpFloatingNav === 'mobile'
+              ? '.clp-intro__subcollection-label--mobile'
+              : '.clp-intro__subcollection-label--desktop';
 
-          if (!label) return;
+          sourceLinks.forEach((sourceLink) => {
+            const sourceLabel =
+              sourceLink.querySelector(labelSelector) ||
+              sourceLink.querySelector('.clp-intro__subcollection-label--desktop') ||
+              sourceLink;
+            const label = sourceLabel.textContent.trim();
 
-          const floatingLink = document.createElement('a');
-          floatingLink.className = 'facets-clp-floating-nav__link';
-          floatingLink.href = sourceLink.href;
-          floatingLink.textContent = label;
+            if (!label) return;
 
-          if (sourceLink.getAttribute('aria-current') === 'page') {
-            floatingLink.setAttribute('aria-current', 'page');
-          }
+            const floatingLink = document.createElement('a');
+            const sourceImage = sourceLink.querySelector('.clp-intro__subcollection-image img');
 
-          fragment.append(floatingLink);
+            floatingLink.className = 'facets-clp-floating-nav__link';
+            floatingLink.href = sourceLink.href;
+
+            if (nav.dataset.clpFloatingNav === 'mobile' && sourceImage) {
+              const imageWrapper = document.createElement('span');
+              const image = sourceImage.cloneNode(false);
+
+              floatingLink.classList.add('facets-clp-floating-nav__link--has-image');
+              imageWrapper.className = 'facets-clp-floating-nav__image';
+              imageWrapper.setAttribute('aria-hidden', 'true');
+              image.alt = '';
+              imageWrapper.append(image);
+              floatingLink.append(imageWrapper);
+            }
+
+            const labelWrapper = document.createElement('span');
+
+            labelWrapper.textContent = label;
+            floatingLink.append(labelWrapper);
+
+            if (sourceLink.getAttribute('aria-current') === 'page') {
+              floatingLink.setAttribute('aria-current', 'page');
+            }
+
+            fragment.append(floatingLink);
+          });
+
+          nav.replaceChildren(fragment);
         });
-
-        this.nav.replaceChildren(fragment);
       }
 
       handleResize() {
@@ -1845,11 +1958,6 @@
       }
 
       updateFloatingState() {
-        if (!this.mediaQuery.matches) {
-          this.classList.remove('facets-block-wrapper--clp-floating');
-          return;
-        }
-
         const topOffset = Number.parseFloat(
           getComputedStyle(this).getPropertyValue('--clp-floating-controls-top')
         ) || 0;

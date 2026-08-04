@@ -159,6 +159,13 @@ and a 3-column product grid whose 394.67px cards require 8px gutters inside the
 1200px content area. The collection template therefore uses 8px horizontal and
 vertical product-grid gaps for this CLP.
 
+The mobile floating subcollection follow-up uses the rendered CLP intro
+navigation as the source of truth too. The intro rail now exposes collection
+image thumbnails for mobile when collection images are available, and the
+floating controls clone those mobile labels and images into a fixed horizontal
+rail after scroll. The rail follows the mobile Figma dimensions: 20px viewport
+gutters, 16px item gaps, 50px thumbnails, 52px tiles, and 13px uppercase labels.
+
 ## Prevention
 
 - Before redesigning filter controls, identify whether the current block owns
@@ -179,6 +186,9 @@ vertical product-grid gaps for this CLP.
   order.
 - For sticky CLP controls, reuse rendered navigation as the source of truth
   instead of introducing a second hardcoded collection-link map.
+- For mobile subcollection rails, keep the image-backed cards optional and
+  collection-driven so missing collection images degrade to text tiles instead
+  of broken placeholders.
 
 ## Related Docs
 
@@ -216,7 +226,9 @@ A later desktop follow-up added a sticky floating state that clones the CLP
 intro navigation into the toolbar after scroll, hides the product count while
 floating, and keeps Filter/Sort available at the top of the product grid. The
 Figma dimension pass then aligned the floating nav typography, bar height, gaps,
-and product-grid gutter settings to the measured node.
+and product-grid gutter settings to the measured node. The mobile follow-up
+extended the same source-navigation cloning pattern to an image-backed fixed
+subcollection rail using collection images where available.
 
 Verification passed with the Shopify Liquid validator for
 `blocks/filters.liquid`, `snippets/sorting.liquid`,
