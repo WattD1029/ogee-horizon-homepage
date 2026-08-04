@@ -138,6 +138,21 @@ The mobile `View` control adds the Figma label while preserving both radio
 options. That keeps the compact design intent without degrading accessibility or
 the already-tested grid switching contract.
 
+## Floating Bar Follow-Up
+
+A later desktop refinement changed the CLP toolbar into a floating bar once the
+customer scrolls into the product grid. The filters block now renders a hidden
+navigation slot inside the collection-scoped toolbar branch, upgrades the
+wrapper to a lightweight `clp-floating-controls` custom element, and clones the
+links from the existing CLP intro navigation. In the floating state, the product
+count is hidden and the compact bar shows subcollection navigation with
+`Filter | Sort By` actions.
+
+This keeps the floating bar synced with merchant-configured CLP navigation
+labels and URLs without duplicating collection handles in the shared filters
+block. The behavior is guarded to desktop breakpoints, so the mobile
+`Refine | Products | View` toolbar remains unchanged.
+
 ## Prevention
 
 - Before redesigning filter controls, identify whether the current block owns
@@ -156,6 +171,8 @@ the already-tested grid switching contract.
 - Place route-specific toolbar overrides after the base facets rules they need
   to beat, or use a selector with enough specificity and equal/later cascade
   order.
+- For sticky CLP controls, reuse rendered navigation as the source of truth
+  instead of introducing a second hardcoded collection-link map.
 
 ## Related Docs
 
@@ -189,11 +206,16 @@ follow-up screenshot comparison found that later base facets styles were still
 winning over parts of the toolbar; the CLP overrides were moved to a winning
 cascade position, desktop product count copy was scoped to `Products`, and the
 mobile layout control was tightened to the Figma-style `View` plus two-bar mark.
+A later desktop follow-up added a sticky floating state that clones the CLP
+intro navigation into the toolbar after scroll, hides the product count while
+floating, and keeps Filter/Sort available at the top of the product grid.
 
 Verification passed with the Shopify Liquid validator for
 `blocks/filters.liquid`, `snippets/sorting.liquid`,
 `snippets/grid-density-controls.liquid`, and `locales/en.default.json`, using
 the cached Shopify validator that includes `@shopify/theme-check-common`.
-`git diff --check` passed with only line-ending warnings. The remaining launch
-dependency is visual QA in a Shopify preview across desktop, tablet, and mobile
-because no local storefront preview server is available in this workspace.
+The floating-bar follow-up revalidated `blocks/filters.liquid` and
+`locales/en.default.json`, parsed the locale JSON, and reran `git diff --check`
+with only line-ending warnings. The remaining launch dependency is visual QA in
+a Shopify preview across desktop, tablet, and mobile because no local storefront
+preview server is available in this workspace.

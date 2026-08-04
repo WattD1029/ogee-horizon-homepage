@@ -30,3 +30,6 @@
 [2026-08-04][COMPOUND] Captured the reusable CLP toolbar-on-Horizon-facets pattern in `docs/solutions/design-patterns/2026-08-04-figma-clp-filter-sort-layout-controls.md`.
 [2026-08-04][FIX] Tightened the CLP toolbar cascade so base Horizon facets styles no longer push product count to the right, stack sort controls, or show default mobile grid chips.
 [2026-08-04][VERIFY] Revalidated the visual-fix files with the Shopify Liquid validator and reran `git diff --check` with only line-ending warnings.
+[2026-08-04][UPDATE] Added a desktop-only sticky floating state for the CLP toolbar so scrolled collection pages show subcollection navigation plus Filter/Sort in a compact bar.
+[2026-08-04][REVIEW] Compound review found the floating behavior remains scoped to horizontal collection facets, clones the existing CLP intro navigation instead of duplicating URLs, and leaves mobile Refine/View controls unchanged.
+[2026-08-04][VERIFY] Revalidated `blocks/filters.liquid` and `locales/en.default.json` with the Shopify Liquid validator, parsed the locale JSON, and reran `git diff --check` with only line-ending warnings.

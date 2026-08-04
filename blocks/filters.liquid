@@ -120,7 +120,7 @@
     </div>
   {% endif %}
 
-  <div
+  <clp-floating-controls
     class="
       {% if should_show_pane == false %}
         hidden
@@ -142,6 +142,9 @@
       --facets-inner-padding-block: {{ block_settings.padding-block-start }}px {{ block_settings.padding-block-end }}px;
       --facets-inner-padding-inline: var(--padding-lg);
     "
+    {% if use_clp_controls %}
+      data-clp-floating-controls
+    {% endif %}
     {{ block.shopify_attributes }}
   >
     <div
@@ -162,6 +165,12 @@
         >
           {% if should_show_pane %}
             {% if use_clp_controls %}
+              <nav
+                class="facets-clp-floating-nav"
+                aria-label="{{ 'accessibility.collection_navigation' | t }}"
+                data-clp-floating-nav
+              ></nav>
+
               <div
                 class="products-count-wrapper products-count-wrapper--clp"
                 data-testid="products-count"
@@ -345,7 +354,7 @@
         </form>
       </facets-form-component>
     </div>
-  </div>
+  </clp-floating-controls>
 
   <div
     class="facets-toggle{% if use_clp_controls %} facets-toggle--clp-controls{% endif %}{% if block_settings.enable_filtering == false %} facets-toggle--no-filters{% endif %}{% if block_settings.filter_style == 'horizontal' and block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}"
@@ -604,6 +613,14 @@
 {% endif %}
 
 {% stylesheet %}
+  .facets-block-wrapper {
+    display: block;
+  }
+
+  .facets-clp-floating-nav {
+    display: none;
+  }
+
   .facets-block-wrapper {
     @media screen and (min-width: 750px) {
       margin: var(--facets-margin);
@@ -1579,6 +1596,10 @@
   .facets-block-wrapper--clp-controls {
     @media screen and (min-width: 750px) {
       grid-column: var(--centered);
+      position: sticky;
+      top: var(--clp-floating-controls-top, 0);
+      z-index: var(--layer-sticky);
+      background: #fff;
     }
   }
 
@@ -1588,6 +1609,14 @@
       padding-block: 24px 0;
       padding-inline: 0;
       width: 100%;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets--clp-controls.facets--horizontal {
+    @media screen and (min-width: 750px) {
+      border-top: 0;
+      box-shadow: 0 1px 10px rgb(0 0 0 / 10%);
+      padding-block: 10px;
     }
   }
 
@@ -1602,6 +1631,57 @@
     }
   }
 
+  .facets-block-wrapper--clp-floating .facets--clp-controls .facets__form--clp-controls {
+    @media screen and (min-width: 750px) {
+      gap: 24px;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav {
+    @media screen and (min-width: 750px) {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 1 1 auto;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets-clp-floating-nav::-webkit-scrollbar {
+    @media screen and (min-width: 750px) {
+      display: none;
+    }
+  }
+
+  .facets-clp-floating-nav__link {
+    @media screen and (min-width: 750px) {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding-block: 6px 5px;
+      border-bottom: 1px solid transparent;
+      color: #000;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+  }
+
+  .facets-clp-floating-nav__link[aria-current='page'],
+  .facets-clp-floating-nav__link:hover,
+  .facets-clp-floating-nav__link:focus-visible {
+    @media screen and (min-width: 750px) {
+      border-bottom-color: #000;
+    }
+  }
+
   .facets--clp-controls .products-count-wrapper--clp {
     @media screen and (min-width: 750px) {
       display: flex;
@@ -1609,6 +1689,12 @@
       height: auto;
       margin-left: 0;
       flex: 0 0 auto;
+    }
+  }
+
+  .facets-block-wrapper--clp-floating .facets--clp-controls .products-count-wrapper--clp {
+    @media screen and (min-width: 750px) {
+      display: none;
     }
   }
 
@@ -1671,6 +1757,110 @@
     margin-inline-start: -8px;
   }
 {% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('clp-floating-controls')) {
+    class ClpFloatingControls extends HTMLElement {
+      connectedCallback() {
+        if (!this.hasAttribute('data-clp-floating-controls')) return;
+        if (this.isInitialized) return;
+
+        this.isInitialized = true;
+        this.nav = this.querySelector('[data-clp-floating-nav]');
+        this.mediaQuery = window.matchMedia('(min-width: 750px)');
+        this.boundUpdate = this.updateFloatingState.bind(this);
+        this.boundResize = this.handleResize.bind(this);
+        this.boundMediaChange = this.handleResize.bind(this);
+
+        this.copyNavigationLinks();
+
+        requestAnimationFrame(() => {
+          this.anchorScrollY = this.getBoundingClientRect().top + window.scrollY;
+          this.updateFloatingState();
+        });
+
+        window.addEventListener('scroll', this.boundUpdate, { passive: true });
+        window.addEventListener('resize', this.boundResize);
+
+        if (this.mediaQuery.addEventListener) {
+          this.mediaQuery.addEventListener('change', this.boundMediaChange);
+        } else {
+          this.mediaQuery.addListener(this.boundMediaChange);
+        }
+      }
+
+      disconnectedCallback() {
+        if (!this.isInitialized) return;
+
+        window.removeEventListener('scroll', this.boundUpdate);
+        window.removeEventListener('resize', this.boundResize);
+
+        if (this.mediaQuery.addEventListener) {
+          this.mediaQuery.removeEventListener('change', this.boundMediaChange);
+        } else {
+          this.mediaQuery.removeListener(this.boundMediaChange);
+        }
+
+        this.isInitialized = false;
+      }
+
+      copyNavigationLinks() {
+        const sourceNavigation = document.querySelector('[data-clp-subcollection-list]');
+
+        if (!this.nav || !sourceNavigation) return;
+
+        const sourceLinks = sourceNavigation.querySelectorAll('a.clp-intro__subcollection-link');
+        const fragment = document.createDocumentFragment();
+
+        sourceLinks.forEach((sourceLink) => {
+          const sourceLabel = sourceLink.querySelector('.clp-intro__subcollection-label--desktop') || sourceLink;
+          const label = sourceLabel.textContent.trim();
+
+          if (!label) return;
+
+          const floatingLink = document.createElement('a');
+          floatingLink.className = 'facets-clp-floating-nav__link';
+          floatingLink.href = sourceLink.href;
+          floatingLink.textContent = label;
+
+          if (sourceLink.getAttribute('aria-current') === 'page') {
+            floatingLink.setAttribute('aria-current', 'page');
+          }
+
+          fragment.append(floatingLink);
+        });
+
+        this.nav.replaceChildren(fragment);
+      }
+
+      handleResize() {
+        this.copyNavigationLinks();
+
+        if (!this.classList.contains('facets-block-wrapper--clp-floating')) {
+          this.anchorScrollY = this.getBoundingClientRect().top + window.scrollY;
+        }
+
+        this.updateFloatingState();
+      }
+
+      updateFloatingState() {
+        if (!this.mediaQuery.matches) {
+          this.classList.remove('facets-block-wrapper--clp-floating');
+          return;
+        }
+
+        const topOffset = Number.parseFloat(
+          getComputedStyle(this).getPropertyValue('--clp-floating-controls-top')
+        ) || 0;
+        const shouldFloat = typeof this.anchorScrollY === 'number' && window.scrollY > this.anchorScrollY - topOffset;
+
+        this.classList.toggle('facets-block-wrapper--clp-floating', shouldFloat);
+      }
+    }
+
+    customElements.define('clp-floating-controls', ClpFloatingControls);
+  }
+{% endjavascript %}
 
 {% schema %}
 {
