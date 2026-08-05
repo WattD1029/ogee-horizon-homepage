@@ -78,8 +78,8 @@ the behavior.
 
 ### Product metadata
 
-Add `blocks/product-subtitle.liquid` as a reusable card block. It reads product
-subtitle text from this cascade:
+Add product subtitle output inside the collection card composition with the
+existing `custom-liquid` block. It reads subtitle text from this cascade:
 
 1. `product.metafields.custom.subtitle`
 2. `product.metafields.custom.short_description`
@@ -87,8 +87,10 @@ subtitle text from this cascade:
 4. `product.type`
 5. optional vendor fallback
 
-Register the block in both static and resource product-card schemas, then add it
-to the collection product-card block order between title and price.
+Add the custom-liquid subtitle block to the collection product-card block order
+between title and price. This avoids introducing a new theme block type that can
+fail Shopify upload validation when the template is processed before the block
+definition.
 
 ### Product-card composition
 
@@ -224,8 +226,7 @@ Local verification passed for the available tools:
 - parsed schema JSON from:
   - `blocks/_product-card.liquid`
   - `blocks/product-card.liquid`
-  - `blocks/product-subtitle.liquid`
-  - `sections/main-collection.liquid`
+- `sections/main-collection.liquid`
 
 The desktop reference follow-up also passed:
 
@@ -282,11 +283,10 @@ art direction.
 
 The CLP product grid and cards now use the existing Horizon collection
 infrastructure with a Figma-aligned card composition. Implementation added a
-product subtitle block, registered it for product-card usage, updated the
-collection product-card block order, added review stars and square media,
-scoped CLP card styles, added contextual quick-add labels and mobile CTAs, and
-introduced manual load-more pagination on top of the existing paginated-list
-renderer.
+custom-liquid product subtitle output, updated the collection product-card block
+order, added review stars and square media, scoped CLP card styles, added
+contextual quick-add labels and mobile CTAs, and introduced manual load-more
+pagination on top of the existing paginated-list renderer.
 
 Review found two issues before finalization: first visible detail spacing needed
 to account for the hidden zoom-out node, and manual status text needed to
@@ -305,6 +305,9 @@ Select shade, and restored visible product swatches and ratings with
 collection-only fallbacks for products that lack native Shopify swatch metadata
 or review metafields. A final shade-row correction made long CLP swatch sets
 horizontally scrollable and added previous/next arrow controls so users can
-reach clipped variant colors. Remaining launch dependency is visual QA in a
+reach clipped variant colors. A Shopify upload validation correction replaced
+the newly introduced `product-subtitle` theme block with the existing
+`custom-liquid` block in the collection template so no undefined custom block
+type is required at upload time. Remaining launch dependency is visual QA in a
 Shopify preview because neither Shopify CLI nor standalone Theme Check is
 available on this machine.
