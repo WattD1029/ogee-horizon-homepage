@@ -123,7 +123,8 @@
     "submit": "Submit",
     "view_store_information": "View store information",
     "sort": "Sort",
-    "sort_by": "Sort By:"
+    "sort_by": "Sort By:",
+    "sort_by_drawer": "Sort By"
   },
   "blocks": {
     "contact_form": {
@@ -215,6 +216,11 @@
       "other": "{{ count }} items"
     },
     "item_count_cutoff": "More than {{ count }} items",
+    "results_count_cutoff": "More than {{ count }} Results",
+    "results_count": {
+      "one": "{{ count }} Result",
+      "other": "{{ count }} Results"
+    },
     "collection_product_count": {
       "one": "{{ count }} Product",
       "other": "{{ count }} Products"

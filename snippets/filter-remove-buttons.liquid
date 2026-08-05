@@ -7,9 +7,10 @@
   @param {boolean} show_filter_label - Whether to show the filter label
   @param {string} results_url - The results URL
   @param {boolean} should_show_clear_all - Whether to show the clear all button
+  @param {string} [variant] - Optional display variant
 {%- enddoc -%}
 
-<div class="facets-remove facets-remove--mobile-and-vertical">
+<div class="facets-remove facets-remove--mobile-and-vertical{% if variant == 'clp-drawer' %} facets-remove--clp-drawer{% endif %}">
   {%- if filters -%}
     <h3 class="visually-hidden">{{ 'accessibility.active_filters' | t }}</h3>
   {%- endif -%}
@@ -146,9 +147,49 @@
     }
   }
 
+  .facets-remove--clp-drawer {
+    gap: 10px;
+    padding: 16px 20px 0;
+  }
+
+  .facets-remove--clp-drawer:has(facet-remove-component) {
+    display: flex;
+    margin-block: 0;
+  }
+
+  .facets-remove--clp-drawer .facets-remove__pill {
+    min-height: 23px;
+    padding: 4px 10px;
+    gap: 8px;
+    border: 0;
+    border-radius: 0;
+    background: #faf8f3;
+    color: #333;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0;
+    line-height: 1.5;
+    text-transform: none;
+  }
+
+  .facets-remove--clp-drawer .facets-remove__pill .svg-wrapper {
+    width: 12px;
+    height: 12px;
+  }
+
+  .facets-remove--clp-drawer .facets-remove__pill svg {
+    width: 100%;
+    height: 100%;
+  }
+
   .facets--horizontal .facets-remove {
     @media screen and (min-width: 750px) {
       display: none;
     }
+  }
+
+  .facets--horizontal.facets--clp-drawer .facets-remove--clp-drawer:has(facet-remove-component) {
+    display: flex;
   }
 {% endstylesheet %}
