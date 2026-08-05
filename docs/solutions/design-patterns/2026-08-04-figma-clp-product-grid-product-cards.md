@@ -92,6 +92,11 @@ between title and price. This avoids introducing a new theme block type that can
 fail Shopify upload validation when the template is processed before the block
 definition.
 
+Keep `blocks/product-subtitle.liquid` available with a valid schema as an upload
+compatibility guard. The CLP collection template does not depend on it, but a
+valid block file prevents Shopify upload validation from failing if a package or
+target theme still contains that path.
+
 ### Product-card composition
 
 Update `templates/collection.json` so the collection card order is:
@@ -308,6 +313,8 @@ horizontally scrollable and added previous/next arrow controls so users can
 reach clipped variant colors. A Shopify upload validation correction replaced
 the newly introduced `product-subtitle` theme block with the existing
 `custom-liquid` block in the collection template so no undefined custom block
-type is required at upload time. Remaining launch dependency is visual QA in a
-Shopify preview because neither Shopify CLI nor standalone Theme Check is
-available on this machine.
+type is required at upload time. A follow-up restored
+`blocks/product-subtitle.liquid` with a valid schema as a compatibility guard so
+Shopify also passes if that block file is present in an upload package or target
+theme. Remaining launch dependency is visual QA in a Shopify preview because
+neither Shopify CLI nor standalone Theme Check is available on this machine.
