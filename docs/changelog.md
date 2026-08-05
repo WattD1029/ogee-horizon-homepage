@@ -55,3 +55,4 @@
 [2026-08-05][FIX] Removed the desktop CLP black grid/card background so desktop product details render on the light page background while mobile single-column keeps its dark treatment.
 [2026-08-05][FIX] Removed the mobile single-column CLP black background and white text override so one-column cards also render on the light page background.
 [2026-08-05][FIX] Made CLP shade swatches horizontally scrollable with previous/next arrow controls so long variant ranges are accessible instead of clipped.
+[2026-08-05][FIX] Replaced the new `product-subtitle` theme block with the existing `custom-liquid` block in `templates/collection.json` to resolve Shopify upload validation for undefined block types.

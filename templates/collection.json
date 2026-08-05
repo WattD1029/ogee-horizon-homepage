@@ -117,14 +117,9 @@
               "blocks": {}
             },
             "product_subtitle": {
-              "type": "product-subtitle",
+              "type": "custom-liquid",
               "settings": {
-                "source": "metafield",
-                "use_vendor_fallback": false,
-                "padding-block-start": 0,
-                "padding-block-end": 2,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "custom_liquid": "{% liquid\n  assign subtitle = closest.product.metafields.custom.subtitle.value\n\n  if subtitle == blank\n    assign subtitle = closest.product.metafields.custom.short_description.value\n  endif\n\n  if subtitle == blank\n    assign subtitle = closest.product.metafields.descriptors.subtitle.value\n  endif\n\n  if subtitle == blank\n    assign subtitle = closest.product.type\n  endif\n%}\n{% if subtitle != blank %}\n  <p class=\"product-card__subtitle spacing-style\">{{ subtitle | strip_html | escape }}</p>\n{% endif %}"
               },
               "blocks": {}
             },
