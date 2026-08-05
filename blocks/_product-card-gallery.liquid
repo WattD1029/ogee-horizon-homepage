@@ -1,31 +1,102 @@
-{% assign product = closest.product %}
+{% liquid
+  assign product = closest.product
+  assign is_clp_collection_card = false
+  if template.name == 'collection'
+    assign is_clp_collection_card = true
+  endif
+
+  assign clp_primary_badge = blank
+  assign clp_secondary_badge = blank
+  if is_clp_collection_card and product != blank
+    assign clp_primary_badge = product.metafields.custom.card_badge.value | default: product.metafields.custom.badge_label.value
+    assign clp_secondary_badge = product.metafields.custom.card_badge_secondary.value | default: product.metafields.custom.secondary_badge_label.value
+    assign product_tags = product.tags | join: '|' | downcase
+
+    if clp_primary_badge == blank
+      if product.available == false
+        assign clp_primary_badge = 'content.product_badge_sold_out' | t
+      elsif product_tags contains 'best-seller'
+        assign clp_primary_badge = 'Best-seller'
+      elsif product_tags contains 'best seller'
+        assign clp_primary_badge = 'Best-seller'
+      elsif product_tags contains 'bestseller'
+        assign clp_primary_badge = 'Best-seller'
+      endif
+    endif
+
+    if clp_secondary_badge == blank
+      if product_tags contains 'new shade'
+        assign clp_secondary_badge = 'New shade'
+      elsif product_tags contains 'new-shade'
+        assign clp_secondary_badge = 'New shade'
+      endif
+    endif
+  endif
+%}
 
 {% capture children %}
   {% unless product == blank %}
-    <div
-      class="product-badges product-badges--{{ settings.badge_position }}"
-      style="
-        --badge-border-radius: {{ settings.badge_corner_radius }}px;
-        --badge-font-family: var(--font-{{ settings.badge_font_family }}--family); --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight); --badge-text-transform: {{ settings.badge_text_transform }};
-      "
-    >
-      {%- if product.available == false or product.compare_at_price > product.price -%}
-        <div
-          class="
-            product-badges__badge product-badges__badge--rectangle
-            {% if product.available == false %} color-{{ settings.badge_sold_out_color_scheme }}{% elsif product.compare_at_price > product.price %} color-{{ settings.badge_sale_color_scheme }}{% endif %}
-          "
-        >
-          {%- if product.available == false -%}
-            {{ 'content.product_badge_sold_out' | t }}
-          {%- elsif product.compare_at_price > product.price -%}
-            {{ 'content.product_badge_sale' | t }}
-          {%- endif -%}
+    {% if is_clp_collection_card %}
+      {% if clp_primary_badge != blank or clp_secondary_badge != blank %}
+        <div class="product-card__clp-badges">
+          {% if clp_primary_badge != blank %}
+            <span class="product-card__clp-badge">{{ clp_primary_badge | escape }}</span>
+          {% endif %}
+          {% if clp_secondary_badge != blank %}
+            <span class="product-card__clp-badge">{{ clp_secondary_badge | escape }}</span>
+          {% endif %}
         </div>
-      {%- endif -%}
-    </div>
-    {%  if settings.quick_add or settings.mobile_quick_add %}
-      {% render 'quick-add', product: product, section_id: section.id %}
+      {% endif %}
+      <button
+        type="button"
+        class="product-card__clp-wishlist"
+        aria-label="{{ 'actions.save_product' | t: product: product.title | escape }}"
+      >
+        <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+          {% render 'icon', icon: 'heart' %}
+        </svg>
+      </button>
+    {% else %}
+      <div
+        class="product-badges product-badges--{{ settings.badge_position }}"
+        style="
+          --badge-border-radius: {{ settings.badge_corner_radius }}px;
+          --badge-font-family: var(--font-{{ settings.badge_font_family }}--family); --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight); --badge-text-transform: {{ settings.badge_text_transform }};
+        "
+      >
+        {%- if product.available == false or product.compare_at_price > product.price -%}
+          <div
+            class="
+              product-badges__badge product-badges__badge--rectangle
+              {% if product.available == false %} color-{{ settings.badge_sold_out_color_scheme }}{% elsif product.compare_at_price > product.price %} color-{{ settings.badge_sale_color_scheme }}{% endif %}
+            "
+          >
+            {%- if product.available == false -%}
+              {{ 'content.product_badge_sold_out' | t }}
+            {%- elsif product.compare_at_price > product.price -%}
+              {{ 'content.product_badge_sale' | t }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {% endif %}
+    {% if settings.quick_add or settings.mobile_quick_add %}
+      {% if is_clp_collection_card %}
+        {% liquid
+          assign clp_add_to_cart_text = 'actions.add_to_cart' | t
+          assign clp_choose_options_text = 'actions.select_shade' | t
+        %}
+        {% render 'quick-add',
+          product: product,
+          section_id: section.id,
+          quick_add_class: 'quick-add--clp-gallery',
+          add_to_cart_text: clp_add_to_cart_text,
+          choose_options_text: clp_choose_options_text,
+          icon_only_on_mobile: false
+        %}
+      {% else %}
+        {% render 'quick-add', product: product, section_id: section.id %}
+      {% endif %}
     {% endif %}
   {% endunless %}
 {% endcapture %}
