@@ -35,6 +35,21 @@
   if pagination_style != 'automatic'
     assign products_per_page = section.settings.products_per_page
   endif
+
+  assign clp_promotion_heading = section.settings.clp_promotion_heading
+  assign clp_promotion_image = section.settings.clp_promotion_image
+  assign clp_promotion_image_alt = section.settings.clp_promotion_image_alt
+  assign clp_promotion_button_label = section.settings.clp_promotion_button_label
+  assign clp_promotion_button_link = section.settings.clp_promotion_button_link
+  assign clp_promotion_button_aria_label = clp_promotion_button_label
+
+  if clp_promotion_image_alt == blank
+    assign clp_promotion_image_alt = clp_promotion_heading
+  endif
+
+  if clp_promotion_heading != blank
+    assign clp_promotion_button_aria_label = clp_promotion_button_label | append: ': ' | append: clp_promotion_heading
+  endif
 %}
 
 {% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
@@ -86,6 +101,462 @@
     {% endpaginate %}
   </div>
 </results-list>
+
+{% if section.settings.show_clp_promotion %}
+  <section
+    class="main-collection-promotion main-collection-promotion--{{ section.settings.clp_promotion_width }} color-{{ section.settings.clp_promotion_color_scheme }}{% unless section.settings.clp_promotion_show_heading_mobile %} main-collection-promotion--hide-mobile-heading{% endunless %}{% unless section.settings.clp_promotion_show_button_mobile %} main-collection-promotion--hide-mobile-button{% endunless %}"
+    style="
+      --main-collection-promotion-padding-top: {{ section.settings.clp_promotion_padding_top }}px;
+      --main-collection-promotion-padding-bottom: {{ section.settings.clp_promotion_padding_bottom }}px;
+      --main-collection-promotion-padding-top-mobile: {{ section.settings.clp_promotion_padding_top_mobile }}px;
+      --main-collection-promotion-padding-bottom-mobile: {{ section.settings.clp_promotion_padding_bottom_mobile }}px;
+      --main-collection-promotion-content-width: {{ section.settings.clp_promotion_content_width }}px;
+      --main-collection-promotion-desktop-gutter: {{ section.settings.clp_promotion_desktop_gutter }}px;
+      --main-collection-promotion-desktop-height: {{ section.settings.clp_promotion_desktop_height }}px;
+      --main-collection-promotion-copy-width: {{ section.settings.clp_promotion_copy_width }}px;
+      --main-collection-promotion-mobile-width: {{ section.settings.clp_promotion_mobile_width }}px;
+      --main-collection-promotion-mobile-image-height: {{ section.settings.clp_promotion_mobile_image_height }}px;
+      --main-collection-promotion-background: {{ section.settings.clp_promotion_background_color }};
+      --main-collection-promotion-mobile-background: {{ section.settings.clp_promotion_mobile_background_color }};
+      --main-collection-promotion-text: {{ section.settings.clp_promotion_text_color }};
+      --main-collection-promotion-muted-text: {{ section.settings.clp_promotion_muted_text_color }};
+      --main-collection-promotion-border: {{ section.settings.clp_promotion_border_color }};
+      --main-collection-promotion-button-background: {{ section.settings.clp_promotion_button_background }};
+      --main-collection-promotion-button-text: {{ section.settings.clp_promotion_button_text_color }};
+    "
+  >
+    <div class="main-collection-promotion__inner">
+      <div class="main-collection-promotion__module">
+        {% if clp_promotion_heading != blank %}
+          <h2 class="main-collection-promotion__heading main-collection-promotion__heading--mobile">
+            {{ clp_promotion_heading | escape }}
+          </h2>
+        {% endif %}
+
+        <div class="main-collection-promotion__media">
+          {% if clp_promotion_image != blank %}
+            {{
+              clp_promotion_image
+              | image_url: width: 1600
+              | image_tag:
+                widths: '350, 600, 700, 900, 1200, 1600',
+                sizes: '(min-width: 990px) 50vw, min(350px, calc(100vw - 40px))',
+                loading: 'lazy',
+                fetchpriority: 'low',
+                alt: clp_promotion_image_alt,
+                class: 'main-collection-promotion__image'
+            }}
+          {% else %}
+            <img
+              src="{{ 'clp-promotion-this-month.png' | asset_url }}"
+              alt="{{ clp_promotion_image_alt | escape }}"
+              class="main-collection-promotion__image"
+              width="3326"
+              height="1562"
+              loading="lazy"
+              fetchpriority="low"
+            >
+          {% endif %}
+        </div>
+
+        <div class="main-collection-promotion__content">
+          <div class="main-collection-promotion__copy">
+            {% if clp_promotion_heading != blank %}
+              <h2 class="main-collection-promotion__heading main-collection-promotion__heading--desktop">
+                {{ clp_promotion_heading | escape }}
+              </h2>
+            {% endif %}
+
+            <div
+              class="main-collection-promotion__accordion"
+              aria-label="{{ section.settings.clp_promotion_accordion_label | escape }}"
+            >
+              {% if section.settings.clp_promotion_row_1_heading != blank %}
+                <details
+                  class="main-collection-promotion__row"
+                  {% if section.settings.clp_promotion_row_1_open %}
+                    open
+                  {% endif %}
+                >
+                  <summary class="main-collection-promotion__summary">
+                    <span class="main-collection-promotion__summary-text">
+                      {{ section.settings.clp_promotion_row_1_heading | escape }}
+                    </span>
+                    <span class="main-collection-promotion__summary-icon" aria-hidden="true">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </summary>
+
+                  {% if section.settings.clp_promotion_row_1_body != blank %}
+                    <div class="main-collection-promotion__row-body">
+                      {{ section.settings.clp_promotion_row_1_body | escape | newline_to_br }}
+                    </div>
+                  {% endif %}
+                </details>
+              {% endif %}
+
+              {% if section.settings.clp_promotion_row_2_heading != blank %}
+                <details
+                  class="main-collection-promotion__row"
+                  {% if section.settings.clp_promotion_row_2_open %}
+                    open
+                  {% endif %}
+                >
+                  <summary class="main-collection-promotion__summary">
+                    <span class="main-collection-promotion__summary-text">
+                      {{ section.settings.clp_promotion_row_2_heading | escape }}
+                    </span>
+                    <span class="main-collection-promotion__summary-icon" aria-hidden="true">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </summary>
+
+                  {% if section.settings.clp_promotion_row_2_body != blank %}
+                    <div class="main-collection-promotion__row-body">
+                      {{ section.settings.clp_promotion_row_2_body | escape | newline_to_br }}
+                    </div>
+                  {% endif %}
+                </details>
+              {% endif %}
+
+              {% if section.settings.clp_promotion_row_3_heading != blank %}
+                <details
+                  class="main-collection-promotion__row"
+                  {% if section.settings.clp_promotion_row_3_open %}
+                    open
+                  {% endif %}
+                >
+                  <summary class="main-collection-promotion__summary">
+                    <span class="main-collection-promotion__summary-text">
+                      {{ section.settings.clp_promotion_row_3_heading | escape }}
+                    </span>
+                    <span class="main-collection-promotion__summary-icon" aria-hidden="true">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </summary>
+
+                  {% if section.settings.clp_promotion_row_3_body != blank %}
+                    <div class="main-collection-promotion__row-body">
+                      {{ section.settings.clp_promotion_row_3_body | escape | newline_to_br }}
+                    </div>
+                  {% endif %}
+                </details>
+              {% endif %}
+            </div>
+
+            {% if clp_promotion_button_label != blank %}
+              <a
+                class="main-collection-promotion__button"
+                {% if clp_promotion_button_link == blank %}
+                  role="link"
+                  aria-disabled="true"
+                {% else %}
+                  href="{{ clp_promotion_button_link }}"
+                {% endif %}
+                aria-label="{{ clp_promotion_button_aria_label | escape }}"
+                {% if section.settings.clp_promotion_open_in_new_tab %}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                {% endif %}
+              >
+                {{ clp_promotion_button_label | escape }}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% stylesheet %}
+  .main-collection-promotion {
+    box-sizing: border-box;
+    width: 100%;
+    padding-block: var(--main-collection-promotion-padding-top) var(--main-collection-promotion-padding-bottom);
+    background: var(--color-background);
+    color: var(--main-collection-promotion-text);
+  }
+
+  .main-collection-promotion__inner {
+    width: min(
+      var(--main-collection-promotion-content-width),
+      calc(100% - var(--main-collection-promotion-desktop-gutter) - var(--main-collection-promotion-desktop-gutter))
+    );
+    margin-inline: auto;
+  }
+
+  .main-collection-promotion--full-width .main-collection-promotion__inner {
+    width: 100%;
+    max-width: none;
+  }
+
+  .main-collection-promotion--page-width .main-collection-promotion__inner {
+    width: min(100%, var(--page-content-width));
+    max-width: var(--page-content-width);
+  }
+
+  .main-collection-promotion__module {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: var(--main-collection-promotion-desktop-height);
+    background: var(--main-collection-promotion-background);
+  }
+
+  .main-collection-promotion__media,
+  .main-collection-promotion__content {
+    min-width: 0;
+  }
+
+  .main-collection-promotion__media {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .main-collection-promotion__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: var(--main-collection-promotion-desktop-height);
+    object-fit: cover;
+  }
+
+  .main-collection-promotion__content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 56px 48px;
+  }
+
+  .main-collection-promotion__copy {
+    display: flex;
+    width: min(100%, var(--main-collection-promotion-copy-width));
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .main-collection-promotion__heading {
+    margin: 0;
+    color: var(--main-collection-promotion-text);
+    font-family: "Chronicle Display", Georgia, "Times New Roman", var(--font-heading--family), serif;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-transform: capitalize;
+  }
+
+  .main-collection-promotion__heading--mobile {
+    display: none;
+  }
+
+  .main-collection-promotion__accordion {
+    width: 100%;
+  }
+
+  .main-collection-promotion__row {
+    border-block-end: 1px solid var(--main-collection-promotion-border);
+  }
+
+  .main-collection-promotion__summary {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-block: 10px;
+    color: var(--main-collection-promotion-text);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .main-collection-promotion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .main-collection-promotion__summary-text {
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .main-collection-promotion__summary-icon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    transition: transform var(--animation-speed) var(--animation-easing);
+  }
+
+  .main-collection-promotion__summary-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .main-collection-promotion__row[open] .main-collection-promotion__summary-icon {
+    transform: rotate(180deg);
+  }
+
+  .main-collection-promotion__row-body {
+    max-width: 100%;
+    padding-block: 0 16px;
+    color: var(--main-collection-promotion-muted-text);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.45;
+    letter-spacing: 0;
+  }
+
+  .main-collection-promotion__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 226px;
+    min-height: 44px;
+    padding: 13px 24px;
+    border: 1px solid var(--main-collection-promotion-button-background);
+    color: var(--main-collection-promotion-button-text);
+    background: var(--main-collection-promotion-button-background);
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.8px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .main-collection-promotion__button:hover {
+    color: var(--main-collection-promotion-button-background);
+    background: transparent;
+  }
+
+  .main-collection-promotion__button[aria-disabled='true'] {
+    pointer-events: none;
+  }
+
+  .main-collection-promotion__summary:focus-visible,
+  .main-collection-promotion__button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  @media screen and (max-width: 989px) {
+    .main-collection-promotion {
+      padding-block: var(--main-collection-promotion-padding-top-mobile)
+        var(--main-collection-promotion-padding-bottom-mobile);
+      background: var(--main-collection-promotion-mobile-background);
+    }
+
+    .main-collection-promotion__inner,
+    .main-collection-promotion--full-width .main-collection-promotion__inner,
+    .main-collection-promotion--page-width .main-collection-promotion__inner {
+      width: min(var(--main-collection-promotion-mobile-width), calc(100% - 32px));
+      max-width: var(--main-collection-promotion-mobile-width);
+    }
+
+    .main-collection-promotion__content {
+      display: block;
+      padding: 32px 24px;
+    }
+
+    .main-collection-promotion__heading--desktop {
+      display: none;
+    }
+
+    .main-collection-promotion__heading--mobile {
+      display: block;
+      margin: 0;
+      padding: 28px 24px 22px;
+      font-size: 20px;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    .main-collection-promotion--hide-mobile-heading .main-collection-promotion__heading--mobile {
+      display: none;
+    }
+
+    .main-collection-promotion__module {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+    }
+
+    .main-collection-promotion__image {
+      height: var(--main-collection-promotion-mobile-image-height);
+      min-height: 0;
+      object-fit: cover;
+    }
+
+    .main-collection-promotion__copy {
+      width: 100%;
+      gap: 0;
+    }
+
+    .main-collection-promotion__summary {
+      min-height: 0;
+      gap: 8px;
+      padding-block: 8px;
+    }
+
+    .main-collection-promotion__summary-text {
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: 0.6px;
+    }
+
+    .main-collection-promotion__summary-icon {
+      width: 24px;
+      height: 24px;
+      flex-basis: 24px;
+    }
+
+    .main-collection-promotion__row[open] .main-collection-promotion__summary {
+      padding-block-end: 4px;
+    }
+
+    .main-collection-promotion__row-body {
+      padding-block-end: 12px;
+      color: var(--main-collection-promotion-text);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .main-collection-promotion--hide-mobile-button .main-collection-promotion__button {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .main-collection-promotion__button {
+      width: 100%;
+      min-width: 0;
+      min-height: 56px;
+      margin-block-start: 32px;
+      padding: 18px 24px;
+      font-size: 18px;
+    }
+
+    .main-collection-promotion--hide-mobile-button .main-collection-promotion__button {
+      display: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -182,6 +653,298 @@
       "max": 36,
       "step": 4,
       "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Promotion this month"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_clp_promotion",
+      "label": "Show promotion this month",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "clp_promotion_heading",
+      "label": "Heading",
+      "default": "Promotion This Month"
+    },
+    {
+      "type": "checkbox",
+      "id": "clp_promotion_show_heading_mobile",
+      "label": "Show heading on mobile",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "clp_promotion_accordion_label",
+      "label": "Accordion accessible label",
+      "default": "Promotion details"
+    },
+    {
+      "type": "image_picker",
+      "id": "clp_promotion_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "clp_promotion_image_alt",
+      "label": "Image alt text",
+      "default": "Ogee cleanser and face oil promotion"
+    },
+    {
+      "type": "text",
+      "id": "clp_promotion_button_label",
+      "label": "Button label",
+      "default": "SHOP BESTSELLERS"
+    },
+    {
+      "type": "url",
+      "id": "clp_promotion_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "clp_promotion_show_button_mobile",
+      "label": "Show button on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "clp_promotion_open_in_new_tab",
+      "label": "Open button in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Promotion rows"
+    },
+    {
+      "type": "text",
+      "id": "clp_promotion_row_1_heading",
+      "label": "Row 1 heading",
+      "default": "GET FREE GIFT WITH PURCHASE OF $150+"
+    },
+    {
+      "type": "textarea",
+      "id": "clp_promotion_row_1_body",
+      "label": "Row 1 body",
+      "default": "You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!"
+    },
+    {
+      "type": "checkbox",
+      "id": "clp_promotion_row_1_open",
+      "label": "Open row 1 by default",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "clp_promotion_row_2_heading",
+      "label": "Row 2 heading",
+      "default": "SAVE MORE WITH SUBSCRIPTION"
+    },
+    {
+      "type": "textarea",
+      "id": "clp_promotion_row_2_body",
+      "label": "Row 2 body",
+      "default": "Subscribe to keep your favorites coming on your schedule."
+    },
+    {
+      "type": "checkbox",
+      "id": "clp_promotion_row_2_open",
+      "label": "Open row 2 by default",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "clp_promotion_row_3_heading",
+      "label": "Row 3 heading",
+      "default": "FREE SHIPPING ALL ORDER $75+"
+    },
+    {
+      "type": "textarea",
+      "id": "clp_promotion_row_3_body",
+      "label": "Row 3 body",
+      "default": "Enjoy complimentary standard shipping when your order total reaches $75+."
+    },
+    {
+      "type": "checkbox",
+      "id": "clp_promotion_row_3_open",
+      "label": "Open row 3 by default",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Promotion layout"
+    },
+    {
+      "type": "select",
+      "id": "clp_promotion_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "full-width",
+          "label": "Full width"
+        },
+        {
+          "value": "page-width",
+          "label": "Page width"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_desktop_gutter",
+      "label": "Desktop gutter",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_desktop_height",
+      "label": "Desktop height",
+      "min": 420,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_copy_width",
+      "label": "Copy width",
+      "min": 360,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "default": 680
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_mobile_width",
+      "label": "Mobile width",
+      "min": 300,
+      "max": 480,
+      "step": 10,
+      "unit": "px",
+      "default": 430
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_mobile_image_height",
+      "label": "Mobile image height",
+      "min": 160,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "default": 250
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "clp_promotion_padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Promotion colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "clp_promotion_color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "clp_promotion_background_color",
+      "label": "Module background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "clp_promotion_mobile_background_color",
+      "label": "Mobile section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "clp_promotion_text_color",
+      "label": "Text",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "clp_promotion_muted_text_color",
+      "label": "Body text",
+      "default": "#4a4a4a"
+    },
+    {
+      "type": "color",
+      "id": "clp_promotion_border_color",
+      "label": "Divider",
+      "default": "#dfdfdf"
+    },
+    {
+      "type": "color",
+      "id": "clp_promotion_button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "clp_promotion_button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
     },
     {
       "type": "header",

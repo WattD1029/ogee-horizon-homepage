@@ -57,3 +57,18 @@
 [2026-08-05][FIX] Made CLP shade swatches horizontally scrollable with previous/next arrow controls so long variant ranges are accessible instead of clipped.
 [2026-08-05][FIX] Replaced the new `product-subtitle` theme block with the existing `custom-liquid` block in `templates/collection.json` to resolve Shopify upload validation for undefined block types.
 [2026-08-05][FIX] Restored `blocks/product-subtitle.liquid` with a valid theme-block schema as an upload compatibility guard while leaving the CLP collection template on `custom-liquid`.
+[2026-08-05][PLAN] Planned the CLP Promotion This Month section from Figma desktop/mobile nodes and screenshots, targeting a merchant-editable collection-template section below `main-collection` with image, accordion promotion rows, CTA, and responsive desktop/mobile layout.
+[2026-08-05][IMPLEMENT] Added `sections/clp-promotion-this-month.liquid` with a merchant-editable image, reference-matched fallback asset, accordion promotion rows, CTA controls, scoped responsive styling, and a collection-only preset.
+[2026-08-05][UPDATE] Wired `clp-promotion-this-month` into `templates/collection.json` after `main-collection` with default gift, subscription, and free-shipping rows plus a bestsellers CTA.
+[2026-08-05][REVIEW] Compound review removed the unnecessary `disabled_on` schema routing from the collection-only promotion section and found no remaining actionable issues.
+[2026-08-05][VERIFY] Parsed the new section schema and collection template JSON, checked schema/template setting references, reran `git diff --check`, and confirmed Shopify validation remains blocked by missing local Theme Check dependencies.
+[2026-08-05][COMPOUND] Captured the reusable CLP promotion accordion section pattern in `docs/solutions/design-patterns/2026-08-05-figma-clp-promotion-this-month-section.md`.
+[2026-08-05][FIX] Resolved the Shopify upload error by removing the new `clp-promotion-this-month` template section dependency and rendering the promotion from the existing `main-collection` section settings.
+[2026-08-05][UPDATE] Tuned the CLP promotion mobile schema with a visible mobile heading, white outer background, compact 12px accordion text, 8px row spacing, and the corrected wide fallback product image.
+[2026-08-05][COMPOUND] Updated `docs/solutions/design-patterns/2026-08-05-figma-clp-promotion-this-month-section.md` with the upload-safe implementation and mobile Figma correction.
+[2026-08-05][FIX] Constrained the CLP promotion banner to the product-grid rail by default using the `page-width` promotion setting and `--page-content-width`.
+[2026-08-05][FIX] Reduced the desktop CLP promotion typography so the heading, accordion rows, body copy, and CTA fit the product-grid-width banner more quietly.
+[2026-08-05][FIX] Further reduced desktop CLP promotion text scale and extended the compact mobile card layout through tablet widths with the mobile heading visible by default.
+[2026-08-05][FIX] Moved the CLP promotion mobile heading into the light card module and reduced its scale so it no longer fades into the black collection background.
+[2026-08-05][FIX] Changed the CLP promotion mobile section background from black to white in both the schema default and collection template settings.
+[2026-08-05][FIX] Increased the CLP promotion mobile card default width and image height so the module fills mobile preview space more confidently.
