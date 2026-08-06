@@ -57,3 +57,8 @@
 [2026-08-05][FIX] Made CLP shade swatches horizontally scrollable with previous/next arrow controls so long variant ranges are accessible instead of clipped.
 [2026-08-05][FIX] Replaced the new `product-subtitle` theme block with the existing `custom-liquid` block in `templates/collection.json` to resolve Shopify upload validation for undefined block types.
 [2026-08-05][FIX] Restored `blocks/product-subtitle.liquid` with a valid theme-block schema as an upload compatibility guard while leaving the CLP collection template on `custom-liquid`.
+[2026-08-07][PLAN] Planned the CLP quick shop drawer from Figma desktop and mobile references, targeting the existing quick-add trigger stack plus a drawer-specific Ogee product-buy render surface so shade selection, subscription pricing, paired products, accordions, sticky add-to-cart, and cart events reuse current Horizon/Ogee product-form behavior.
+[2026-08-07][IMPLEMENT] Built the CLP quick shop drawer as a drawer-specific quick-add surface backed by `sections/quick-shop-drawer.liquid`, Ogee-styled drawer chrome, variant refetch mapping, and paired-product batch add-ons.
+[2026-08-07][REVIEW] Compound review found and fixed the non-swatch option selected-state gap; no remaining blocking code issues were found, with Shopify validator availability left as the main residual risk.
+[2026-08-07][VERIFY] Ran JS syntax checks, parsed the quick shop drawer section schema, checked quick shop drawer locale references, and confirmed `git diff --check` passes with only line-ending warnings; Shopify validator and CLI are unavailable in this workspace.
+[2026-08-07][COMPOUND] Captured the reusable section-rendered quick shop drawer pattern in `docs/solutions/design-patterns/2026-08-07-figma-clp-quick-shop-drawer.md`.
