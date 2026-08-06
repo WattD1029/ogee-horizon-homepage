@@ -23,6 +23,8 @@
     if search.terms contains 'id:'
       assign order_ids = search.terms | replace: 'id:', '' | split: ' OR '
     endif
+  else
+    assign products = collections.all.products
   endif
 
   capture slides

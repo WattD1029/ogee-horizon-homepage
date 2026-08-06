@@ -17,19 +17,16 @@ class RecentlyViewedProductsSection extends HTMLElement {
   async loadRecentlyViewed() {
     const productIds = this.getProductIds();
 
-    if (productIds.length === 0) {
-      this.hide();
-      return;
-    }
-
-    const url = new URL(Theme.routes.search_url, window.location.origin);
-    url.searchParams.set('q', productIds.map((id) => `id:${id}`).join(' OR '));
-    url.searchParams.set('resources[type]', 'product');
-
     try {
-      const renderedContent = await this.getRenderedContent(url);
-      const renderedViewport = renderedContent?.viewport;
-      const productCount = renderedContent?.productCount || 0;
+      let renderedContent = await this.getRenderedContent(this.getRenderUrl(productIds));
+      let renderedViewport = renderedContent?.viewport;
+      let productCount = renderedContent?.productCount || 0;
+
+      if ((!renderedViewport || productCount === 0) && productIds.length > 0) {
+        renderedContent = await this.getRenderedContent(this.getFallbackRenderUrl());
+        renderedViewport = renderedContent?.viewport;
+        productCount = renderedContent?.productCount || 0;
+      }
 
       if (!renderedViewport || productCount === 0) {
         this.hide();
@@ -47,6 +44,24 @@ class RecentlyViewedProductsSection extends HTMLElement {
     } catch (error) {
       this.hide();
     }
+  }
+
+  getRenderUrl(productIds) {
+    if (productIds.length === 0) {
+      return this.getFallbackRenderUrl();
+    }
+
+    const url = new URL(Theme.routes.search_url, window.location.origin);
+    url.searchParams.set('q', productIds.map((id) => `id:${id}`).join(' OR '));
+    url.searchParams.set('resources[type]', 'product');
+
+    return url;
+  }
+
+  getFallbackRenderUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('page');
+    return url;
   }
 
   getProductIds() {
