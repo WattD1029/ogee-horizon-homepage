@@ -1,0 +1,1151 @@
+{%- liquid
+  assign product_resource = product
+  if product_resource == blank
+    assign product_resource = section.settings.product
+  endif
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+-%}
+
+{%- if product_resource != blank -%}
+  {%- liquid
+    assign current_variant = product_resource.selected_or_first_available_variant
+    assign quantity_default = 1
+    if current_variant.quantity_rule.min
+      assign quantity_default = current_variant.quantity_rule.min
+    endif
+
+    assign can_add_to_cart = false
+    assign add_to_cart_text = 'products.product.unavailable' | t
+    if current_variant.available
+      assign can_add_to_cart = true
+      assign add_to_cart_text = 'actions.add_to_cart' | t
+    else
+      assign add_to_cart_text = 'products.product.sold_out' | t
+    endif
+
+    assign current_variant_price = current_variant.price | money
+    assign subscription_price = current_variant.price | times: 90 | divided_by: 100 | money
+    assign subtitle = product_resource.metafields.custom.subtitle.value
+    if subtitle == blank
+      assign subtitle = product_resource.metafields.custom.short_description.value
+    endif
+    if subtitle == blank
+      assign subtitle = product_resource.metafields.descriptors.subtitle.value
+    endif
+    if subtitle == blank
+      assign subtitle = product_resource.type
+    endif
+
+    assign display_weight = product_resource.metafields.custom.display_weight.value
+    if display_weight == blank
+      if current_variant.weight > 0
+        assign display_weight = current_variant.weight | weight_with_unit
+      endif
+    endif
+
+    assign rating = product_resource.metafields.reviews.rating.value.rating
+    assign rating_count = product_resource.metafields.reviews.rating_count
+    if rating == blank
+      assign rating = 5
+    endif
+    if rating_count == blank
+      assign rating_count = 5
+    endif
+    assign rating_floor = rating | floor
+    assign rating_decimal = rating | modulo: 1
+    assign rounded_star = 0
+    if rating_decimal >= 0.5
+      assign rounded_star = 1
+    endif
+    assign filled_stars = rating_floor | plus: rounded_star
+
+    assign shade_note = product_resource.metafields.custom.shade_undertone.value
+    if shade_note == blank
+      assign shade_note = product_resource.metafields.custom.selected_shade_note.value
+    endif
+
+    assign pairs_products = product_resource.metafields.custom.pairs_well_with.value
+    assign fallback_pair_product = blank
+    if pairs_products == blank
+      for product_collection in product_resource.collections
+        for collection_product in product_collection.products
+          if collection_product.id != product_resource.id
+            assign fallback_pair_product = collection_product
+            break
+          endif
+        endfor
+        if fallback_pair_product != blank
+          break
+        endif
+      endfor
+    endif
+
+    assign featured_image = current_variant.featured_media.preview_image
+    if featured_image == blank
+      assign featured_image = product_resource.featured_image
+    endif
+    assign full_set_secondary = blank
+    for product_media in product_resource.media
+      if product_media.preview_image != blank
+        if featured_image == blank or product_media.preview_image.id != featured_image.id
+          assign full_set_secondary = product_media.preview_image
+          break
+        endif
+      endif
+    endfor
+    assign variant_url = product_resource.url | append: '?variant=' | append: current_variant.id
+  -%}
+
+  <quick-shop-drawer
+    id="QuickShopDrawer-{{ section.id }}-{{ product_resource.id }}"
+    class="quick-shop-drawer"
+    data-quick-shop-drawer-content
+    data-product-id="{{ product_resource.id }}"
+    data-selected-variant-id="{{ current_variant.id }}"
+    data-quantity-default="{{ quantity_default }}"
+    data-currency-code="{{ cart.currency.iso_code | default: localization.country.currency.iso_code | default: 'USD' }}"
+  >
+    <div class="quick-shop-drawer__product">
+      <a class="quick-shop-drawer__product-image" href="{{ variant_url }}" data-quick-shop-primary-image>
+        {%- if featured_image != blank -%}
+          {%- assign image_alt = featured_image.alt | default: product_resource.title -%}
+          {{
+            featured_image
+            | image_url: width: 240
+            | image_tag:
+              widths: '120, 180, 240',
+              sizes: '120px',
+              loading: 'eager',
+              alt: image_alt
+          }}
+        {%- else -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag }}
+        {%- endif -%}
+      </a>
+
+      <div class="quick-shop-drawer__product-copy">
+        <h3 class="quick-shop-drawer__product-title">{{ product_resource.title | escape }}</h3>
+        {%- if subtitle != blank -%}
+          <p class="quick-shop-drawer__product-subtitle">{{ subtitle }}</p>
+        {%- endif -%}
+        {%- if display_weight != blank -%}
+          <p class="quick-shop-drawer__product-weight">{{ display_weight }}</p>
+        {%- endif -%}
+        {%- if rating != blank and rating_count != blank -%}
+          <div class="quick-shop-drawer__rating" aria-label="{{ 'accessibility.rating' | t: rating: rating }}">
+            <span class="quick-shop-drawer__stars" aria-hidden="true">
+              {%- for star in (1..5) -%}
+                <svg class="quick-shop-drawer__star{% if star <= filled_stars %} is-filled{% endif %}" viewBox="0 0 32 32" focusable="false">
+                  <path d="M31.547 12a.848.848 0 0 0-.677-.577l-9.427-1.376-4.224-8.532a.847.847 0 0 0-1.516 0l-4.218 8.534-9.427 1.355a.847.847 0 0 0-.467 1.467l6.823 6.664-1.612 9.375a.847.847 0 0 0 1.23.893l8.428-4.434 8.432 4.432a.847.847 0 0 0 1.229-.894l-1.615-9.373 6.822-6.665a.845.845 0 0 0 .214-.869z"></path>
+                </svg>
+              {%- endfor -%}
+            </span>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- unless product_resource.has_only_default_variant -%}
+      <variant-picker
+        class="quick-shop-drawer__variant-picker"
+        data-section-id="{{ section.id }}"
+        data-product-id="{{ product_resource.id }}"
+        data-product-url="{{ product_resource.url }}"
+      >
+        <form class="quick-shop-drawer__variant-form">
+          {%- for product_option in product_resource.options_with_values -%}
+            {%- liquid
+              assign option_name_downcase = product_option.name | downcase
+              assign swatch_count = product_option.values | map: 'swatch' | compact | size
+              assign is_swatch_option = false
+              if swatch_count > 0
+                assign is_swatch_option = true
+              endif
+              if option_name_downcase contains 'shade'
+                assign is_swatch_option = true
+              endif
+              if option_name_downcase contains 'color'
+                assign is_swatch_option = true
+              endif
+              if option_name_downcase contains 'colour'
+                assign is_swatch_option = true
+              endif
+              assign fieldset_index = forloop.index0
+            -%}
+            <fieldset
+              class="quick-shop-drawer__option{% if is_swatch_option %} quick-shop-drawer__option--swatches{% endif %}"
+              data-fieldset-index="{{ fieldset_index }}"
+              ref="fieldsets[]"
+            >
+              {%- if is_swatch_option -%}
+                <legend class="quick-shop-drawer__shade-heading">
+                  <span>{{ 'quick_shop_drawer.select_shade' | t }}</span>
+                  <button class="quick-shop-drawer__shade-finder" type="button">
+                    {{ 'quick_shop_drawer.find_my_shades' | t }}
+                  </button>
+                </legend>
+
+                <div class="quick-shop-drawer__shade-summary">
+                  <span class="quick-shop-drawer__shade-summary-swatch" aria-hidden="true">
+                    {%- for product_option_value in product_option.values -%}
+                      {%- if product_option_value.selected -%}
+                        {%- assign featured_media = product_option_value.variant.featured_media -%}
+                        {%- capture shade_color_override -%}
+                          {%- render 'ogee-shade-color',
+                            option_value: product_option_value,
+                            variant: product_option_value.variant
+                          -%}
+                        {%- endcapture -%}
+                        {%- assign shade_color_override = shade_color_override | strip -%}
+                        {%- render 'swatch',
+                          swatch: product_option_value.swatch,
+                          variant_image: featured_media,
+                          color_override: shade_color_override,
+                          mode: 'unscaled',
+                          label: product_option_value.name
+                        -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </span>
+                  <span class="quick-shop-drawer__shade-summary-copy">
+                    <span data-quick-shop-selected-shade>{{ product_option.selected_value | escape }}</span>
+                    {%- if shade_note != blank -%}
+                      <span>{{ shade_note }}</span>
+                    {%- endif -%}
+                  </span>
+                  <span class="quick-shop-drawer__shade-summary-icon" aria-hidden="true">
+                    {{ 'icon-chevron-down.svg' | inline_asset_content }}
+                  </span>
+                </div>
+
+                <div class="quick-shop-drawer__shade-tabs" aria-label="{{ 'quick_shop_drawer.shade_families' | t }}">
+                  <button type="button" class="is-active" aria-pressed="true" data-quick-shop-shade-tab>{{ 'quick_shop_drawer.all' | t }}</button>
+                  <button type="button" aria-pressed="false" data-quick-shop-shade-tab>{{ 'quick_shop_drawer.light' | t }}</button>
+                  <button type="button" aria-pressed="false" data-quick-shop-shade-tab>{{ 'quick_shop_drawer.medium' | t }}</button>
+                  <button type="button" aria-pressed="false" data-quick-shop-shade-tab>{{ 'quick_shop_drawer.deep' | t }}</button>
+                </div>
+              {%- else -%}
+                <legend>
+                  <span>{{ product_option.name | escape }}</span>
+                  <span class="quick-shop-drawer__selected-value">
+                    {{ 'quick_shop_drawer.selected' | t }} <span>{{ product_option.selected_value }}</span>
+                  </span>
+                </legend>
+              {%- endif -%}
+
+              <div class="quick-shop-drawer__option-values{% if is_swatch_option %} quick-shop-drawer__option-values--swatches{% endif %}">
+                {%- for product_option_value in product_option.values -%}
+                  {%- liquid
+                    assign option_variant_image = ''
+                    if product_option_value.variant.featured_media.preview_image != blank
+                      assign option_variant_image = product_option_value.variant.featured_media.preview_image | image_url: width: 240
+                    endif
+                  -%}
+                  <label class="quick-shop-drawer__option-label{% if is_swatch_option %} quick-shop-drawer__swatch-label{% endif %}">
+                    <input
+                      type="radio"
+                      name="{{ product_option.name | escape }}-{{ section.id }}-{{ product_resource.id }}"
+                      value="{{ product_option_value | escape }}"
+                      aria-label="{{ product_option_value.name | escape }}{% if product_option_value.available == false %} - {{ 'products.product.sold_out' | t }}{% endif %}"
+                      {% if product_option_value.available == false %}
+                        aria-disabled="true"
+                      {% endif %}
+                      data-previous-checked="false"
+                      data-fieldset-index="{{ fieldset_index }}"
+                      data-input-index="{{ forloop.index0 }}"
+                      data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                      data-option-value-id="{{ product_option_value.id }}"
+                      data-option-available="{{ product_option_value.available }}"
+                      data-connected-product-url="{{ product_option_value.product_url }}"
+                      data-quick-shop-shade-label="{{ product_option_value.name | escape }}"
+                      {% if option_variant_image != blank %}
+                        data-quick-shop-variant-image="{{ option_variant_image }}"
+                      {% endif %}
+                      {% if product_option_value.variant.id %}
+                        data-variant-id="{{ product_option_value.variant.id }}"
+                      {% endif %}
+                      {% if product_option_value.selected %}
+                        data-current-checked="true"
+                        checked
+                      {% else %}
+                        data-current-checked="false"
+                      {% endif %}
+                    >
+                    {%- if is_swatch_option -%}
+                      {%- assign featured_media = product_option_value.variant.featured_media -%}
+                      {%- capture shade_color_override -%}
+                        {%- render 'ogee-shade-color',
+                          option_value: product_option_value,
+                          variant: product_option_value.variant
+                        -%}
+                      {%- endcapture -%}
+                      {%- assign shade_color_override = shade_color_override | strip -%}
+                      {%- render 'swatch',
+                        swatch: product_option_value.swatch,
+                        variant_image: featured_media,
+                        color_override: shade_color_override,
+                        mode: 'unscaled',
+                        label: product_option_value.name
+                      -%}
+                    {%- else -%}
+                      <span>{{ product_option_value | escape }}</span>
+                    {%- endif -%}
+                  </label>
+                {%- endfor -%}
+              </div>
+            </fieldset>
+          {%- endfor -%}
+          <script type="application/json">
+            {{ current_variant | json }}
+          </script>
+        </form>
+      </variant-picker>
+    {%- endunless -%}
+
+    <product-form-component
+      id="QuickShopDrawerForm-{{ section.id }}"
+      class="quick-shop-drawer__form"
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ product_resource.id }}"
+      data-product-url="{{ product_resource.url }}"
+      data-quantity-default="{{ quantity_default }}"
+      data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+      on:submit="/handleSubmit"
+    >
+      <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
+      {%- assign product_form_id = 'QuickShopDrawer-ProductForm-' | append: section.id -%}
+      {%- assign submit_button_id = 'QuickShopDrawer-SubmitButton-' | append: section.id -%}
+      {%- form 'product', product_resource, id: product_form_id, data-type: 'add-to-cart-form' -%}
+        <input type="hidden" name="id" ref="variantId" value="{{ current_variant.id }}">
+        <input type="hidden" name="quantity" value="{{ quantity_default }}">
+
+        {%- if product_resource.selling_plan_groups.size > 0 -%}
+          <fieldset class="quick-shop-drawer__purchase-options">
+            <legend>{{ 'quick_shop_drawer.purchase_options' | t }}</legend>
+            {%- unless product_resource.requires_selling_plan -%}
+              <label class="quick-shop-drawer__purchase-option">
+                <input type="radio" name="selling_plan" value="" checked>
+                <span>{{ 'quick_shop_drawer.one_time_purchase' | t }}</span>
+              </label>
+            {%- endunless -%}
+            {%- assign selling_plan_index = 0 -%}
+            {%- for selling_plan_group in product_resource.selling_plan_groups -%}
+              {%- for selling_plan in selling_plan_group.selling_plans -%}
+                {%- assign selling_plan_index = selling_plan_index | plus: 1 -%}
+                <label class="quick-shop-drawer__purchase-option">
+                  <input
+                    type="radio"
+                    name="selling_plan"
+                    value="{{ selling_plan.id }}"
+                    {% if product_resource.requires_selling_plan %}
+                      {% if selling_plan_index == 1 %}
+                        checked
+                      {% endif %}
+                    {% endif %}
+                  >
+                  <span>{{ selling_plan.name | escape }}</span>
+                </label>
+              {%- endfor -%}
+            {%- endfor -%}
+          </fieldset>
+        {%- else -%}
+          <div class="quick-shop-drawer__subscription" aria-label="{{ 'quick_shop_drawer.subscription_offer' | t }}">
+            <span class="quick-shop-drawer__subscription-box" aria-hidden="true"></span>
+            <span class="quick-shop-drawer__subscription-copy">
+              <span>
+                {{ 'quick_shop_drawer.subscribe' | t }}
+                <span class="quick-shop-drawer__subscription-help" aria-hidden="true">?</span>
+              </span>
+              <span>{{ 'quick_shop_drawer.save_free_shipping' | t }}</span>
+            </span>
+            <span class="quick-shop-drawer__subscription-price" data-quick-shop-subscription-price>
+              <span>{{ subscription_price }}</span>
+              <span>{{ current_variant_price }}</span>
+            </span>
+          </div>
+        {%- endif -%}
+
+        <div class="quick-shop-drawer__full-set" data-quick-shop-full-set>
+          <p>{{ 'quick_shop_drawer.full_set' | t: shade: current_variant.title }}</p>
+          <div class="quick-shop-drawer__full-set-tiles">
+            <span class="quick-shop-drawer__full-set-tile is-active">
+              {%- if featured_image != blank -%}
+                {%- assign full_set_alt = featured_image.alt | default: product_resource.title -%}
+                {{
+                  featured_image
+                  | image_url: width: 160
+                  | image_tag:
+                    widths: '80, 120, 160',
+                    sizes: '80px',
+                    loading: 'lazy',
+                    alt: full_set_alt
+                }}
+              {%- else -%}
+                {{ 'product-apparel-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </span>
+            <span class="quick-shop-drawer__full-set-tile">
+              {%- if full_set_secondary != blank -%}
+                {%- assign full_set_secondary_alt = full_set_secondary.alt | default: product_resource.title -%}
+                {{
+                  full_set_secondary
+                  | image_url: width: 160
+                  | image_tag:
+                    widths: '80, 120, 160',
+                    sizes: '80px',
+                    loading: 'lazy',
+                    alt: full_set_secondary_alt
+                }}
+              {%- elsif product_resource.featured_image != blank -%}
+                {%- assign product_image_alt = product_resource.featured_image.alt | default: product_resource.title -%}
+                {{
+                  product_resource.featured_image
+                  | image_url: width: 160
+                  | image_tag:
+                    widths: '80, 120, 160',
+                    sizes: '80px',
+                    loading: 'lazy',
+                    alt: product_image_alt
+                }}
+              {%- else -%}
+                {{ 'product-apparel-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </span>
+          </div>
+        </div>
+
+        {%- if pairs_products != blank or fallback_pair_product != blank -%}
+          <details class="quick-shop-drawer__panel quick-shop-drawer__panel--pairs" open>
+            <summary>
+              <span>{{ 'quick_shop_drawer.pair_with' | t }}</span>
+              <span class="quick-shop-drawer__summary-icon" aria-hidden="true">{{ 'icon-chevron-down.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="quick-shop-drawer__pairs-list">
+              {%- for pair_product in pairs_products limit: 2 -%}
+                {%- assign pair_variant = pair_product.selected_or_first_available_variant -%}
+                {%- assign pair_subtitle = pair_product.metafields.custom.subtitle.value | default: pair_product.type -%}
+                <label class="quick-shop-drawer__pair-card">
+                  <span class="quick-shop-drawer__pair-image">
+                    {%- if pair_product.featured_image -%}
+                      {%- assign pair_image_alt = pair_product.featured_image.alt | default: pair_product.title -%}
+                      {{
+                        pair_product.featured_image
+                        | image_url: width: 180
+                        | image_tag:
+                          widths: '90, 140, 180',
+                          sizes: '64px',
+                          loading: 'lazy',
+                          alt: pair_image_alt
+                      }}
+                    {%- else -%}
+                      {{ 'product-apparel-1' | placeholder_svg_tag }}
+                    {%- endif -%}
+                  </span>
+                  <span class="quick-shop-drawer__pair-info">
+                    <span class="quick-shop-drawer__pair-title">{{ pair_product.title | escape }}</span>
+                    {%- if pair_subtitle != blank -%}
+                      <span class="quick-shop-drawer__pair-subtitle">{{ pair_subtitle }}</span>
+                    {%- endif -%}
+                    <span class="quick-shop-drawer__pair-price">{%- render 'price', product_resource: pair_product, show_sale_price_first: true -%}</span>
+                  </span>
+                  <input
+                    class="quick-shop-drawer__pair-checkbox"
+                    type="checkbox"
+                    name="quick_shop_addon_{{ pair_variant.id }}"
+                    data-quick-shop-addon
+                    data-variant-id="{{ pair_variant.id }}"
+                    data-price="{{ pair_variant.price }}"
+                    {% unless pair_variant.available %}
+                      disabled
+                    {% endunless %}
+                  >
+                  <span class="quick-shop-drawer__pair-check" aria-hidden="true"></span>
+                </label>
+              {%- endfor -%}
+              {%- if pairs_products == blank and fallback_pair_product != blank -%}
+                {%- assign pair_variant = fallback_pair_product.selected_or_first_available_variant -%}
+                {%- assign pair_subtitle = fallback_pair_product.metafields.custom.subtitle.value | default: fallback_pair_product.type -%}
+                <label class="quick-shop-drawer__pair-card">
+                  <span class="quick-shop-drawer__pair-image">
+                    {%- if fallback_pair_product.featured_image -%}
+                      {%- assign pair_image_alt = fallback_pair_product.featured_image.alt | default: fallback_pair_product.title -%}
+                      {{
+                        fallback_pair_product.featured_image
+                        | image_url: width: 180
+                        | image_tag:
+                          widths: '90, 140, 180',
+                          sizes: '64px',
+                          loading: 'lazy',
+                          alt: pair_image_alt
+                      }}
+                    {%- else -%}
+                      {{ 'product-apparel-1' | placeholder_svg_tag }}
+                    {%- endif -%}
+                  </span>
+                  <span class="quick-shop-drawer__pair-info">
+                    <span class="quick-shop-drawer__pair-title">{{ fallback_pair_product.title | escape }}</span>
+                    {%- if pair_subtitle != blank -%}
+                      <span class="quick-shop-drawer__pair-subtitle">{{ pair_subtitle }}</span>
+                    {%- endif -%}
+                    <span class="quick-shop-drawer__pair-price">{%- render 'price', product_resource: fallback_pair_product, show_sale_price_first: true -%}</span>
+                  </span>
+                  <input
+                    class="quick-shop-drawer__pair-checkbox"
+                    type="checkbox"
+                    name="quick_shop_addon_{{ pair_variant.id }}"
+                    data-quick-shop-addon
+                    data-variant-id="{{ pair_variant.id }}"
+                    data-price="{{ pair_variant.price }}"
+                    {% unless pair_variant.available %}
+                      disabled
+                    {% endunless %}
+                  >
+                  <span class="quick-shop-drawer__pair-check" aria-hidden="true"></span>
+                </label>
+              {%- endif -%}
+            </div>
+          </details>
+        {%- endif -%}
+
+        <div class="quick-shop-drawer__accordions">
+          <details class="quick-shop-drawer__panel" open>
+            <summary>
+              <span>{{ 'quick_shop_drawer.product_details' | t }}</span>
+              <span class="quick-shop-drawer__summary-icon" aria-hidden="true">{{ 'icon-chevron-down.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="quick-shop-drawer__rte">
+              {%- if product_resource.metafields.custom.product_details != blank -%}
+                {{ product_resource.metafields.custom.product_details | metafield_tag }}
+              {%- elsif product_resource.description != blank -%}
+                {{ product_resource.description }}
+              {%- else -%}
+                {{ 'quick_shop_drawer.details_fallback' | t }}
+              {%- endif -%}
+            </div>
+          </details>
+
+          <details class="quick-shop-drawer__panel">
+            <summary>
+              <span>{{ 'quick_shop_drawer.high_performance_ingredients' | t }}</span>
+              <span class="quick-shop-drawer__summary-icon" aria-hidden="true">{{ 'icon-chevron-down.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="quick-shop-drawer__rte">
+              {%- if product_resource.metafields.custom.ingredients != blank -%}
+                {{ product_resource.metafields.custom.ingredients | metafield_tag }}
+              {%- else -%}
+                {{ 'quick_shop_drawer.ingredients_fallback' | t }}
+              {%- endif -%}
+            </div>
+          </details>
+
+          <details class="quick-shop-drawer__panel">
+            <summary>
+              <span>{{ 'quick_shop_drawer.how_to_apply' | t }}</span>
+              <span class="quick-shop-drawer__summary-icon" aria-hidden="true">{{ 'icon-chevron-down.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="quick-shop-drawer__rte">
+              {%- if product_resource.metafields.custom.how_to_use != blank -%}
+                {{ product_resource.metafields.custom.how_to_use | metafield_tag }}
+              {%- else -%}
+                {{ 'quick_shop_drawer.how_to_apply_fallback' | t }}
+              {%- endif -%}
+            </div>
+          </details>
+
+          <details class="quick-shop-drawer__panel">
+            <summary>
+              <span>{{ 'quick_shop_drawer.drug_facts' | t }}</span>
+              <span class="quick-shop-drawer__summary-icon" aria-hidden="true">{{ 'icon-chevron-down.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="quick-shop-drawer__rte">
+              {%- if product_resource.metafields.custom.drug_facts != blank -%}
+                {{ product_resource.metafields.custom.drug_facts | metafield_tag }}
+              {%- elsif product_resource.metafields.custom.benefits != blank -%}
+                {{ product_resource.metafields.custom.benefits | metafield_tag }}
+              {%- else -%}
+                {{ 'quick_shop_drawer.drug_facts_fallback' | t }}
+              {%- endif -%}
+            </div>
+          </details>
+
+          <details class="quick-shop-drawer__panel">
+            <summary>
+              <span>{{ 'quick_shop_drawer.shipping_refunds' | t }}</span>
+              <span class="quick-shop-drawer__summary-icon" aria-hidden="true">{{ 'icon-chevron-down.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="quick-shop-drawer__rte">
+              {%- if product_resource.metafields.custom.shipping_returns != blank -%}
+                {{ product_resource.metafields.custom.shipping_returns | metafield_tag }}
+              {%- elsif shop.shipping_policy.body != blank -%}
+                {{ shop.shipping_policy.body }}
+              {%- else -%}
+                {{ 'quick_shop_drawer.shipping_refunds_fallback' | t }}
+              {%- endif -%}
+            </div>
+          </details>
+        </div>
+
+        <span class="quick-shop-drawer__form-error hidden" ref="addToCartTextError">
+          <span class="svg-wrapper">{{ 'icon-error.svg' | inline_asset_content }}</span>
+        </span>
+
+        <div class="quick-shop-drawer__footer">
+          <div class="quick-shop-drawer__footer-actions product-form-buttons" ref="productFormButtons">
+            {%- render 'add-to-cart-button',
+              id: submit_button_id,
+              class: 'quick-shop-drawer__add-button add-to-cart-button',
+              can_add_to_cart: can_add_to_cart,
+              product: product_resource,
+              add_to_cart_text: add_to_cart_text,
+              data_testid: 'quick-shop-drawer-add-to-cart'
+            -%}
+            <span class="quick-shop-drawer__footer-price" data-quick-shop-footer-price data-price="{{ current_variant.price }}" aria-hidden="true">
+              {{ current_variant_price }}
+            </span>
+          </div>
+          <a class="quick-shop-drawer__details-link" href="{{ variant_url }}">
+            {{ 'quick_shop_drawer.view_details' | t }}
+          </a>
+        </div>
+      {%- endform -%}
+    </product-form-component>
+  </quick-shop-drawer>
+{%- endif -%}
+
+{% stylesheet %}
+  .quick-shop-drawer {
+    background: #fff;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-body--family);
+    gap: 18px;
+    min-height: 100%;
+    padding: 24px 20px 0;
+  }
+
+  .quick-shop-drawer a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .quick-shop-drawer__product {
+    border-bottom: 1px solid rgb(0 0 0 / 0.08);
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 120px minmax(0, 1fr);
+    padding-bottom: 20px;
+  }
+
+  .quick-shop-drawer__product-image {
+    background: #f6f5f2;
+    display: grid;
+    min-height: 120px;
+    place-items: center;
+  }
+
+  .quick-shop-drawer__product-image img,
+  .quick-shop-drawer__product-image svg,
+  .quick-shop-drawer__full-set-tile img,
+  .quick-shop-drawer__full-set-tile svg,
+  .quick-shop-drawer__pair-image img,
+  .quick-shop-drawer__pair-image svg {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  .quick-shop-drawer__product-copy {
+    align-self: center;
+    min-width: 0;
+  }
+
+  .quick-shop-drawer__product-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  .quick-shop-drawer__product-subtitle,
+  .quick-shop-drawer__product-weight {
+    color: rgb(0 0 0 / 0.56);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    margin: 6px 0 0;
+    text-transform: uppercase;
+  }
+
+  .quick-shop-drawer__rating {
+    margin-top: 8px;
+  }
+
+  .quick-shop-drawer__stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .quick-shop-drawer__star {
+    fill: transparent;
+    height: 13px;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    width: 13px;
+  }
+
+  .quick-shop-drawer__star.is-filled {
+    fill: currentColor;
+  }
+
+  .quick-shop-drawer__variant-form,
+  .quick-shop-drawer__form form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 0;
+  }
+
+  .quick-shop-drawer__option {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .quick-shop-drawer__shade-heading,
+  .quick-shop-drawer__option legend {
+    align-items: center;
+    color: rgb(0 0 0 / 0.54);
+    display: flex;
+    font-size: 0.75rem;
+    gap: 8px;
+    justify-content: space-between;
+    line-height: 1.2;
+    margin: 0 0 12px;
+    padding: 0;
+    width: 100%;
+  }
+
+  .quick-shop-drawer__shade-finder {
+    background: #fff;
+    border: 1px solid #555;
+    color: #222;
+    cursor: pointer;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    min-height: 30px;
+    padding: 0 16px;
+    text-transform: uppercase;
+  }
+
+  .quick-shop-drawer__shade-summary {
+    align-items: center;
+    border: 1px solid rgb(0 0 0 / 0.12);
+    display: grid;
+    gap: 12px;
+    grid-template-columns: auto 1fr auto;
+    min-height: 48px;
+    padding: 8px 12px;
+  }
+
+  .quick-shop-drawer__shade-summary .swatch {
+    border-radius: 50%;
+    height: 22px;
+    width: 22px;
+  }
+
+  .quick-shop-drawer__shade-summary-copy {
+    color: rgb(0 0 0 / 0.54);
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75rem;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .quick-shop-drawer__shade-summary-icon svg {
+    height: 12px;
+    width: 12px;
+  }
+
+  .quick-shop-drawer__shade-tabs {
+    align-items: center;
+    display: flex;
+    gap: 24px;
+    margin-top: 14px;
+  }
+
+  .quick-shop-drawer__shade-tabs button {
+    background: none;
+    border: 0;
+    color: rgb(0 0 0 / 0.5);
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 0 0 4px;
+  }
+
+  .quick-shop-drawer__shade-tabs button.is-active {
+    border-bottom: 1px solid currentColor;
+    color: #222;
+  }
+
+  .quick-shop-drawer__option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .quick-shop-drawer__option-values--swatches {
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .quick-shop-drawer__option-label {
+    align-items: center;
+    border: 1px solid rgb(0 0 0 / 0.16);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.75rem;
+    min-height: 34px;
+    padding: 6px 12px;
+    position: relative;
+  }
+
+  .quick-shop-drawer__option-label:has(input:checked) {
+    background: #f8f7f4;
+    border-color: #222;
+  }
+
+  .quick-shop-drawer__swatch-label {
+    border: 0;
+    background: transparent;
+    min-height: 30px;
+    padding: 0;
+  }
+
+  .quick-shop-drawer__swatch-label:has(input:checked) {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .quick-shop-drawer__option-label input {
+    appearance: none;
+    margin: 0;
+    position: absolute;
+  }
+
+  .quick-shop-drawer__option-label input:checked + .swatch {
+    outline: 1px solid #222;
+    outline-offset: 3px;
+  }
+
+  .quick-shop-drawer__swatch-label .swatch {
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+  }
+
+  .quick-shop-drawer__selected-value {
+    color: rgb(0 0 0 / 0.42);
+    margin-left: auto;
+  }
+
+  .quick-shop-drawer__purchase-options {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .quick-shop-drawer__purchase-options legend {
+    color: rgb(0 0 0 / 0.54);
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+    padding: 0;
+  }
+
+  .quick-shop-drawer__purchase-option,
+  .quick-shop-drawer__subscription {
+    align-items: center;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .quick-shop-drawer__purchase-option {
+    border: 1px solid rgb(0 0 0 / 0.12);
+    cursor: pointer;
+    margin-top: 8px;
+    min-height: 42px;
+    padding: 10px 12px;
+  }
+
+  .quick-shop-drawer__subscription {
+    color: #222;
+    font-size: 0.75rem;
+  }
+
+  .quick-shop-drawer__subscription-box,
+  .quick-shop-drawer__pair-check {
+    border: 1px solid rgb(0 0 0 / 0.28);
+    display: block;
+    height: 18px;
+    width: 18px;
+  }
+
+  .quick-shop-drawer__subscription-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-transform: uppercase;
+  }
+
+  .quick-shop-drawer__subscription-copy > span:first-child {
+    font-weight: 700;
+  }
+
+  .quick-shop-drawer__subscription-help {
+    align-items: center;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    display: inline-flex;
+    font-size: 0.625rem;
+    height: 13px;
+    justify-content: center;
+    margin-left: 2px;
+    width: 13px;
+  }
+
+  .quick-shop-drawer__subscription-price,
+  .quick-shop-drawer__pair-price {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75rem;
+    font-weight: 700;
+    gap: 2px;
+    text-align: right;
+  }
+
+  .quick-shop-drawer__subscription-price span:last-child,
+  .quick-shop-drawer__pair-price .compare-at-price {
+    color: rgb(0 0 0 / 0.42);
+    font-size: 0.625rem;
+    text-decoration: line-through;
+  }
+
+  .quick-shop-drawer__full-set p {
+    color: rgb(0 0 0 / 0.56);
+    font-size: 0.75rem;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+  }
+
+  .quick-shop-drawer__full-set-tiles {
+    display: flex;
+    gap: 8px;
+  }
+
+  .quick-shop-drawer__full-set-tile {
+    background: #fbfaf8;
+    border: 1px solid rgb(0 0 0 / 0.08);
+    display: grid;
+    height: 80px;
+    place-items: center;
+    width: 80px;
+  }
+
+  .quick-shop-drawer__full-set-tile.is-active {
+    border-color: #222;
+  }
+
+  .quick-shop-drawer__panel {
+    border-top: 1px solid rgb(0 0 0 / 0.1);
+  }
+
+  .quick-shop-drawer__panel summary {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    font-size: 0.75rem;
+    font-weight: 700;
+    justify-content: space-between;
+    letter-spacing: 0.45px;
+    list-style: none;
+    min-height: 42px;
+    text-transform: uppercase;
+  }
+
+  .quick-shop-drawer__panel summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .quick-shop-drawer__summary-icon svg {
+    height: 12px;
+    transform: rotate(0deg);
+    transition: transform 0.18s ease;
+    width: 12px;
+  }
+
+  .quick-shop-drawer__panel[open] .quick-shop-drawer__summary-icon svg {
+    transform: rotate(180deg);
+  }
+
+  .quick-shop-drawer__pairs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 14px;
+  }
+
+  .quick-shop-drawer__pair-card {
+    align-items: center;
+    background: #fbfaf6;
+    cursor: pointer;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    min-height: 86px;
+    padding: 10px;
+  }
+
+  .quick-shop-drawer__pair-image {
+    background: #f3f2ef;
+    display: grid;
+    height: 64px;
+    place-items: center;
+    width: 64px;
+  }
+
+  .quick-shop-drawer__pair-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .quick-shop-drawer__pair-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .quick-shop-drawer__pair-subtitle {
+    color: rgb(0 0 0 / 0.52);
+    font-size: 0.625rem;
+    letter-spacing: 0.4px;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .quick-shop-drawer__pair-checkbox {
+    appearance: none;
+    height: 1px;
+    opacity: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  .quick-shop-drawer__pair-checkbox:checked + .quick-shop-drawer__pair-check {
+    background: #222;
+    box-shadow: inset 0 0 0 4px #fff;
+  }
+
+  .quick-shop-drawer__rte {
+    color: rgb(0 0 0 / 0.58);
+    font-size: 0.75rem;
+    line-height: 1.55;
+    padding-bottom: 16px;
+  }
+
+  .quick-shop-drawer__rte > * {
+    margin-block: 0 10px;
+  }
+
+  .quick-shop-drawer__form-error {
+    align-items: center;
+    color: var(--color-foreground);
+    display: flex;
+    font-size: 0.75rem;
+    gap: 8px;
+  }
+
+  .quick-shop-drawer__form-error.hidden {
+    display: none;
+  }
+
+  .quick-shop-drawer__footer {
+    background: #fff;
+    border-top: 1px solid rgb(0 0 0 / 0.12);
+    bottom: 0;
+    margin-inline: -20px;
+    margin-top: 4px;
+    padding: 12px 20px 14px;
+    position: sticky;
+    z-index: 2;
+  }
+
+  .quick-shop-drawer__footer-actions {
+    display: grid;
+    grid-template-columns: 1fr 88px;
+  }
+
+  .quick-shop-drawer__add-button {
+    --button-padding-inline: 18px;
+    background: #000;
+    border-color: #000;
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    min-height: 42px;
+    text-transform: uppercase;
+    width: 100%;
+  }
+
+  .quick-shop-drawer__footer-price {
+    align-items: center;
+    background: #000;
+    border-left: 1px solid rgb(255 255 255 / 0.28);
+    color: #fff;
+    display: flex;
+    font-size: 0.75rem;
+    font-weight: 500;
+    justify-content: center;
+    min-height: 42px;
+  }
+
+  .quick-shop-drawer__details-link {
+    color: rgb(0 0 0 / 0.58);
+    display: block;
+    font-size: 0.6875rem;
+    margin-top: 12px;
+    text-align: center;
+    text-decoration: underline;
+    text-transform: uppercase;
+  }
+
+  @media screen and (max-width: 749px) {
+    .quick-shop-drawer {
+      padding-inline: 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:quick_shop_drawer.name",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    }
+  ]
+}
+{% endschema %}
