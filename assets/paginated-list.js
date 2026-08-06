@@ -12,6 +12,7 @@ import { PaginatedListAspectRatioHelper } from '@theme/paginated-list-aspect-rat
  * @property {HTMLSpanElement} [viewMorePrevious] - The view more previous button.
  * @property {HTMLSpanElement} [viewMoreNext] - The view more next button.
  * @property {HTMLParagraphElement} [viewMoreStatus] - Manual load-more status.
+ * @property {HTMLElement} [viewMoreProgress] - Manual load-more progress bar.
  * @property {HTMLButtonElement} [viewMoreNextButton] - Manual load-more button.
  * @property {HTMLElement[]} [cards] - The cards elements.
  *
@@ -306,21 +307,39 @@ export default class PaginatedList extends Component {
   }
 
   #updateManualLoadMoreState() {
-    const { grid, viewMoreStatus, viewMoreNextButton } = this.refs;
+    const { grid, viewMoreStatus, viewMoreProgress, viewMoreNextButton } = this.refs;
 
     if (!grid) return;
 
     const cards = Array.from(grid.querySelectorAll(':scope > [ref="cards[]"]'));
     const totalItems = Number(grid.dataset.totalItems || cards.length);
-    const currentOffset = Number(grid.dataset.currentOffset || 0);
-    const visibleCount = currentOffset + cards.length;
+    const visibleCount = Math.min(cards.length, totalItems);
 
     if (viewMoreStatus) {
       const template = viewMoreStatus.dataset.showingTemplate;
       if (template) {
-        viewMoreStatus.textContent = template
-          .replace('[count]', visibleCount.toString())
-          .replace('[total]', totalItems.toString());
+        const statusText = template.replace('[count]', visibleCount.toString()).replace('[total]', totalItems.toString());
+        viewMoreStatus.textContent = statusText;
+
+        if (viewMoreProgress) {
+          viewMoreProgress.setAttribute('aria-valuetext', statusText);
+        }
+      }
+    }
+
+    if (viewMoreProgress) {
+      const progress = totalItems > 0 ? Math.min(Math.max((visibleCount / totalItems) * 100, 0), 100) : 0;
+      viewMoreProgress.style.setProperty('--load-more-progress', `${progress}%`);
+      viewMoreProgress.setAttribute('aria-valuenow', visibleCount.toString());
+      viewMoreProgress.setAttribute('aria-valuemax', totalItems.toString());
+    }
+
+    if (viewMoreNextButton) {
+      viewMoreNextButton.hidden = false;
+      viewMoreNextButton.disabled = false;
+
+      if (!viewMoreNextButton.hasAttribute('aria-busy')) {
+        viewMoreNextButton.removeAttribute('aria-busy');
       }
     }
 
