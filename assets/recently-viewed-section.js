@@ -17,6 +17,11 @@ class RecentlyViewedProductsSection extends HTMLElement {
   async loadRecentlyViewed() {
     const productIds = this.getProductIds();
 
+    if (productIds.length === 0 && this.hasServerRenderedProducts()) {
+      this.showServerRenderedProducts();
+      return;
+    }
+
     try {
       let renderedContent = await this.getRenderedContent(this.getRenderUrl(productIds));
       let renderedViewport = renderedContent?.viewport;
@@ -29,6 +34,11 @@ class RecentlyViewedProductsSection extends HTMLElement {
       }
 
       if (!renderedViewport || productCount === 0) {
+        if (this.hasServerRenderedProducts()) {
+          this.showServerRenderedProducts();
+          return;
+        }
+
         this.hide();
         return;
       }
@@ -42,6 +52,11 @@ class RecentlyViewedProductsSection extends HTMLElement {
         this.status.textContent = '';
       }
     } catch (error) {
+      if (this.hasServerRenderedProducts()) {
+        this.showServerRenderedProducts();
+        return;
+      }
+
       this.hide();
     }
   }
@@ -122,6 +137,21 @@ class RecentlyViewedProductsSection extends HTMLElement {
     if (Number.isNaN(maxProducts)) return 4;
 
     return Math.min(Math.max(maxProducts, 1), 4);
+  }
+
+  hasServerRenderedProducts() {
+    const productCount = Number.parseInt(this.dataset.productCount || '0', 10);
+
+    return !Number.isNaN(productCount) && productCount > 0;
+  }
+
+  showServerRenderedProducts() {
+    this.hidden = false;
+    this.dataset.loaded = 'true';
+
+    if (this.status) {
+      this.status.textContent = '';
+    }
   }
 
   hide() {

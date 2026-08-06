@@ -67,3 +67,4 @@
 [2026-08-06][FIX] Moved the collection page recently viewed shell into the existing `main-collection` section and removed the `recently-viewed-products` JSON template dependency so Shopify upload validation no longer requires a new template section type.
 [2026-08-07][FIX] Restored recently viewed product output by using `search.results` directly like the existing predictive-search recently viewed flow, and set the recently viewed heading to Times New Roman.
 [2026-08-07][FIX] Added an `all` collection fallback so the recently viewed rail still renders product cards when no local recently viewed IDs are available.
+[2026-08-07][FIX] Rendered the `all` collection fallback directly in `main-collection` so recently viewed product cards appear before client-side section rendering runs.

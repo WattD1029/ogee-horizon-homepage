@@ -100,6 +100,29 @@
     endif
 
     assign recently_viewed_max_products = section.settings.recently_viewed_max_products | default: 4
+
+    assign recently_viewed_rendered_count = 0
+    assign recently_viewed_products = collections.all.products
+    assign add_to_cart_label = 'actions.add_to_cart' | t
+    assign choose_options_label = 'actions.select_shade' | t
+    assign quick_view_label = 'accessibility.product_details' | t
+
+    capture recently_viewed_slides
+      if recently_viewed_products != blank
+        for recently_viewed_product in recently_viewed_products limit: recently_viewed_max_products
+          assign recently_viewed_rendered_count = recently_viewed_rendered_count | plus: 1
+          assign slide_index = recently_viewed_rendered_count | minus: 1
+          capture slide_children
+            render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-main-' | append: recently_viewed_product.id, badge_label: 'Best-Seller', show_badge: true, badge_limit: 2, card_index: recently_viewed_rendered_count, subtitle_source: 'metafield', show_vendor: false, show_reviews: true, show_swatches: true, show_wishlist: true, fallback_rating: 5, fallback_rating_count: 1, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: false, loading: 'lazy'
+          endcapture
+          render 'slideshow-slide', slide_id: recently_viewed_product.id, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
+        endfor
+      endif
+    endcapture
+
+    capture recently_viewed_controls
+      render 'slideshow-controls', style: 'counter', item_count: recently_viewed_rendered_count, show_arrows: true, arrows_on_media: false, controls_on_media: false, pagination_position: 'right', icon_style: 'arrow', shape: 'square', class: 'recently-viewed-products__controls'
+    endcapture
   %}
 
   <recently-viewed-products
@@ -108,8 +131,10 @@
     data-render-section-id="recently-viewed-products"
     data-fallback-section-id="recently-viewed-products"
     data-max-products="{{ recently_viewed_max_products }}"
-    data-product-count="0"
-    hidden
+    data-product-count="{{ recently_viewed_rendered_count }}"
+    {% if recently_viewed_rendered_count == 0 %}
+      hidden
+    {% endif %}
     style="
       --recently-viewed-padding-top: {{ section.settings.recently_viewed_padding_top }}px;
       --recently-viewed-padding-bottom: {{ section.settings.recently_viewed_padding_bottom }}px;
@@ -147,7 +172,22 @@
       <div
         class="recently-viewed-products__viewport"
         data-recently-viewed-viewport
-      ></div>
+      >
+        {% if recently_viewed_rendered_count > 0 %}
+          {% render 'slideshow',
+            class: 'recently-viewed-products__slideshow',
+            controls: recently_viewed_controls,
+            slides: recently_viewed_slides,
+            slide_count: recently_viewed_rendered_count,
+            show_arrows: true,
+            icon_style: 'arrow',
+            icon_shape: 'square',
+            arrows_position: 'center',
+            autoplay: false,
+            infinite: false
+          %}
+        {% endif %}
+      </div>
     </div>
   </recently-viewed-products>
 {% endif %}
