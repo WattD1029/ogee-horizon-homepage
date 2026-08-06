@@ -1,0 +1,640 @@
+<script
+  src="{{ 'recently-viewed-section.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{% liquid
+  assign max_products = section.settings.max_products | default: 4
+  assign rendered_count = 0
+  assign section_heading = section.settings.heading
+  if section_heading == blank
+    assign section_heading = 'content.recently_viewed_products' | t
+  endif
+
+  assign add_to_cart_label = 'actions.add_to_cart' | t
+  assign choose_options_label = 'actions.select_shade' | t
+  assign quick_view_label = 'accessibility.product_details' | t
+
+  assign products = blank
+  assign order_ids = blank
+  if search.performed
+    assign products = search.results
+    if search.terms contains 'id:'
+      assign order_ids = search.terms | replace: 'id:', '' | split: ' OR '
+    endif
+  else
+    assign products = collections.all.products
+  endif
+
+  capture slides
+    if products != blank
+      if order_ids != blank
+        for product_id in order_ids limit: max_products
+          assign product_id_number = product_id | times: 1
+          assign recently_viewed_product = products | find: 'id', product_id_number
+          if recently_viewed_product != blank
+            assign rendered_count = rendered_count | plus: 1
+            assign slide_index = rendered_count | minus: 1
+            capture slide_children
+              render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-' | append: section.id | append: '-' | append: recently_viewed_product.id, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy'
+            endcapture
+            render 'slideshow-slide', slide_id: recently_viewed_product.id, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
+          endif
+        endfor
+      else
+        for recently_viewed_product in products limit: max_products
+          assign rendered_count = rendered_count | plus: 1
+          assign slide_index = rendered_count | minus: 1
+          capture slide_children
+            render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-' | append: section.id | append: '-' | append: recently_viewed_product.id, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy'
+          endcapture
+          render 'slideshow-slide', slide_id: recently_viewed_product.id, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
+        endfor
+      endif
+    endif
+
+    if rendered_count == 0 and request.design_mode
+      for placeholder_index in (1..3)
+        assign rendered_count = rendered_count | plus: 1
+        assign slide_index = rendered_count | minus: 1
+        capture slide_children
+          render 'product-carousel-card', product: blank, section_id: section.id, card_id: 'recently-viewed-placeholder-' | append: placeholder_index, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, show_reviews: section.settings.show_reviews, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label
+        endcapture
+        render 'slideshow-slide', slide_id: 'placeholder-' | append: placeholder_index, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
+      endfor
+    endif
+  endcapture
+
+  capture controls
+    render 'slideshow-controls', style: 'counter', item_count: rendered_count, show_arrows: true, arrows_on_media: false, controls_on_media: false, pagination_position: 'right', icon_style: 'arrow', shape: 'square', class: 'recently-viewed-products__controls'
+  endcapture
+
+  assign section_hidden = true
+  if rendered_count > 0
+    assign section_hidden = false
+  endif
+%}
+
+<recently-viewed-products
+  class="recently-viewed-products color-{{ section.settings.color_scheme }}"
+  data-recently-viewed-section
+  data-render-section-id="{{ section.id }}"
+  data-fallback-section-id="recently-viewed-products"
+  data-max-products="{{ max_products }}"
+  data-product-count="{{ rendered_count }}"
+  {% if product != blank %}
+    data-current-product-id="{{ product.id }}"
+  {% endif %}
+  style="
+    --recently-viewed-padding-top: {{ section.settings.padding_top }}px;
+    --recently-viewed-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --recently-viewed-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --recently-viewed-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --recently-viewed-content-width: {{ section.settings.desktop_content_width }}px;
+    --recently-viewed-desktop-gutter: {{ section.settings.desktop_gutter }}px;
+    --recently-viewed-mobile-gutter: {{ section.settings.mobile_gutter }}px;
+    --recently-viewed-card-gap: {{ section.settings.card_gap }}px;
+    --recently-viewed-card-gap-mobile: {{ section.settings.card_gap_mobile }}px;
+    --recently-viewed-products-desktop: {{ section.settings.products_visible_desktop }};
+    --recently-viewed-card-width-mobile: {{ section.settings.mobile_card_width }}px;
+    --recently-viewed-media-background: {{ section.settings.image_background_color }};
+  "
+  {% if section_hidden %}
+    hidden
+  {% endif %}
+>
+  <div class="recently-viewed-products__asset-primer" hidden aria-hidden="true">
+    {% render 'product-carousel-card',
+      product: blank,
+      section_id: section.id,
+      card_id: 'recently-viewed-asset-primer',
+      show_reviews: false,
+      show_swatches: false,
+      show_wishlist: false
+    %}
+  </div>
+
+  <div class="recently-viewed-products__inner">
+    <h2 class="recently-viewed-products__heading">{{ section_heading | escape }}</h2>
+    <div
+      class="visually-hidden"
+      data-recently-viewed-status
+      role="status"
+      aria-live="polite"
+    ></div>
+    <div
+      class="recently-viewed-products__viewport"
+      data-recently-viewed-viewport
+    >
+      {% if rendered_count > 0 %}
+        {% render 'slideshow',
+          class: 'recently-viewed-products__slideshow',
+          controls: controls,
+          slides: slides,
+          slide_count: rendered_count,
+          show_arrows: true,
+          icon_style: 'arrow',
+          icon_shape: 'square',
+          arrows_position: 'center',
+          autoplay: false,
+          infinite: false
+        %}
+      {% endif %}
+    </div>
+  </div>
+</recently-viewed-products>
+
+{% stylesheet %}
+  .recently-viewed-products {
+    display: block;
+    padding-block: var(--recently-viewed-padding-top) var(--recently-viewed-padding-bottom);
+    background: rgb(var(--color-background-rgb));
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .recently-viewed-products[hidden] {
+    display: none;
+  }
+
+  .recently-viewed-products__asset-primer {
+    display: none;
+  }
+
+  .recently-viewed-products__inner {
+    width: min(100%, var(--recently-viewed-content-width));
+    margin-inline: auto;
+    padding-inline: var(--recently-viewed-desktop-gutter);
+  }
+
+  .recently-viewed-products__heading {
+    margin: 0 0 24px;
+    color: inherit;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.1;
+    text-align: center;
+    text-transform: capitalize;
+  }
+
+  .recently-viewed-products__slideshow {
+    --recently-viewed-slide-width: calc(
+      (100% - (var(--recently-viewed-card-gap) * (var(--recently-viewed-products-desktop) - 1))) /
+        var(--recently-viewed-products-desktop)
+    );
+    display: block;
+  }
+
+  .recently-viewed-products__slideshow slideshow-container {
+    position: relative;
+  }
+
+  .recently-viewed-products__slideshow slideshow-slides {
+    align-items: flex-start;
+    gap: var(--recently-viewed-card-gap);
+    justify-content: center;
+    scrollbar-width: none;
+  }
+
+  .recently-viewed-products__slideshow slideshow-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .recently-viewed-products__slide {
+    display: flex;
+    flex: 0 0 var(--recently-viewed-slide-width);
+    scroll-snap-align: start;
+  }
+
+  .recently-viewed-products__slide > product-card {
+    width: 100%;
+  }
+
+  .recently-viewed-products__controls {
+    display: none;
+  }
+
+  .recently-viewed-products__slideshow slideshow-arrows {
+    inset: 0 0 auto;
+    height: var(--recently-viewed-slide-width);
+    mix-blend-mode: normal;
+    padding-inline: 8px;
+  }
+
+  .recently-viewed-products__slideshow slideshow-arrows .slideshow-control {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    opacity: 1;
+    color: rgb(var(--color-foreground-rgb));
+    background: rgb(var(--color-background-rgb) / 0.72);
+    border: 0;
+  }
+
+  .recently-viewed-products .product-carousel-card {
+    gap: 16px;
+    color: inherit;
+  }
+
+  .recently-viewed-products .product-carousel-card__media {
+    background: var(--recently-viewed-media-background);
+  }
+
+  .recently-viewed-products .product-carousel-card__media slideshow-container,
+  .recently-viewed-products .product-carousel-card__media slideshow-slides,
+  .recently-viewed-products .product-carousel-card__media slideshow-slide,
+  .recently-viewed-products .product-carousel-card__media .product-media,
+  .recently-viewed-products .product-carousel-card__media .product-media-container {
+    background: var(--recently-viewed-media-background);
+  }
+
+  .recently-viewed-products .product-carousel-card__details {
+    gap: 10px;
+    padding-inline: 0;
+  }
+
+  .recently-viewed-products .product-carousel-card__title {
+    color: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .recently-viewed-products .product-carousel-card__subtitle {
+    min-height: auto;
+    color: rgb(var(--color-foreground-rgb) / 0.68);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.6px;
+    line-height: 1.5;
+  }
+
+  .recently-viewed-products .product-carousel-card__price {
+    color: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .recently-viewed-products .product-rating {
+    gap: 0;
+    min-height: 15px;
+  }
+
+  .recently-viewed-products .product-rating__stars {
+    gap: 2px;
+  }
+
+  .recently-viewed-products .product-rating__star {
+    width: 10px;
+    height: 10px;
+    color: rgb(var(--color-foreground-rgb));
+  }
+
+  .recently-viewed-products .product-rating__count,
+  .recently-viewed-products .product-carousel-card__swatch-label {
+    display: none;
+  }
+
+  .recently-viewed-products .product-carousel-card__swatches {
+    margin-top: 0;
+  }
+
+  .recently-viewed-products .product-carousel-card__shade-list {
+    gap: 4px;
+  }
+
+  .recently-viewed-products .product-carousel-card__shade-option {
+    width: 22px;
+    height: 22px;
+  }
+
+  .recently-viewed-products .product-carousel-card__shade-option .swatch {
+    width: 14px;
+    height: 14px;
+  }
+
+  @media screen and (max-width: 989px) {
+    .recently-viewed-products__slideshow {
+      --recently-viewed-products-desktop: 3;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .recently-viewed-products {
+      padding-block: var(--recently-viewed-padding-top-mobile) var(--recently-viewed-padding-bottom-mobile);
+    }
+
+    .recently-viewed-products__inner {
+      width: 100%;
+      padding-inline: var(--recently-viewed-mobile-gutter);
+    }
+
+    .recently-viewed-products__heading {
+      margin-bottom: 24px;
+      font-size: 24px;
+    }
+
+    .recently-viewed-products__slideshow {
+      --recently-viewed-slide-width: min(
+        var(--recently-viewed-card-width-mobile),
+        calc(100vw - ((var(--recently-viewed-mobile-gutter) * 2) + 42px))
+      );
+    }
+
+    .recently-viewed-products__slideshow slideshow-slides {
+      gap: var(--recently-viewed-card-gap-mobile);
+      justify-content: flex-start;
+      margin-inline: calc(var(--recently-viewed-mobile-gutter) * -1);
+      padding-inline: var(--recently-viewed-mobile-gutter);
+      scroll-padding-inline: var(--recently-viewed-mobile-gutter);
+    }
+
+    .recently-viewed-products__slide {
+      flex-basis: var(--recently-viewed-slide-width);
+    }
+
+    .recently-viewed-products__slideshow slideshow-arrows {
+      display: none;
+    }
+
+    .recently-viewed-products .product-carousel-card {
+      gap: 12px;
+    }
+
+    .recently-viewed-products .product-carousel-card__details {
+      gap: 8px;
+    }
+
+    .recently-viewed-products .product-carousel-card__title {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .recently-viewed-products .product-carousel-card__subtitle {
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+    }
+
+    .recently-viewed-products .product-carousel-card__price {
+      font-size: 14px;
+    }
+
+    .recently-viewed-products .product-carousel-card__swatches {
+      display: flex;
+    }
+
+    .recently-viewed-products .product-carousel-card__button {
+      min-height: 45px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.1px;
+      line-height: 1.1;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Recently viewed products",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Recently viewed"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Maximum products",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "badge_label",
+      "label": "Badge label",
+      "default": "Best-Seller"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badges",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "badge_count",
+      "label": "Number of badges",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "subtitle_source",
+      "label": "Subtitle source",
+      "default": "metafield",
+      "options": [
+        {
+          "value": "metafield",
+          "label": "Product subtitle metafield, then type"
+        },
+        {
+          "value": "type",
+          "label": "Product type"
+        },
+        {
+          "value": "vendor",
+          "label": "Vendor"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Use vendor as subtitle fallback",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show review rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Show variant swatches",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "transition_to_main_product",
+      "label": "Enable product image transition",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating",
+      "label": "Fallback rating",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating_count",
+      "label": "Fallback rating count",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "products_visible_desktop",
+      "label": "Visible products on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 0.5,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "desktop_gutter",
+      "label": "Desktop gutter",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_gutter",
+      "label": "Mobile gutter",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Mobile card width",
+      "min": 240,
+      "max": 340,
+      "step": 5,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Desktop card gap",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "label": "Mobile card gap",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "image_background_color",
+      "label": "Image background",
+      "default": "#f1f1ef"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding on mobile",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding on mobile",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recently viewed products"
+    }
+  ]
+}
+{% endschema %}
