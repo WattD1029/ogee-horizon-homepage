@@ -68,3 +68,4 @@
 [2026-08-07][FIX] Restored recently viewed product output by using `search.results` directly like the existing predictive-search recently viewed flow, and set the recently viewed heading to Times New Roman.
 [2026-08-07][FIX] Added an `all` collection fallback so the recently viewed rail still renders product cards when no local recently viewed IDs are available.
 [2026-08-07][FIX] Rendered the `all` collection fallback directly in `main-collection` so recently viewed product cards appear before client-side section rendering runs.
+[2026-08-07][FIX] Matched nested recently viewed product media slideshow backgrounds to the card media color so mobile does not show a white strip inside product imagery.
