@@ -64,3 +64,4 @@
 [2026-08-06][FIX] Hardened recently viewed loading against malformed `viewedProducts` localStorage and clamped the section max-product value to the storage contract.
 [2026-08-06][REVIEW] Compound review found no remaining code-level blockers after the localStorage guard and render-section fallback; residual risk is Shopify preview verification of Section Rendering API behavior and responsive visual parity.
 [2026-08-06][COMPOUND] Captured the reusable recently viewed Section Rendering pattern in `docs/solutions/design-patterns/2026-08-06-recently-viewed-products-section-rendering.md`.
+[2026-08-06][FIX] Moved the collection page recently viewed shell into the existing `main-collection` section and removed the `recently-viewed-products` JSON template dependency so Shopify upload validation no longer requires a new template section type.
