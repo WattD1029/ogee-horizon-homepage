@@ -198,10 +198,43 @@
         "padding-block-start": 0,
         "padding-block-end": 32
       }
+    },
+    "recently_viewed_products": {
+      "type": "recently-viewed-products",
+      "name": "Recently viewed products",
+      "settings": {
+        "heading": "Recently Viewed",
+        "max_products": 4,
+        "badge_label": "Best-Seller",
+        "show_badge": true,
+        "badge_count": 2,
+        "subtitle_source": "metafield",
+        "show_vendor": false,
+        "show_reviews": true,
+        "show_swatches": true,
+        "show_wishlist": true,
+        "transition_to_main_product": false,
+        "fallback_rating": 5,
+        "fallback_rating_count": 1,
+        "products_visible_desktop": 3,
+        "desktop_content_width": 1200,
+        "desktop_gutter": 0,
+        "mobile_gutter": 16,
+        "mobile_card_width": 300,
+        "card_gap": 8,
+        "card_gap_mobile": 16,
+        "image_background_color": "#f1f1ef",
+        "color_scheme": "scheme-1",
+        "padding_top": 32,
+        "padding_bottom": 40,
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 32
+      }
     }
   },
   "order": [
     "section",
-    "main"
+    "main",
+    "recently_viewed_products"
   ]
 }
