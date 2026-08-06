@@ -187,7 +187,7 @@
         "mobile_product_card_size": "small",
         "enable_infinite_scroll": true,
         "pagination_style": "manual",
-        "products_per_page": 16,
+        "products_per_page": 6,
         "product_grid_width": "centered",
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 8,
@@ -198,10 +198,66 @@
         "padding-block-start": 0,
         "padding-block-end": 32
       }
+    },
+    "promotion_this_month": {
+      "type": "clp-promotion-this-month",
+      "name": "Promotion This Month",
+      "blocks": {
+        "gift_with_purchase": {
+          "type": "offer",
+          "settings": {
+            "title": "Get free gift with purchase of $150+",
+            "body": "<p>You'll receive our Deluxe Sample Botanical Brilliance Exfoliating Cleanser and Jojoba Glow Face Oil with your purchase of $150+!</p>",
+            "open_by_default": true
+          }
+        },
+        "subscription": {
+          "type": "offer",
+          "settings": {
+            "title": "Save more with subscription",
+            "body": "<p>Subscribe to your Ogee favorites and save on every replenishment while keeping your routine fully stocked.</p>",
+            "open_by_default": false
+          }
+        },
+        "shipping": {
+          "type": "offer",
+          "settings": {
+            "title": "Free shipping all order $75+",
+            "body": "<p>Enjoy free shipping on qualifying orders of $75 or more.</p>",
+            "open_by_default": false
+          }
+        }
+      },
+      "block_order": [
+        "gift_with_purchase",
+        "subscription",
+        "shipping"
+      ],
+      "settings": {
+        "heading": "Promotion This Month",
+        "image_alt": "Ogee products arranged in natural light",
+        "button_label": "Shop bestsellers",
+        "fallback_collection_handle": "bestsellers",
+        "open_in_new_tab": false,
+        "desktop_content_width": 1000,
+        "mobile_content_width": 350,
+        "padding_top": 0,
+        "padding_bottom": 56,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 48,
+        "color_scheme": "scheme-1",
+        "panel_background": "#fafafa",
+        "text_color": "#000000",
+        "muted_text_color": "#333333",
+        "border_color": "#d9d9d9",
+        "button_background": "#000000",
+        "button_color": "#ffffff"
+      }
     }
   },
   "order": [
     "section",
-    "main"
+    "main",
+    "promotion_this_month"
   ]
 }
