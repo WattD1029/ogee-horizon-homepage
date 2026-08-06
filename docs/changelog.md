@@ -63,3 +63,4 @@
 [2026-08-06][VERIFY] Ran local JS syntax, JSON/JSONC parsing, section schema parsing, and diff whitespace checks; Shopify CLI/Theme Check were unavailable and the hosted Shopify validator was blocked because it can export changed source to telemetry.
 [2026-08-06][COMPOUND] Captured the CLP load-more progress and Promotion This Month implementation pattern in `docs/solutions/design-patterns/2026-08-06-figma-clp-load-more-progress-promotion-this-month.md`.
 [2026-08-06][FIX] Corrected the CLP manual load-more status and progress to count rendered product cards instead of adding `paginate.current_offset`, so direct mobile page states no longer claim all products are visible when only the current page is rendered.
+[2026-08-06][FIX] Kept the CLP manual Load More button available when a direct paginated mobile state renders fewer products than the collection total, and stopped manual clicks from pushing `?page=2` into browser history.

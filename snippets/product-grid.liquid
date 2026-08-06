@@ -24,6 +24,14 @@
   if total_products > 0
     assign load_more_progress = shown_count | times: 100 | divided_by: total_products | at_most: 100
   endif
+  assign show_load_more_button = false
+  if shown_count < total_products
+    if paginate.next
+      assign show_load_more_button = true
+    elsif paginate.previous
+      assign show_load_more_button = true
+    endif
+  endif
   assign is_clp_collection_grid = false
   if template.name == 'collection'
     assign is_clp_collection_grid = true
@@ -216,7 +224,7 @@
           >
             <span class="product-grid__load-more-progress-fill"></span>
           </div>
-          {% if paginate.next %}
+          {% if show_load_more_button %}
             <button
               class="button product-grid__load-more-button"
               type="button"

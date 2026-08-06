@@ -168,7 +168,7 @@ export default class PaginatedList extends Component {
     this.pages.set(pageNumber, pageContent);
   }
 
-  async #renderNextPage() {
+  async #renderNextPage({ updateHistory = true } = {}) {
     const { grid } = this.refs;
 
     if (!grid) return false;
@@ -195,7 +195,9 @@ export default class PaginatedList extends Component {
 
     this.#aspectRatioHelper.processNewElements();
 
-    history.pushState('', '', nextPage.url.toString());
+    if (updateHistory) {
+      history.pushState('', '', nextPage.url.toString());
+    }
 
     requestIdleCallback(() => {
       this.#fetchPage('next');
@@ -218,7 +220,7 @@ export default class PaginatedList extends Component {
     }
 
     try {
-      await this.#renderNextPage();
+      await this.#renderManualLoadMorePage();
     } finally {
       this.#updateManualLoadMoreState();
 
@@ -229,13 +231,27 @@ export default class PaginatedList extends Component {
     }
   };
 
-  async #renderPreviousPage() {
-    const { grid } = this.refs;
-
-    if (!grid) return;
+  async #renderManualLoadMorePage() {
+    const nextPage = this.#getPage('next');
+    if (nextPage && this.#shouldUsePage(nextPage)) {
+      return this.#renderNextPage({ updateHistory: false });
+    }
 
     const previousPage = this.#getPage('previous');
-    if (!previousPage || !this.#shouldUsePage(previousPage)) return;
+    if (previousPage && this.#shouldUsePage(previousPage)) {
+      return this.#renderPreviousPage({ updateHistory: false });
+    }
+
+    return false;
+  }
+
+  async #renderPreviousPage({ updateHistory = true } = {}) {
+    const { grid } = this.refs;
+
+    if (!grid) return false;
+
+    const previousPage = this.#getPage('previous');
+    if (!previousPage || !this.#shouldUsePage(previousPage)) return false;
 
     let previousPageItemElements = this.#getGridForPage(previousPage.page);
     if (!previousPageItemElements) {
@@ -248,7 +264,7 @@ export default class PaginatedList extends Component {
 
       await promise;
       previousPageItemElements = this.#getGridForPage(previousPage.page);
-      if (!previousPageItemElements) return;
+      if (!previousPageItemElements) return false;
     }
 
     // Store the current scroll position and height of the first element
@@ -261,7 +277,9 @@ export default class PaginatedList extends Component {
 
     this.#aspectRatioHelper.processNewElements();
 
-    history.pushState('', '', previousPage.url.toString());
+    if (updateHistory) {
+      history.pushState('', '', previousPage.url.toString());
+    }
 
     // Calculate and adjust scroll position to maintain the same view
     if (firstElement) {
@@ -276,6 +294,8 @@ export default class PaginatedList extends Component {
     requestIdleCallback(() => {
       this.#fetchPage('previous');
     });
+
+    return true;
   }
 
   /**
@@ -346,10 +366,13 @@ export default class PaginatedList extends Component {
     if (!viewMoreNextButton) return;
 
     const nextPage = this.#getPage('next');
-    const hasNextPage = Boolean(nextPage && this.#shouldUsePage(nextPage));
+    const previousPage = this.#getPage('previous');
+    const hasPageToLoad = Boolean(
+      (nextPage && this.#shouldUsePage(nextPage)) || (previousPage && this.#shouldUsePage(previousPage))
+    );
     const allItemsVisible = totalItems > 0 && visibleCount >= totalItems;
 
-    if (!hasNextPage || allItemsVisible) {
+    if (!hasPageToLoad || allItemsVisible) {
       viewMoreNextButton.hidden = true;
       viewMoreNextButton.disabled = true;
       viewMoreNextButton.removeAttribute('aria-busy');

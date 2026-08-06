@@ -35,12 +35,15 @@ the Figma accordion module.
 
 ## Symptoms
 
-- `templates/collection.json` already sets the collection grid to manual
-  pagination with 16 products per page.
+- `templates/collection.json` sets the collection grid to manual pagination
+  with 6 products per page so the initial handoff exposes the Load More CTA.
 - `snippets/product-grid.liquid` renders manual load more when
   `pagination_style == 'manual'`.
 - `assets/paginated-list.js` fetches and appends the next section-rendered page,
   then updates manual load-more status text.
+- Refreshing or entering a final paginated URL can render only the last page of
+  products, so the manual CTA still needs a recovery path when visible products
+  are below the collection total.
 - Existing `promotion-offer-banner` is a simple image/copy/CTA banner.
 - Existing `promotion-blocks` is a carousel and does not match the CLP
   accordion reference.
@@ -88,10 +91,19 @@ percentage from that value. In the manual load-more branch, the snippet renders:
   accessible label
 - a full-width black load-more button matching the Figma control width
 
+The button is rendered when the visible product count is below the collection
+total and either a next or previous paginated page exists. This keeps the CTA
+available in the mobile `Showing 4 of 10 products` state caused by landing on a
+final paginated URL.
+
 `assets/paginated-list.js` now updates both the visible status and progressbar
 state inside the existing `#updateManualLoadMoreState()` lifecycle. The same
 method already runs on initial connection, after manual appends, and after
 filter updates, so the progress bar stays tied to the rendered grid state.
+Manual button clicks load the next page when available, or the previous page if
+the current URL is already on the final page. Manual clicks do not push the next
+pagination URL into browser history, which prevents a refresh from reopening the
+last page as a sparse grid.
 
 ### Promotion This Month
 
@@ -130,6 +142,11 @@ introducing another collection-query path. Because the JS counts the rendered
 product-card nodes and compares them to `data-total-items`, direct page URLs and
 filtered results report what is actually visible in the grid.
 
+The CTA visibility is based on the same rendered-count check plus available
+pagination in either direction. That makes the initial page show `Load more` for
+6 of 10 products and lets direct final-page states recover the missing products
+instead of ending at `Showing 4 of 10 products` with no action.
+
 The promotion is isolated as a section because it is a full-width collection
 page module with its own editable content and layout. Its offer blocks keep the
 campaign copy reorderable and removable in the theme editor, while native
@@ -149,8 +166,10 @@ Checked risks:
 - The progress count is clamped and based on rendered cards, so direct page-entry
   URLs cannot claim previous-page products are visible when only the current page
   has been rendered.
-- The button can be re-shown after filter updates before being hidden again when
-  no next page exists.
+- The button can be re-shown after filter updates and direct final-page states
+  while hidden only when all products are visible or no adjacent page exists.
+- Manual load-more clicks avoid updating browser history to a later pagination
+  URL, preventing refreshes from reopening a sparse final page.
 - The promotion section is enabled only on collection templates.
 - Offer accordions use semantic `details` / `summary` markup and
   `block.shopify_attributes`.
@@ -194,6 +213,8 @@ search was used as the available fallback.
 - Clamp visible counts before rendering status or progress values.
 - For manual load-more pages, avoid using `paginate.current_offset` in visible
   status text unless previous pages are also rendered in the DOM.
+- Keep manual load-more history stable unless the design explicitly wants page
+  URLs to become shareable pagination states.
 - Use native accordion elements for static offer rows unless the design requires
   custom cross-row behavior.
 - Keep Figma reference images as references; use image picker settings for
