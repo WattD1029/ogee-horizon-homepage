@@ -57,3 +57,10 @@
 [2026-08-05][FIX] Made CLP shade swatches horizontally scrollable with previous/next arrow controls so long variant ranges are accessible instead of clipped.
 [2026-08-05][FIX] Replaced the new `product-subtitle` theme block with the existing `custom-liquid` block in `templates/collection.json` to resolve Shopify upload validation for undefined block types.
 [2026-08-05][FIX] Restored `blocks/product-subtitle.liquid` with a valid theme-block schema as an upload compatibility guard while leaving the CLP collection template on `custom-liquid`.
+[2026-08-10][PLAN] Planned the Ogee header menu redesign from the desktop Figma node, targeting the existing Horizon header, logo, menu, search, account, cart, and drawer primitives with the Figma-provided logo asset and inferred mobile behavior.
+[2026-08-10][IMPLEMENT] Implemented the Ogee header menu pass on Horizon primitives with the committed Figma logo asset, scoped desktop header/menu/action styling, centered navigation defaults, icon-only actions, and a full-width bordered header group.
+[2026-08-10][REVIEW] Compound review found and fixed one issue: 24px action icon sizing originally leaked into mobile touch targets, so those overrides are now desktop/tablet-only.
+[2026-08-10][VERIFY] Parsed changed header JSON and Liquid schema blocks, verified the Figma logo asset dimensions, and ran `git diff --check`; the local Shopify validator remains blocked by a missing `@shopify/theme-check-common` dependency.
+[2026-08-10][COMPOUND] Captured the reusable Figma header-on-Horizon-primitives pattern in `docs/solutions/design-patterns/2026-08-10-figma-header-menu-on-horizon-primitives.md`.
+[2026-08-10][FIX] Matched the provided screenshot by raising the Ogee header rail to 68px, removing scoped top-edge chrome, and adding a fallback Ogee nav when the selected Shopify menu is still the default `Home|Catalog|Contact|` dev menu.
+[2026-08-10][VERIFY] Re-ran Shopify docs search, parsed changed JSON and Liquid schema blocks, ran `git diff --check`, and re-attempted the Shopify validator; validation remains blocked by the missing `@shopify/theme-check-common` dependency.

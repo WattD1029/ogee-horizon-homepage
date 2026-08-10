@@ -306,6 +306,7 @@
   {% endif %}
   data-skip-node-update
   data-scroll-direction="none"
+  data-ogee-header-menu
   {% if section.settings.menu_row == 'top' and bottom_row_blocks.size > 0 %}
     data-submenu-overlap-bottom-row
   {% endif %}
@@ -443,6 +444,80 @@
 
   #header-component[data-menu-style='drawer'] .header__column {
     display: contents;
+  }
+
+  #header-component[data-ogee-header-menu] {
+    --ogee-header-height: 68px;
+    --ogee-header-padding-inline: 32px;
+    --ogee-header-action-gap: 24px;
+    border-block-start: 0;
+    box-shadow: none;
+    outline: 0;
+  }
+
+  #header-component[data-ogee-header-menu] .header__row--top {
+    --color-border: #dfdfdf;
+    --color-foreground: #333333;
+    --color-foreground-rgb: 51 51 51;
+    border-block-start: 0;
+  }
+
+  #header-component[data-ogee-header-menu] .header__row--top .header__columns {
+    min-height: var(--ogee-header-height);
+    padding-block: 0;
+    padding-inline: var(--ogee-header-padding-inline);
+  }
+
+  #header-component[data-ogee-header-menu] .header__column {
+    min-height: var(--ogee-header-height);
+  }
+
+  #header-component[data-ogee-header-menu] .header__column--left,
+  #header-component[data-ogee-header-menu] .header__column--center {
+    gap: 0;
+  }
+
+  #header-component[data-ogee-header-menu] .header__column--right {
+    gap: var(--ogee-header-action-gap);
+  }
+
+  #header-component[data-ogee-header-menu] .header__column--right header-actions {
+    gap: var(--ogee-header-action-gap);
+    margin-inline-start: 0;
+  }
+
+  #header-component[data-ogee-header-menu] .header__columns:has(.header__column--center header-menu) {
+    --header-left: minmax(120px, 1fr);
+    --header-right: minmax(120px, 1fr);
+  }
+
+  @media screen and (max-width: 989px) and (min-width: 750px) {
+    #header-component[data-ogee-header-menu] {
+      --ogee-header-padding-inline: 24px;
+    }
+
+    #header-component[data-ogee-header-menu] .header__columns:has(.header__column--center header-menu) {
+      --header-left: minmax(96px, 1fr);
+      --header-right: minmax(96px, 1fr);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    #header-component[data-ogee-header-menu] {
+      --button-size: 24px;
+      --icon-size-md: 24px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    #header-component[data-ogee-header-menu] {
+      --ogee-header-height: 56px;
+    }
+
+    #header-component[data-ogee-header-menu] .header__row--top .header__columns {
+      min-height: var(--ogee-header-height);
+      padding-inline: 0 var(--padding-3xs);
+    }
   }
 
   @media screen and (min-width: 750px) {
