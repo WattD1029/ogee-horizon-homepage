@@ -36,6 +36,12 @@
         "fallback_rating_count": 500
       }
     },
+    "positive_reviews": {
+      "type": "positive-reviews",
+      "settings": {
+        "color_scheme": "scheme-1"
+    "how_to_use": {
+      "type": "how-to-use",
     "ogee_look_upsell": {
       "type": "ogee-look-upsell",
       "settings": {
@@ -806,6 +812,7 @@
   },
   "order": [
     "ogee_product_buy",
+    "positive_reviews",
     "ogee_look_upsell",
     "plant_derived_ingredients_AFPkrY",
     "beyond_clean_certification_4WhziD",
