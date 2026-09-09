@@ -61,7 +61,7 @@ Read the [shared contract and verification plan](README.md#shared-implementation
 - `snippets/ogee-menu-promo.liquid` — proposed new shared snippet owned by this plan.
 - `snippets/ogee-menu-product-card.liquid` — proposed new shared snippet owned by this plan.
 
-`layout/theme.liquid` is an inspection-only mount point. Route templates and global product-card behavior are outside scope. This planning change does not modify any of these implementation files.
+`layout/theme.liquid` is an inspection-only mount point. Route templates and global product-card behavior are outside scope. The implementation uses these integration points; new scoped snippets are listed in the branch diff.
 
 ## Shopify data and proposed schema
 
@@ -87,13 +87,13 @@ Proposed setting IDs/types require validation against current Shopify schema lim
 - [ ] Panel settings do not leak to other menus or duplicate mobile navigation data.
 - [ ] Run the shared schema/Theme Check, unpublished Shopify preview and desktop/tablet/mobile checks in the index. Record screenshots/videos and any unavailable checks.
 
-These are planned acceptance checks, not claims of tested implementation.
+The checklist records the original acceptance scope. Completed checks and remaining external verification are distinguished in [implementation-report.md](implementation-report.md).
 
 ## Dependencies and integration
 
 - Depends on header shell. Owns shared interfaces for eight other panel plans and mobile-menu.
 
-All area branches begin at the shared planning commit and contain the other plans for reference. Integrate the listed prerequisite implementations before coding; creating the branches does not create those future changes. Keep shared schema/group/locale edits focused and append an implementation changelog entry when work is delivered.
+Area branches are stacked in the order recorded in [branches.json](branches.json). Each includes its implemented prerequisites and a focused change for its own area. Shared review fixes were folded into the owning branch.
 
 ## Risks and decisions
 
@@ -102,9 +102,9 @@ All area branches begin at the shared planning commit and contain the other plan
 
 ## Completion boundary
 
-The current request is branches and plans. Future work should deliver this area and its relevant checks as a focused diff. Publishing, store-navigation mutations and external messages are outside this planning task.
+Implementation is complete locally on the named branch. See [implementation report](implementation-report.md) for integrated verification, measured dimensions and remaining Shopify preview/configuration work. Publishing remains outside this task.
 
-## Implementation � 2026-09-09
+## Implementation — 2026-09-09
 
 Added URL-based dispatch with duplicate detection, native menu fallback, four collection groups, reusable product/promotion snippets, original Figma imagery, and Escape/ArrowDown keyboard behavior. Shared rail: 1300px with 50px horizontal/32px vertical padding; All panel minimum 458px. Visual preview configuration remains under verification.
 

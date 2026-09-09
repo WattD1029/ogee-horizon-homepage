@@ -17,11 +17,7 @@
       data-hydration-key="header-drawer-mobile"
       {{ block.shopify_attributes }}
     >
-      {% if block_settings.ogee_panels_enabled %}
-        {% render 'ogee-menu-drawer', block: block, section: section %}
-      {% else %}
       {% render 'header-drawer', linklist: block_settings.menu, data_header_drawer_type: 'mobile-drawer', block: block, section: section %}
-      {% endif %}
     </div>
 
   {% when 'navigation_bar' %}
