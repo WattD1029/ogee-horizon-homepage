@@ -4,12 +4,31 @@
   assign rating = product.metafields.reviews.rating.value.rating
   assign scale_max = product.metafields.reviews.rating.value.scale_max
   assign rating_count = product.metafields.reviews.rating_count
+  assign is_clp_collection_card = false
+
+  if template.name == 'collection'
+    assign is_clp_collection_card = true
+  endif
 
   if request.visual_preview_mode and product == blank
     assign product = collections.all.products.first
-    assign rating = product.metafields.reviews.rating.value | default: 4
+    assign rating = product.metafields.reviews.rating.value.rating | default: 4
     assign scale_max = product.metafields.reviews.rating.value.scale_max | default: 5
     assign rating_count = product.metafields.reviews.rating_count | default: 3
+  endif
+
+  if rating == blank
+    if is_clp_collection_card
+      if product != blank
+        assign rating = 5
+      endif
+    endif
+  endif
+
+  assign scale_max = scale_max | default: 5
+  assign show_rating_count = block_settings.show_number
+  if rating_count == blank
+    assign show_rating_count = false
   endif
 -%}
 
@@ -85,15 +104,15 @@
       {% endif %}
     </div>
 
-    {%- if block_settings.show_number or block_settings.stars_style == 'single' -%}
+    {%- if show_rating_count or block_settings.stars_style == 'single' -%}
       <p class="rating-count {{ block_settings.type_preset }}">
         {%- if block_settings.stars_style == 'single' -%}
           <span aria-hidden="true">{{- rating | round: 1 }}</span>
         {%- endif -%}
-        {%- if block_settings.stars_style == 'single' and block_settings.show_number -%}
+        {%- if block_settings.stars_style == 'single' and show_rating_count -%}
           <span class="rating-count-separator">|</span>
         {%- endif -%}
-        {%- if block_settings.show_number -%}
+        {%- if show_rating_count -%}
           {{- rating_count }}
           {{ 'content.reviews' | t }}
         {%- endif -%}
