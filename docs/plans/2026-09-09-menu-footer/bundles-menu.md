@@ -55,7 +55,7 @@ Read the [shared contract and verification plan](README.md#shared-implementation
 
 No new theme files are proposed. Shared snippets introduced by all-menu are dependencies, not duplicate files to create.
 
-`layout/theme.liquid` is an inspection-only mount point. Route templates and global product-card behavior are outside scope. This planning change does not modify any of these implementation files.
+`layout/theme.liquid` is an inspection-only mount point. Route templates and global product-card behavior are outside scope. The implementation uses these integration points; new scoped snippets are listed in the branch diff.
 
 ## Shopify data and proposed schema
 
@@ -80,13 +80,13 @@ Proposed setting IDs/types require validation against current Shopify schema lim
 - [ ] Other panels and collection product-card/quick-add behavior remain unaffected.
 - [ ] Run the shared schema/Theme Check, unpublished Shopify preview and desktop/tablet/mobile checks in the index. Record screenshots/videos and any unavailable checks.
 
-These are planned acceptance checks, not claims of tested implementation.
+The checklist records the original acceptance scope. Completed checks and remaining external verification are distinguished in [implementation-report.md](implementation-report.md).
 
 ## Dependencies and integration
 
 - Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu.
 
-All area branches begin at the shared planning commit and contain the other plans for reference. Integrate the listed prerequisite implementations before coding; creating the branches does not create those future changes. Keep shared schema/group/locale edits focused and append an implementation changelog entry when work is delivered.
+Area branches are stacked in the order recorded in [branches.json](branches.json). Each includes its implemented prerequisites and a focused change for its own area. Shared review fixes were folded into the owning branch.
 
 ## Risks and decisions
 
@@ -96,9 +96,9 @@ All area branches begin at the shared planning commit and contain the other plan
 
 ## Completion boundary
 
-The current request is branches and plans. Future work should deliver this area and its relevant checks as a focused diff. Publishing, store-navigation mutations and external messages are outside this planning task.
+Implementation is complete locally on the named branch. See [implementation report](implementation-report.md) for integrated verification, measured dimensions and remaining Shopify preview/configuration work. Publishing remains outside this task.
 
-## Implementation — 2026-09-09
+## Implementation â€” 2026-09-09
 
 Implemented bundles navigation using selected products or the native collection, live counts, optional prices, and a six-card rail without promotion. Mobile cards use 100px images with 16px text gaps. Empty collections do not create duplicate products.
 

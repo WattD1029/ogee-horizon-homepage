@@ -1,0 +1,100 @@
+{% doc %}
+  Ogee mobile drawer using Horizon's native disclosure, focus, scroll-lock and hydration controls.
+  @param {object} block - Static header menu block
+  @param {object} section - Header section
+{% enddoc %}
+{% liquid
+  assign menu_settings = block.settings
+  assign menu_titles = menu_settings.menu.links | map: 'title' | join: '|'
+  assign fallback_menu = false
+  if menu_titles == 'Home|Catalog|Contact'
+    assign fallback_menu = true
+  endif
+%}
+<script src="{{ 'header-drawer.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<header-drawer class="header-drawer" data-ogee-drawer>
+  <details id="Details-menu-drawer-container" data-skip-node-update="true" class="menu-drawer-container" ref="details" scroll-lock>
+    <summary class="header__icon header__icon--menu header__icon--summary" aria-label="{{ 'accessibility.menu' | t }}" on:click="/toggle">
+      <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">{{ 'icon-menu.svg' | inline_asset_content }}</span>
+      <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">{{ 'icon-close.svg' | inline_asset_content }}</span>
+    </summary>
+    <div ref="menuDrawer" class="menu-drawer ogee-drawer" tabindex="-1">
+      {% render 'ogee-menu-drawer-rail' %}
+      <nav class="ogee-drawer__navigation" aria-label="{{ 'accessibility.header_navigation_label' | t }}">
+        <ul class="ogee-drawer__links">
+          {% if fallback_menu %}
+            {% assign keys = 'new,bestsellers,all,makeup,skincare,accessories,bundles,quizzes,about' | split: ',' %}
+            {% for key in keys %}
+              {% liquid
+                assign label_key = 'ogee_menu.' | append: key
+                assign label = label_key | t
+                assign trigger_id = key | append: '_trigger_url'
+                assign url = menu_settings[trigger_id]
+                if url == blank
+                  if key == 'quizzes' or key == 'about'
+                    assign url = '/pages/' | append: key
+                  else
+                    assign url = '/collections/' | append: key
+                  endif
+                endif
+                assign item_id = section.id | append: '-' | append: key
+              %}
+              {% render 'ogee-menu-mobile-item', title: label, url: url, settings: menu_settings, id: item_id %}
+            {% endfor %}
+          {% else %}
+            {% for link in menu_settings.menu.links %}{% assign item_id = section.id | append: '-' | append: forloop.index %}{% render 'ogee-menu-mobile-item', title: link.title, url: link.url, link: link, settings: menu_settings, id: item_id %}{% endfor %}
+          {% endif %}
+        </ul>
+      </nav>
+      {% assign promo_count = menu_settings.mobile_promo_count | plus: 0 %}
+      {% if promo_count > 0 %}
+        <div class="ogee-drawer__promotions" style="--ogee-mobile-promo-count: {{ promo_count }}">
+          {% for i in (1..promo_count) %}
+            {% liquid
+              assign prefix = 'mobile_promo_' | append: i
+              assign image_id = prefix | append: '_image'
+              assign heading_id = prefix | append: '_heading'
+              assign url_id = prefix | append: '_url'
+              assign image_asset = 'ogee-menu-mobile-promo-' | append: i | append: '.png'
+            %}
+            <div class="ogee-drawer__promotion">
+              {% if menu_settings[url_id] != blank %}<a href="{{ menu_settings[url_id] }}">{% endif %}
+              {% if menu_settings[image_id] != blank %}{{ menu_settings[image_id] | image_url: width: 780 | image_tag: loading: 'lazy', sizes: '(max-width:749px) 50vw, 195px' }}{% else %}<img src="{{ image_asset | asset_url }}" alt="" width="195" height="250" loading="lazy">{% endif %}
+              <span>{{ menu_settings[heading_id] | escape }}</span>
+              {% if menu_settings[url_id] != blank %}<span class="ogee-drawer__promotion-cta">{{ 'ogee_menu.shop_all' | t }}</span></a>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="menu-drawer__backdrop" on:click="header-drawer/close"></div>
+  </details>
+</header-drawer>
+{% stylesheet %}
+  .menu-drawer.ogee-drawer { width:100vw; max-width:100vw; height:100dvh; color:#333; background:white; border:0; overflow:hidden; }
+  .ogee-drawer__rail { display:flex; align-items:center; gap:0; height:50px; min-height:50px; padding-inline:10px; border-bottom:1px solid #dfdfdf; background:white; }
+  .ogee-drawer__rail button { display:flex; align-items:center; justify-content:center; border:0; background:none; color:inherit; width:44px; height:44px; padding:10px; cursor:pointer; }
+  .ogee-drawer .svg-wrapper,.ogee-drawer svg { width:24px; height:24px; }
+  .ogee-drawer__navigation { padding:12px 20px; flex:1; overflow-y:auto; }
+  .ogee-drawer__links { list-style:none; margin:0; padding:0; }
+  .ogee-drawer__link { display:flex; justify-content:space-between; align-items:center; min-height:50px; padding:10px 0; color:inherit; font-size:13px; font-weight:500; line-height:1.1; letter-spacing:1.3px; text-transform:uppercase; cursor:pointer; gap:12px; }
+  .ogee-drawer__link>span:first-child { min-width:0; overflow-wrap:anywhere; }
+  .ogee-drawer__link .svg-wrapper { rotate:-90deg; flex:none; }
+  .ogee-drawer__link::marker,.ogee-drawer__link::-webkit-details-marker { display:none; content:''; }
+  .menu-drawer__submenu.ogee-drawer__level { position:absolute; inset:0; height:100dvh; background:white; color:#333; overflow:hidden; z-index:2; }
+  .ogee-drawer__back { min-height:50px; width:100%; display:flex; gap:12px; align-items:center; padding:10px 20px; background:#faf8f3; border:0; font-size:14px; line-height:21px; text-align:left; text-transform:uppercase; cursor:pointer; color:inherit; }
+  .ogee-drawer__back .svg-wrapper { rotate:90deg; }
+  .ogee-drawer__body { padding:0 20px; overflow-y:auto; flex:1; min-height:0; overscroll-behavior:contain; }
+  .ogee-drawer__body--quizzes { padding:0; }
+  .ogee-drawer .ogee-menu-shop-all { position:sticky; bottom:0; justify-content:center; background:white; min-height:70px; padding:12px; margin-top:auto; border-top:1px solid #dfdfdf; text-align:center; }
+  .ogee-drawer .ogee-menu-panel__main { min-height:calc(100dvh - 100px); }
+  .ogee-drawer__promotions { display:grid; grid-template-columns:repeat(var(--ogee-mobile-promo-count),minmax(0,1fr)); flex:none; }
+  .ogee-drawer__promotion { min-width:0; position:relative; height:250px; }
+  .ogee-drawer__promotion a { display:block; height:100%; color:inherit; }
+  .ogee-drawer__promotion img { width:100%; height:250px; object-fit:cover; }
+  .ogee-drawer__promotion span { position:absolute; bottom:44px; left:16px; right:16px; font-size:14px; line-height:21px; font-weight:500; }
+  .ogee-drawer__promotion .ogee-drawer__promotion-cta { bottom:16px; text-decoration:underline; font-weight:300; }
+  .ogee-drawer__promotion:first-child span { color:white; text-shadow:0 1px 4px #333; }
+  @media(max-height:650px) { .ogee-drawer__promotions { display:none; } }
+  @media(prefers-reduced-motion:reduce) { .ogee-drawer,.ogee-drawer__level { transition:none!important; } }
+{% endstylesheet %}

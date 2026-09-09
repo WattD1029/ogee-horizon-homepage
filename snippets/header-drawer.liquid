@@ -11,6 +11,9 @@
   {% render 'header-drawer', linklist: section.settings.menu, class: 'header-drawer--mobile' %}
 {%- enddoc -%}
 
+{% if block.settings.ogee_panels_enabled %}
+  {% render 'ogee-menu-drawer', block: block, section: section %}
+{% else %}
 {% liquid
   assign block_settings = block.settings
   assign max_featured_items = 4
@@ -763,6 +766,8 @@
     ></div>
   </details>
 </header-drawer>
+
+{% endif %}
 
 {% stylesheet %}
   .header__icon--menu {
