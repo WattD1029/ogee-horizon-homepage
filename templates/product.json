@@ -37,6 +37,37 @@
         "fallback_rating_count": 500
       }
     },
+    "ogee_look_upsell": {
+      "type": "ogee-look-upsell",
+      "settings": {
+        "heading": "Complete The Look",
+        "products": [],
+        "fallback_product_handles": "complexion-perfecting-concealer,sculpted-complexion-foundation-stick,complexion-perfecting-tinted-serum,skin-enhancing-primer-spf-40",
+        "discount_percent": 20,
+        "offer_prefix": "Add all to cart with",
+        "offer_suffix": "off",
+        "add_all_label": "Add all [count] to cart",
+        "add_to_cart_label": "Add to cart",
+        "select_options_label": "Select shade",
+        "sold_out_label": "Sold out",
+        "adding_label": "Adding...",
+        "added_label": "Added",
+        "error_text": "Unable to add products to cart.",
+        "empty_text": "Choose up to four products for this upsell.",
+        "checkbox_label": "Include [product]",
+        "background_color": "#faf8f3",
+        "text_color": "#000000",
+        "muted_text_color": "#646464",
+        "border_color": "#dfdfdf",
+        "image_background_color": "#f1f1f1",
+        "button_background": "#000000",
+        "button_text_color": "#ffffff",
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 40
+      }
+    },
     "main": {
       "type": "product-information",
       "disabled": true,
@@ -441,6 +472,7 @@
   },
   "order": [
     "ogee_product_buy",
+    "ogee_look_upsell",
     "main",
     "product_recommendations_qggXJq"
   ]
