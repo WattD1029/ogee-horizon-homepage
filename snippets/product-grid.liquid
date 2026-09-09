@@ -7,12 +7,23 @@
   @param {string} [title] - Header of the collection or search results
   @param {string} children - List or grid of product cards
   @param {boolean} [enable_infinite_scroll] - Whether to enable infinite scroll (default: true)
+  @param {string} [pagination_style] - Pagination style: automatic, manual, or paginated
+  @param {number} [total_products] - Total number of products for status text
 {%- enddoc -%}
 
 {% capture product_card_size %}
   {% render 'util-product-grid-card-size' section: section %}
 {% endcapture %}
 {% assign product_card_size = product_card_size | strip %}
+{% liquid
+  assign pagination_style = pagination_style | default: 'automatic'
+  assign total_products = total_products | default: paginate.items
+  assign shown_count = paginate.current_offset | plus: products.size
+  assign is_clp_collection_grid = false
+  if template.name == 'collection'
+    assign is_clp_collection_grid = true
+  endif
+%}
 
 {% style %}
   @media screen and (min-width: 750px) {
@@ -72,6 +83,20 @@
       padding-block-end: var(--zoom-out-padding-block-end, 0);
     }
   }
+
+  {% if is_clp_collection_grid %}
+    @media screen and (min-width: 750px) and (max-width: 989px) {
+      .product-grid--{{ section.id }}.product-grid--clp:is(.product-grid--grid):not([product-grid-view='zoom-out']) {
+        --product-grid-columns-desktop: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media screen and (min-width: 990px) {
+      .product-grid--{{ section.id }}.product-grid--clp:is(.product-grid--grid):not([product-grid-view='zoom-out']) {
+        --product-grid-columns-desktop: repeat(3, minmax(0, 1fr));
+      }
+    }
+  {% endif %}
 {% endstyle %}
 <div
   id="ResultsList"
@@ -80,6 +105,7 @@
     {%- if section.settings.inherit_color_scheme == false %} color-{{ section.settings.color_scheme }}{% endif %}
     {%- if section.settings.product_grid_width == 'full-width' %} collection-wrapper--full-width{% endif %}
     {%- if section.settings.full_width_on_mobile == true %} collection-wrapper--full-width-on-mobile{% endif %}
+    {%- if is_clp_collection_grid %} main-collection-grid--clp{% endif %}
     spacing-style
   "
 
@@ -110,7 +136,7 @@
         </p>
       </div>
     {% else %}
-      {% if enable_infinite_scroll %}
+      {% if enable_infinite_scroll and pagination_style == 'automatic' %}
         <span ref="viewMorePrevious"></span>
       {% endif %}
 
@@ -118,12 +144,14 @@
         <h4 class="main-collection-grid__title">{{ title }}</h4>
       {% endif %}
       <ul
-        class="product-grid product-grid--{{ section.id }} product-grid--{{ section.settings.layout_type }} {% if section.settings.mobile_product_card_size == 'large' %} product-grid-mobile--large{% endif %}"
+        class="product-grid product-grid--{{ section.id }} product-grid--{{ section.settings.layout_type }}{% if is_clp_collection_grid %} product-grid--clp{% endif %} {% if section.settings.mobile_product_card_size == 'large' %} product-grid-mobile--large{% endif %}"
         data-testid="product-grid"
         product-grid-view="default"
         ref="grid"
         role="list"
         data-last-page="{{ paginate.pages }}"
+        data-current-offset="{{ paginate.current_offset }}"
+        data-total-items="{{ total_products }}"
         data-product-card-size="{{ section.settings.product_card_size }}"
         style="--mobile-columns: {% if section.settings.mobile_product_card_size == 'large' %}1{% else %}2{% endif %};"
       >
@@ -159,8 +187,28 @@
 
         {{ children }}
       </ul>
-      {% if enable_infinite_scroll != false %}
+      {% if enable_infinite_scroll != false and pagination_style == 'automatic' %}
         <span ref="viewMoreNext"></span>
+      {% elsif pagination_style == 'manual' %}
+        <div class="product-grid__load-more">
+          <p
+            class="product-grid__load-more-status"
+            ref="viewMoreStatus"
+            data-showing-template="{{ 'content.showing_products' | t: count: '[count]', total: '[total]' | escape }}"
+          >
+            {{ 'content.showing_products' | t: count: shown_count, total: total_products }}
+          </p>
+          {% if paginate.next %}
+            <button
+              class="button product-grid__load-more-button"
+              type="button"
+              ref="viewMoreNextButton"
+              on:click="/loadMoreNext"
+            >
+              {{ 'actions.load_more' | t }}
+            </button>
+          {% endif %}
+        </div>
       {% else %}
         {% render 'pagination-controls', paginate: paginate %}
       {% endif %}
@@ -219,5 +267,70 @@
 
   .main-collection-grid__empty-title {
     margin: 0;
+  }
+
+  .product-grid__load-more {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-block-start: 24px;
+    text-align: center;
+  }
+
+  .product-grid__load-more-status {
+    color: rgb(var(--color-foreground-rgb) / 0.65);
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .product-grid__load-more-button {
+    background: #000000;
+    border: 1px solid #000000;
+    border-radius: 0;
+    color: #ffffff;
+    font-size: 0.75rem;
+    min-height: 40px;
+    min-width: 186px;
+    padding-inline: 32px;
+    text-transform: uppercase;
+  }
+
+  @media screen and (min-width: 750px) {
+    .main-collection-grid--clp {
+      --clp-product-grid-max-width: var(--page-content-width);
+    }
+
+    .main-collection-grid--clp .product-grid--clp,
+    .main-collection-grid--clp .product-grid__load-more {
+      margin-inline: auto;
+      max-width: min(100%, var(--clp-product-grid-max-width));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .main-collection-grid:has(.product-grid[product-grid-view='mobile-single']) {
+      background: transparent;
+      color: var(--color-foreground);
+      margin-inline: calc(var(--page-margin) * -1);
+      padding-inline: 20px;
+      padding-block: 18px 28px;
+    }
+
+    .main-collection-grid:has(.product-grid[product-grid-view='mobile-single']) .product-grid {
+      gap: 26px;
+      margin-inline: auto;
+      max-width: 350px;
+    }
+
+    .main-collection-grid:has(.product-grid[product-grid-view='mobile-single']) .product-grid__load-more-status {
+      color: rgb(var(--color-foreground-rgb) / 0.65);
+    }
+
+    .main-collection-grid:has(.product-grid[product-grid-view='mobile-single']) .product-grid__load-more-button {
+      background: #000000;
+      border-color: #000000;
+      color: #ffffff;
+    }
   }
 {% endstylesheet %}

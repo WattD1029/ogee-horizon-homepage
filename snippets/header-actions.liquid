@@ -545,6 +545,35 @@
   }
 
   @media screen and (min-width: 750px) {
+    #header-component[data-ogee-header-menu] header-actions {
+      align-items: center;
+      gap: var(--ogee-header-action-gap, 24px);
+    }
+
+    #header-component[data-ogee-header-menu] .header-actions__action {
+      align-items: center;
+      min-height: 24px;
+      min-width: 24px;
+      padding: 0;
+    }
+
+    #header-component[data-ogee-header-menu] .account-button {
+      display: flex;
+      height: 24px;
+      justify-content: center;
+      width: 24px;
+    }
+
+    #header-component[data-ogee-header-menu] .account-button__icon {
+      height: 24px;
+      width: 24px;
+    }
+
+    #header-component[data-ogee-header-menu] shopify-account:not(:defined) {
+      height: 24px;
+      min-width: 24px;
+    }
+
     .header-actions--text {
       gap: var(--gap-xl);
     }

@@ -14,6 +14,7 @@
     "cart": "Cart",
     "cart_count": "Total items in cart",
     "close_dialog": "Close dialog",
+    "collection_navigation": "Collection navigation",
     "country_region": "Country/Region",
     "country_results_count": "{{ count }} results",
     "product_details": "Product details",
@@ -88,10 +89,13 @@
     "log_in_html": "Have an account? <a href=\"{{ link }}\">Log in</a> to check out faster.",
     "log_in": "Sign in",
     "log_out": "Log out",
+    "load_more": "Load more",
     "open_image_in_full_screen": "Open image in full screen",
     // Button to remove applied filters from search/collection results
     "remove": "Remove",
     "remove_discount": "Remove discount {{ code }}",
+    "refine": "Refine",
+    "save_product": "Save {{ product }}",
     // Button to expand hidden product variant options
     "show_all_options": "Show all options",
     "see_items": {
@@ -102,6 +106,7 @@
     "show_filters": "Filter",
     "show_less": "Show less",
     "show_more": "Show more",
+    "select_shade": "Select shade",
     "sign_in_options": "Other sign in options",
     // AR button to view 3D product model in physical space
     "view_in_your_space": "View in your space",
@@ -117,7 +122,9 @@
     "sign_up": "Sign up",
     "submit": "Submit",
     "view_store_information": "View store information",
-    "sort": "Sort"
+    "sort": "Sort",
+    "sort_by": "Sort By:",
+    "sort_by_drawer": "Sort By"
   },
   "blocks": {
     "contact_form": {
@@ -194,6 +201,7 @@
       "default_view": "Default",
       "grid_fieldset": "Column grid",
       "single_item": "Single",
+      "view": "View",
       "zoom_out": "Zoom out"
     },
     "inventory_low_stock_show_count": {
@@ -208,6 +216,16 @@
       "other": "{{ count }} items"
     },
     "item_count_cutoff": "More than {{ count }} items",
+    "results_count_cutoff": "More than {{ count }} Results",
+    "results_count": {
+      "one": "{{ count }} Result",
+      "other": "{{ count }} Results"
+    },
+    "collection_product_count": {
+      "one": "{{ count }} Product",
+      "other": "{{ count }} Products"
+    },
+    "showing_products": "Showing {{ count }} of {{ total }} products",
     "language": "Language",
     "localization_region_and_language": "Region and language",
     "no_products_found": "No products found.",
