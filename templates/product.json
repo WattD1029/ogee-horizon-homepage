@@ -36,121 +36,6 @@
         "fallback_rating_count": 500
       }
     },
-    "ogee_customer_reviews": {
-      "type": "ogee-customer-reviews",
-      "blocks": {
-        "review_cam": {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Cam I.",
-            "skin_tone": "Medium",
-            "skin_concern": "Damaged",
-            "values": "Organic, Vegan, Cruelty Free, Not Tested on Animals, Natural",
-            "title": "Multiple Use",
-            "body": "I used mahogany as eye-shadow and added a touch of mascara. Perfect!",
-            "date_label": "3 hours ago",
-            "helpful_yes": "0",
-            "helpful_no": "0"
-          }
-        },
-        "review_melanie": {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Melanie P.",
-            "skin_tone": "Light",
-            "skin_concern": "Combination, Wrinkles",
-            "values": "Natural",
-            "title": "Love!",
-            "body": "It's the best full coverage makeup I have ever used, and I feel like I have tried just about everything!",
-            "date_label": "5 hours ago",
-            "helpful_yes": "0",
-            "helpful_no": "0"
-          }
-        },
-        "review_debra": {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Debra F.",
-            "skin_tone": "Medium",
-            "skin_concern": "Dry, Normal, Wrinkles",
-            "values": "Natural, Not Tested on Animals",
-            "title": "Finally Found My Makeup Line!!",
-            "body": "I finally found my foundation makeup. The complexion stick goes on so easily. I love using Ogee for this and everything else. It took me years to find a makeup line to like.",
-            "date_label": "7 hours ago",
-            "helpful_yes": "0",
-            "helpful_no": "0"
-          }
-        },
-        "review_karolyn": {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Karolyn S.",
-            "skin_tone": "Light",
-            "skin_concern": "Dry, Wrinkles, Rosacea, Damaged",
-            "values": "Natural",
-            "title": "Complexion Stick",
-            "body": "Smooth application, even coverage in a stick. No waste. Love it!",
-            "date_label": "Yesterday",
-            "helpful_yes": "0",
-            "helpful_no": "1"
-          }
-        },
-        "review_rita": {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Rita C.",
-            "skin_tone": "Medium",
-            "skin_concern": "Rosacea",
-            "values": "Organic, Natural, Not Tested on Animals, Cruelty Free, GMO Free",
-            "title": "Best Ever",
-            "body": "My goodness what a subtle and perfect difference this has made for evening out some redness or dark spots on my face. Wow I am just so impressed as someone with beloved freckles I do not like thick covering makeup that washes out my freckles. This is light or heavier if you want it to be and glides on smooth and blends perfectly. I get so many comments about glowing even if I am unrested and not feeling my best and it immediately perks me up knowing less than 10 min of touching up in the morning made such a big impact.",
-            "date_label": "Yesterday",
-            "helpful_yes": "1",
-            "helpful_no": "0"
-          }
-        },
-        "review_lynn": {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Lynn M.",
-            "skin_tone": "Medium",
-            "skin_concern": "Dryness, Uneven tone",
-            "values": "Organic, Natural, Cruelty Free",
-            "title": "Beautiful Coverage",
-            "body": "This gives me the smooth natural finish I wanted without feeling heavy. It blends quickly and looks fresh all day.",
-            "date_label": "Yesterday",
-            "helpful_yes": "0",
-            "helpful_no": "0"
-          }
-        }
-      },
-      "block_order": [
-        "review_cam",
-        "review_melanie",
-        "review_debra",
-        "review_karolyn",
-        "review_rita",
-        "review_lynn"
-      ],
-      "settings": {
-        "heading": "",
-        "use_product_rating": false,
-        "average_rating": 4.8,
-        "rating_count": "3696",
-        "reviews_text": "Based on 3,696 reviews",
-        "review_count_display": "3,696 reviews",
-        "recommendation_percent": 96,
-        "content_width": 1120,
-        "padding_top": 48,
-        "padding_bottom": 64,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 48
-    "positive_reviews": {
-      "type": "positive-reviews",
-      "settings": {
-        "color_scheme": "scheme-1"
-    "how_to_use": {
-      "type": "how-to-use",
     "ogee_look_upsell": {
       "type": "ogee-look-upsell",
       "settings": {
@@ -236,7 +121,7 @@
         "heading_color": "#000000",
         "text_color": "#646464",
         "card_text_color": "#ffffff",
-        "overlay_color": "#000000B3",
+        "overlay_color": "#000000b3",
         "progress_color": "#333333",
         "progress_muted_color": "#00000033",
         "desktop_content_width": 1200,
@@ -534,6 +419,81 @@
         "padding-block-end": 0
       }
     },
+    "ogee_faq_knKyeR": {
+      "type": "ogee-faq",
+      "blocks": {
+        "faq_item_eeTH7y": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_4xWtfk": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_prJmfC": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_9qDnc4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_rFkTTM": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_pLNiX4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_eeTH7y",
+        "faq_item_4xWtfk",
+        "faq_item_prJmfC",
+        "faq_item_9qDnc4",
+        "faq_item_rFkTTM",
+        "faq_item_pLNiX4"
+      ],
+      "name": "Ogee FAQ",
+      "settings": {
+        "heading": "FAQ",
+        "content_width": 1200,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 96,
+        "mobile_padding_bottom": 36,
+        "background_color": "#ffffff",
+        "heading_color": "#21272a",
+        "question_color": "#21272a",
+        "answer_color": "#21272a",
+        "divider_color": "#dfdfdf"
+      }
+    },
     "how_to_use_KURqN9": {
       "type": "how-to-use",
       "name": "How to use",
@@ -551,8 +511,8 @@
         "content_width": 1200,
         "mobile_media_height": 350,
         "color_scheme": "",
-        "background_color": "#FAF8F3",
-        "heading_color": "#21272A",
+        "background_color": "#faf8f3",
+        "heading_color": "#21272a",
         "text_color": "#333333"
       }
     },
@@ -623,6 +583,83 @@
         "border_color": "#dde1e6",
         "progress_color": "#333333",
         "progress_muted_color": "#cccccc"
+      }
+    },
+    "shop_social_media_VxVw6T": {
+      "type": "shop-social-media",
+      "blocks": {
+        "post_MiHnNF": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": true
+          }
+        },
+        "post_4aLbcE": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_YcKe7X": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_Hd6RMT": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_nQUnTF": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        }
+      },
+      "block_order": [
+        "post_MiHnNF",
+        "post_4aLbcE",
+        "post_YcKe7X",
+        "post_Hd6RMT",
+        "post_nQUnTF"
+      ],
+      "name": "Shop social media",
+      "settings": {
+        "heading": "Shop @Ogee",
+        "subheading": "# BeyoundCleanBeauty",
+        "button_label": "Shop",
+        "default_link": "https://www.instagram.com/ogee/",
+        "background_color": "#faf8f3",
+        "text_color": "#21272a",
+        "rail_color": "#333333",
+        "show_arrows": true,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
       }
     },
     "product_recommendations_qggXJq": {
@@ -766,163 +803,28 @@
         "padding-block-end": 48
       }
     },
-    "shop_social_media_VxVw6T": {
-      "type": "shop-social-media",
-      "blocks": {
-        "post_MiHnNF": {
-          "type": "post",
-          "settings": {
-            "fallback_image": "products",
-            "alt_text": "Ogee makeup products arranged on a wooden table.",
-            "link": "",
-            "open_in_new_tab": true,
-            "show_overlay": true
-          }
-        },
-        "post_4aLbcE": {
-          "type": "post",
-          "settings": {
-            "fallback_image": "eye_balm",
-            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
-            "link": "",
-            "open_in_new_tab": true,
-            "show_overlay": false
-          }
-        },
-        "post_YcKe7X": {
-          "type": "post",
-          "settings": {
-            "fallback_image": "products",
-            "alt_text": "Ogee makeup products arranged on a wooden table.",
-            "link": "",
-            "open_in_new_tab": true,
-            "show_overlay": false
-          }
-        },
-        "post_Hd6RMT": {
-          "type": "post",
-          "settings": {
-            "fallback_image": "eye_balm",
-            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
-            "link": "",
-            "open_in_new_tab": true,
-            "show_overlay": false
-          }
-        },
-        "post_nQUnTF": {
-          "type": "post",
-          "settings": {
-            "fallback_image": "products",
-            "alt_text": "Ogee makeup products arranged on a wooden table.",
-            "link": "",
-            "open_in_new_tab": true,
-            "show_overlay": false
-          }
-        }
-      },
-      "block_order": [
-        "post_MiHnNF",
-        "post_4aLbcE",
-        "post_YcKe7X",
-        "post_Hd6RMT",
-        "post_nQUnTF"
-      ],
-      "name": "Shop social media",
+    "positive_reviews_6WPUHr": {
+      "type": "positive-reviews",
+      "name": "Positive reviews",
       "settings": {
-        "heading": "Shop @Ogee",
-        "subheading": "# BeyoundCleanBeauty",
-        "button_label": "Shop",
-        "default_link": "https://www.instagram.com/ogee/",
-        "background_color": "#faf8f3",
-        "text_color": "#21272a",
-        "rail_color": "#333333",
-        "show_arrows": true,
-        "padding_top": 64,
-        "padding_bottom": 64,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40
-      }
-    },
-    "ogee_faq_knKyeR": {
-      "type": "ogee-faq",
-      "blocks": {
-        "faq_item_eeTH7y": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_4xWtfk": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_prJmfC": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_9qDnc4": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_rFkTTM": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_pLNiX4": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        }
-      },
-      "block_order": [
-        "faq_item_eeTH7y",
-        "faq_item_4xWtfk",
-        "faq_item_prJmfC",
-        "faq_item_9qDnc4",
-        "faq_item_rFkTTM",
-        "faq_item_pLNiX4"
-      ],
-      "name": "Ogee FAQ",
-      "settings": {
-        "heading": "FAQ",
+        "metric_fallback": "30,000+",
+        "label_fallback": "Positive reviews",
+        "quote_fallback": "\"It evens out my skin tone and is so lightweight I forget I'm even wearing it. It stayed on all day.\"",
+        "author_fallback": "Katie F.",
+        "color_scheme": "",
         "content_width": 1200,
         "padding_top": 64,
         "padding_bottom": 64,
-        "mobile_padding_top": 96,
-        "mobile_padding_bottom": 36,
-        "background_color": "#ffffff",
-        "heading_color": "#21272a",
-        "question_color": "#21272a",
-        "answer_color": "#21272a",
-        "divider_color": "#dfdfdf"
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "label_color": "#21272a",
+        "card_background": "#faf8f3",
+        "card_text_color": "#333333"
       }
     }
   },
   "order": [
     "ogee_product_buy",
-    "ogee_customer_reviews",
-    "positive_reviews",
     "ogee_look_upsell",
     "plant_derived_ingredients_AFPkrY",
     "beyond_clean_certification_4WhziD",
@@ -930,6 +832,7 @@
     "ogee_faq_knKyeR",
     "how_to_use_KURqN9",
     "result_stats",
+    "positive_reviews_6WPUHr",
     "shop_social_media_VxVw6T",
     "product_recommendations_qggXJq"
   ]
