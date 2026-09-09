@@ -585,6 +585,25 @@
         "progress_muted_color": "#cccccc"
       }
     },
+    "positive_reviews_6WPUHr": {
+      "type": "positive-reviews",
+      "name": "Positive reviews",
+      "settings": {
+        "metric_fallback": "30,000+",
+        "label_fallback": "Positive reviews",
+        "quote_fallback": "\"It evens out my skin tone and is so lightweight I forget I'm even wearing it. It stayed on all day.\"",
+        "author_fallback": "Katie F.",
+        "color_scheme": "",
+        "content_width": 1200,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "label_color": "#21272a",
+        "card_background": "#faf8f3",
+        "card_text_color": "#333333"
+      }
+    },
     "shop_social_media_VxVw6T": {
       "type": "shop-social-media",
       "blocks": {
@@ -783,6 +802,7 @@
       "block_order": [
         "text_cbcgyb"
       ],
+      "disabled": true,
       "name": "t:names.product_recommendations",
       "settings": {
         "product": "{{ closest.product }}",
@@ -801,25 +821,6 @@
         "color_scheme": "scheme-1",
         "padding-block-start": 48,
         "padding-block-end": 48
-      }
-    },
-    "positive_reviews_6WPUHr": {
-      "type": "positive-reviews",
-      "name": "Positive reviews",
-      "settings": {
-        "metric_fallback": "30,000+",
-        "label_fallback": "Positive reviews",
-        "quote_fallback": "\"It evens out my skin tone and is so lightweight I forget I'm even wearing it. It stayed on all day.\"",
-        "author_fallback": "Katie F.",
-        "color_scheme": "",
-        "content_width": 1200,
-        "padding_top": 64,
-        "padding_bottom": 64,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "label_color": "#21272a",
-        "card_background": "#faf8f3",
-        "card_text_color": "#333333"
       }
     }
   },
