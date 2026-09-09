@@ -41,6 +41,25 @@
       "type": "positive-reviews",
       "settings": {
         "color_scheme": "scheme-1"
+    "how_to_use": {
+      "type": "how-to-use",
+      "settings": {
+        "media_type": "image",
+        "fallback_image_asset": "how-to-use-poster.jpg",
+        "image_alt": "Model applying an Ogee lip product",
+        "video_loop": false,
+        "video_label": "How to use video",
+        "show_play_icon": true,
+        "video_link": "",
+        "play_label": "Play how to use video",
+        "heading": "How to use",
+        "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",
+        "content_width": 1200,
+        "mobile_media_height": 350,
+        "color_scheme": "scheme-1",
+        "background_color": "#FAF8F3",
+        "heading_color": "#21272A",
+        "text_color": "#333333"
       }
     },
     "main": {
@@ -303,6 +322,114 @@
         "padding-block-end": 0
       }
     },
+    "shop_social_media": {
+      "type": "shop-social-media",
+      "blocks": {
+        "post_products_1": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": true
+          }
+        },
+        "post_eye_balm_1": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_products_2": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_eye_balm_2": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_products_3": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        }
+      },
+      "block_order": [
+        "post_products_1",
+        "post_eye_balm_1",
+        "post_products_2",
+        "post_eye_balm_2",
+        "post_products_3"
+      ],
+      "settings": {
+        "heading": "Shop @Ogee",
+        "subheading": "# BeyoundCleanBeauty",
+        "button_label": "Shop",
+        "default_link": "https://www.instagram.com/ogee/",
+        "background_color": "#faf8f3",
+        "text_color": "#21272a",
+        "rail_color": "#333333",
+        "show_arrows": true,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    "result_stats": {
+      "type": "result-stats",
+      "blocks": {
+        "stat_1": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_2": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_3": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_4": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_5": {
+          "type": "stat",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "stat_1",
+        "stat_2",
+        "stat_3",
+        "stat_4",
+        "stat_5"
+      ],
+      "settings": {}
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -448,7 +575,10 @@
   "order": [
     "ogee_product_buy",
     "positive_reviews",
+    "ogee_look_upsell",
     "main",
+    "shop_social_media",
+    "result_stats",
     "product_recommendations_qggXJq"
   ]
 }
