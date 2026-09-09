@@ -84,3 +84,7 @@
 [2026-08-10][COMPOUND] Captured the reusable Figma header-on-Horizon-primitives pattern in `docs/solutions/design-patterns/2026-08-10-figma-header-menu-on-horizon-primitives.md`.
 [2026-08-10][FIX] Matched the provided screenshot by raising the Ogee header rail to 68px, removing scoped top-edge chrome, and adding a fallback Ogee nav when the selected Shopify menu is still the default `Home|Catalog|Contact|` dev menu.
 [2026-08-10][VERIFY] Re-ran Shopify docs search, parsed changed JSON and Liquid schema blocks, ran `git diff --check`, and re-attempted the Shopify validator; validation remains blocked by the missing `@shopify/theme-check-common` dependency.
+
+[2026-09-09][PLAN] Planned 13 menu/footer areas from the supplied Figma export, with per-area branches, source-node inventory, measured desktop/mobile dimensions, schema/data proposals, dependencies and acceptance checks in docs/plans/2026-09-09-menu-footer/. Recorded existing sizing and revision conflicts; implementation remains a subsequent phase.
+
+[2026-09-09][PLAN] Removed completed announcement-bar and footer work from the menu redesign plans at the user’s request. Eleven active plans remain; updated branch mapping, implementation order and header dependencies to preserve completed chrome. Retained desktop/mobile dimension checks for remaining work.
