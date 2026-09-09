@@ -282,6 +282,7 @@ export default class VariantPicker extends Component {
     // If variant-picker is a child of some specific sections, we need to append section_id=xxxx to the URL
     const SECTION_ID_MAP = {
       'quick-add-component': 'section-rendering-product-card',
+      'quick-shop-drawer': 'quick-shop-drawer',
       'swatches-variant-picker-component': 'section-rendering-product-card',
       'featured-product-information': this.closest('featured-product-information')?.id,
     };

@@ -48,6 +48,19 @@
     }
   }
 
+  .quick-add-modal__header {
+    display: none;
+  }
+
+  .quick-add-modal__title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    line-height: 1;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
   .quick-add-modal .view-more-details__wrapper {
     @media screen and (max-width: 749px) {
       display: none;
@@ -110,6 +123,94 @@
       overflow-y: auto;
       height: auto; /* Prevent a bug in Safari where height:fit-content is not respected */
       max-height: 100vh;
+    }
+  }
+
+  .quick-add-modal[data-quick-add-surface='quick-shop-drawer'] {
+    background: #fff;
+    border: 0;
+    border-left: 1px solid rgb(0 0 0 / 0.12);
+    border-radius: 0;
+    box-shadow: none;
+    color: #1f1f1f;
+    flex-direction: column;
+    height: 100dvh;
+    margin: 0 0 0 auto;
+    max-height: 100dvh;
+    max-width: min(420px, 100vw);
+    min-height: 100dvh;
+    overflow: hidden;
+    width: min(420px, 100vw);
+  }
+
+  .quick-add-modal[data-quick-add-surface='quick-shop-drawer'][open] {
+    animation: quickShopDrawerIn var(--animation-speed) var(--animation-easing) forwards;
+    display: flex;
+  }
+
+  .quick-add-modal[data-quick-add-surface='quick-shop-drawer'].dialog-closing {
+    animation: quickShopDrawerOut var(--animation-speed) var(--animation-easing) forwards;
+  }
+
+  .quick-add-modal[data-quick-add-surface='quick-shop-drawer'] .quick-add-modal__header {
+    align-items: center;
+    border-bottom: 1px solid rgb(0 0 0 / 0.08);
+    display: flex;
+    flex: 0 0 48px;
+    min-height: 48px;
+    padding-inline: 20px 56px;
+  }
+
+  .quick-add-modal[data-quick-add-surface='quick-shop-drawer'] .quick-add-modal__close {
+    height: 48px;
+    right: 4px;
+    top: 0;
+    width: 48px;
+  }
+
+  .quick-add-modal[data-quick-add-surface='quick-shop-drawer'] .quick-add-modal__content {
+    display: block;
+    flex: 1 1 auto;
+    grid-template-columns: none;
+    grid-template-rows: none;
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0;
+    position: relative;
+  }
+
+  @media screen and (max-width: 749px) {
+    .quick-add-modal[data-quick-add-surface='quick-shop-drawer'] {
+      border-left: 0;
+      border-radius: 0;
+      height: 100dvh;
+      margin: 0;
+      max-height: 100dvh;
+      max-width: 100vw;
+      min-height: 100dvh;
+      width: 100vw;
+    }
+  }
+
+  @keyframes quickShopDrawerIn {
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes quickShopDrawerOut {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(100%);
     }
   }
 
