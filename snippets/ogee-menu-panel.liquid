@@ -44,6 +44,8 @@
       {% render 'ogee-menu-promo', key: key, settings: settings, fallback_asset: 'ogee-menu-all-promo.png', fallback_url: routes.all_products_collection_url %}
     {% when 'makeup' %}
       {% render 'ogee-menu-collection', key: key, settings: settings, link: link, limit: 5, show_promo: true %}
+    {% when 'skincare' %}
+      {% render 'ogee-menu-collection', key: key, settings: settings, link: link, limit: 5, show_promo: true %}
     {% else %}
       {% for child in panel_links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}
   {% endcase %}
