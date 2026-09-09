@@ -53,8 +53,6 @@
   {% else %}
     {% liquid
       assign block_settings = block.settings
-      assign menu_content_type = block_settings.menu_style | default: 'text'
-      assign image_border_radius = block_settings.image_border_radius
       assign color_scheme_classes = ''
       assign color_scheme_setting_id = 'color_scheme_' | append: section.settings.menu_row
       assign current_color_scheme = block_settings.color_scheme
@@ -69,11 +67,6 @@
         assign color_scheme_classes = color_scheme_classes | append: ' color-scheme-matches-parent'
       endif
 
-      if block_settings.menu_style == 'featured_collections'
-        assign ratio = block_settings.featured_collections_aspect_ratio
-      elsif block_settings.menu_style == 'featured_products'
-        assign ratio = block_settings.featured_products_aspect_ratio
-      endif
 
       assign menu_titles = ''
       for link in block_settings.menu.links
@@ -158,86 +151,13 @@
                 endif
               endif
             endif
-            if template.name == 'index'
-              if fallback_index == 1
-                assign is_current = true
-              endif
-            endif
           %}
 
-          <li
-            role="presentation"
-            class="menu-list__list-item"
-          >
-            <a
-              href="{{ fallback_url }}"
-              data-skip-node-update="true"
-              class="menu-list__link{% if is_current %} menu-list__link--active{% endif %}"
-              {% if is_current %}
-                aria-current="page"
-              {% endif %}
-              ref="menuitem"
-            >
-              <span class="menu-list__link-title">{{- fallback_title | escape -}}</span>
-            </a>
-          </li>
+          {% render 'ogee-menu-item', title: fallback_title, url: fallback_url, index: fallback_index, settings: block_settings, section: section, current: is_current, color_classes: color_scheme_classes %}
         {% endfor %}
       {% else %}
         {% for link in block_settings.menu.links %}
-          <li
-            role="presentation"
-            class="menu-list__list-item"
-            on:focus="/activate"
-            on:blur="/deactivate"
-            on:pointerenter="/activate"
-            on:pointerleave="/deactivate"
-          >
-            <a
-              href="{{ link.url }}"
-              data-skip-node-update="true"
-              class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
-              {%- if link.links != blank -%}
-                aria-controls="submenu-{{ forloop.index }}"
-                aria-haspopup="true"
-                aria-expanded="false"
-              {%- endif -%}
-              {% if link.current %}
-                aria-current="page"
-              {% endif %}
-              ref="menuitem"
-            >
-              <span class="menu-list__link-title">{{- link.title -}}</span>
-            </a>
-            {%- if link.links != blank -%}
-              <div class="menu-list__submenu{{ color_scheme_classes }}" ref="submenu[]">
-                <div
-                  id="submenu-{{ forloop.index }}"
-                  class="menu-list__submenu-inner"
-                  style="{% render 'submenu-font-styles', settings: block_settings %}"
-                >
-                  {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
-                  <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
-                    <div
-                      class="mega-menu__grid"
-                      data-menu-grid-id="{{ list_id }}"
-                    >
-                      {% render 'mega-menu-list',
-                        parent_link: link,
-                        id: list_id,
-                        section: section,
-                        grid_columns_count: 6,
-                        grid_columns_count_tablet: 4,
-                        grid_columns_count_collection_images: 8,
-                        menu_content_type: menu_content_type,
-                        content_aspect_ratio: ratio,
-                        image_border_radius: image_border_radius
-                      %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            {%- endif -%}
-          </li>
+          {% render 'ogee-menu-item', title: link.title, url: link.url, link: link, index: forloop.index, settings: block_settings, section: section, current: link.current, color_classes: color_scheme_classes %}
         {% endfor %}
       {% endif %}
       <li
@@ -1077,6 +997,77 @@
       "id": "drawer_dividers",
       "label": "t:settings.dividers",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.all"
+    },
+    {
+      "type": "checkbox",
+      "id": "ogee_panels_enabled",
+      "label": "t:ogee_menu.enabled",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "all_trigger_url",
+      "label": "t:ogee_menu.trigger",
+      "default": "/collections/all"
+    },
+    {
+      "type": "link_list",
+      "id": "all_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_promo_image",
+      "label": "t:ogee_menu.promo"
+    },
+    {
+      "type": "text",
+      "id": "all_promo_heading",
+      "label": "t:ogee_menu.promo_heading"
+    },
+    {
+      "type": "url",
+      "id": "all_promo_url",
+      "label": "t:ogee_menu.promo_link"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_promo_second_image",
+      "label": "t:ogee_menu.promo_second"
+    },
+    {
+      "type": "text",
+      "id": "all_promo_second_heading",
+      "label": "t:ogee_menu.promo_second_heading"
+    },
+    {
+      "type": "url",
+      "id": "all_promo_second_url",
+      "label": "t:ogee_menu.promo_second_link"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_makeup_image",
+      "label": "t:ogee_menu.makeup"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_skincare_image",
+      "label": "t:ogee_menu.skincare"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_accessories_image",
+      "label": "t:ogee_menu.accessories"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_bundles_image",
+      "label": "t:ogee_menu.bundles"
     }
   ]
 }

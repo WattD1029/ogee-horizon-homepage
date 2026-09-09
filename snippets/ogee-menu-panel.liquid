@@ -1,0 +1,64 @@
+{% doc %}
+  Shared responsive panel dispatch. Native resources supply links, titles, images and counts.
+  @param {string} key - Configured panel key
+  @param {object} settings - Header menu settings
+  @param {object} [link] - Native navigation link
+{% enddoc %}
+{% liquid
+  assign menu_id = key | append: '_menu'
+  assign panel_links = settings[menu_id].links | default: link.links
+%}
+<div class="ogee-menu-panel ogee-menu-panel--{{ key }}" data-ogee-panel="{{ key }}">
+  {% case key %}
+    {% when 'all' %}
+      <div class="ogee-menu-panel__main">
+        <div class="ogee-menu-categories">
+          {% if panel_links != blank %}
+            {% for category in panel_links limit: 4 %}
+              <div class="ogee-menu-category">
+                {% if category.object.image %}<a href="{{ category.url }}" tabindex="-1" aria-hidden="true">{{ category.object.image | image_url: width: 500 | image_tag: loading: 'lazy', class: 'ogee-menu-category__image' }}</a>{% endif %}
+                <a class="ogee-menu-heading" href="{{ category.url }}">{{ category.title | escape }}</a>
+                {% for child in category.links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}
+              </div>
+            {% endfor %}
+          {% else %}
+            {% assign category_keys = 'makeup,skincare,accessories,bundles' | split: ',' %}
+            {% for category_key in category_keys %}
+              {% liquid
+                assign category = collections[category_key]
+                assign image_setting = 'all_' | append: category_key | append: '_image'
+                assign image_asset = 'ogee-menu-all-' | append: category_key | append: '.png'
+              %}
+              {% if category != blank %}
+                <a class="ogee-menu-category" href="{{ category.url }}">
+                  {% if settings[image_setting] != blank %}{{ settings[image_setting] | image_url: width: 500 | image_tag: loading: 'lazy', class: 'ogee-menu-category__image' }}{% else %}<img src="{{ image_asset | asset_url }}" alt="" width="250" height="120" loading="lazy" class="ogee-menu-category__image">{% endif %}
+                  <span class="ogee-menu-heading">{{ category.title | escape }}</span>
+                  <span class="ogee-menu-text-link">{{ 'ogee_menu.shop_all' | t }} ({{ category.all_products_count }})</span>
+                </a>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+        <a class="ogee-menu-shop-all" href="{{ routes.all_products_collection_url }}">{{ 'ogee_menu.all_products' | t }} ({{ collections.all.all_products_count }}) <span class="svg-wrapper">{{ 'icon-arrow.svg' | inline_asset_content }}</span></a>
+      </div>
+      {% render 'ogee-menu-promo', key: key, settings: settings, fallback_asset: 'ogee-menu-all-promo.png', fallback_url: routes.all_products_collection_url %}
+    {% else %}
+      {% for child in panel_links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}
+  {% endcase %}
+</div>
+{% stylesheet %}
+  .menu-list__submenu-inner.ogee-submenu-inner { padding:0; width:100%; }
+  .ogee-menu-panel { width:100%; max-width:1300px; margin-inline:auto; padding:32px 50px; display:flex; gap:48px; color:#333; font-family:var(--font-body--family); background:#fff; text-align:left; }
+  .ogee-menu-panel__main { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .ogee-menu-categories { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:15px; }
+  .ogee-menu-category { display:block; min-width:0; color:inherit; }
+  .ogee-menu-category__image { width:100%; height:120px; object-fit:cover; display:block; margin-bottom:10px; }
+  .ogee-menu-heading { min-height:40px; display:flex; align-items:center; font-size:13px; line-height:1.1; font-weight:500; text-transform:uppercase; letter-spacing:1.3px; color:inherit; }
+  .ogee-menu-text-link { display:flex; align-items:center; min-height:32px; padding-block:5px; font-size:14px; line-height:21px; font-weight:300; color:inherit; }
+  .ogee-menu-shop-all { display:flex; align-items:center; justify-content:flex-end; gap:10px; min-height:44px; margin-top:auto; padding-top:16px; font-size:13px; text-transform:uppercase; letter-spacing:1.3px; color:inherit; }
+  .ogee-menu-shop-all .svg-wrapper { width:20px; height:20px; }
+  .ogee-menu-panel--all { min-height:458px; }
+  .ogee-menu-panel a:hover,.ogee-menu-panel a:focus-visible { text-decoration:underline; text-underline-offset:4px; }
+  @media(min-width:750px) and (max-width:1100px) { .ogee-menu-panel { padding:24px; gap:24px; } .ogee-menu-promo { width:210px; } }
+  @media(max-width:749px) { .ogee-menu-panel { display:block; padding:0; min-height:0; } .ogee-menu-categories { display:block; } .ogee-menu-category__image { display:none; } .ogee-menu-heading,.ogee-menu-text-link { min-height:50px; } .ogee-menu-promo { width:100%; } .ogee-menu-panel__main>.ogee-menu-shop-all { justify-content:space-between; } }
+{% endstylesheet %}

@@ -1,0 +1,23 @@
+{% doc %}
+  A compact menu-only product card with a real product title and optional second image.
+  @param {product} product - Native product resource
+  @param {boolean} [show_price] - Show the live formatted product price
+{% enddoc %}
+<a class="ogee-menu-product" href="{{ product.url }}">
+  <span class="ogee-menu-product__media">
+    {% if product.featured_image %}
+      {{ product.featured_image | image_url: width: 465 | image_tag: widths: '155,310,465', sizes: '(max-width: 749px) 70px, 155px', loading: 'lazy', class: 'ogee-menu-product__primary' }}
+      {% if product.images[1] %}{{ product.images[1] | image_url: width: 465 | image_tag: widths: '155,310,465', sizes: '(max-width: 749px) 70px, 155px', loading: 'lazy', class: 'ogee-menu-product__secondary' }}{% endif %}
+    {% else %}{{ 'product-1' | placeholder_svg_tag }}{% endif %}
+  </span>
+  <span class="ogee-menu-product__text">{{ product.title | escape }}{% if show_price %}<span class="ogee-menu-product__price">{{ product.price | money }}</span>{% endif %}</span>
+</a>
+{% stylesheet %}
+  .ogee-menu-product { min-width:0; display:flex; flex-direction:column; gap:10px; color:inherit; font-size:14px; font-weight:300; line-height:21px; }
+  .ogee-menu-product__media { position:relative; display:block; width:100%; aspect-ratio:1; background:#faf8f3; }
+  .ogee-menu-product__media img,.ogee-menu-product__media svg { display:block; width:100%; height:100%; object-fit:cover; }
+  .ogee-menu-product__media .ogee-menu-product__secondary { position:absolute; inset:0; opacity:0; transition:opacity .2s; }
+  .ogee-menu-product:hover .ogee-menu-product__secondary,.ogee-menu-product:focus-visible .ogee-menu-product__secondary { opacity:1; }
+  .ogee-menu-product__price { display:block; margin-top:4px; }
+  @media(prefers-reduced-motion:reduce) { .ogee-menu-product__secondary { transition:none; } }
+{% endstylesheet %}

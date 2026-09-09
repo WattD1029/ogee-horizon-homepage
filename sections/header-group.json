@@ -101,7 +101,9 @@
             "color_scheme_navigation_bar": "",
             "drawer_accordion": false,
             "drawer_accordion_expand_first": false,
-            "drawer_dividers": false
+            "drawer_dividers": false,
+            "ogee_panels_enabled": true,
+            "all_trigger_url": "/collections/all"
           },
           "blocks": {}
         }

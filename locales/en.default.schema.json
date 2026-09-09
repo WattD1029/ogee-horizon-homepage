@@ -1222,5 +1222,33 @@
     "what_is_return_policy": "What is the return policy?",
     "when_will_order_arrive": "When will I get my order?",
     "where_are_products_made": "Where are your products manufactured?"
+  },
+  "ogee_menu": {
+    "all": "All menu",
+    "enabled": "Enable designed panels",
+    "trigger": "Navigation link URL",
+    "menu": "Menu links",
+    "collection": "Collection",
+    "products": "Featured products",
+    "image": "Image",
+    "heading": "Heading",
+    "link": "Link",
+    "promo": "Promotion image",
+    "promo_heading": "Promotion heading",
+    "promo_link": "Promotion link",
+    "promo_second": "Second promotion image",
+    "promo_second_heading": "Second promotion heading",
+    "promo_second_link": "Second promotion link",
+    "show_prices": "Show product prices",
+    "makeup": "Makeup",
+    "skincare": "Skincare",
+    "accessories": "Accessories",
+    "bundles": "Bundles",
+    "new": "New",
+    "bestsellers": "Bestsellers",
+    "quizzes": "Quizzes",
+    "about": "About",
+    "description": "Description",
+    "title": "Title"
   }
 }
