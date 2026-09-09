@@ -83,3 +83,5 @@
 [2026-09-09][IMPLEMENT][bundles-menu] Implemented bundles navigation using selected products or the native collection, live counts, optional prices, and a six-card rail without promotion. Mobile cards use 100px images with 16px text gaps. Empty collections do not create duplicate products.
 
 [2026-09-09][IMPLEMENT][new-menu] Implemented the final Figma two-column favourites/collections variant with native product links, collection counts and editable 250 × 350px image. The 813px centered desktop composition becomes stacked mobile links. Merchant order is authoritative; no invented ranking or duplicate filler.
+
+[2026-09-09][IMPLEMENT][bestsellers-menu] Implemented the final Figma two-column favourites/collections variant with native product links, collection counts and editable 250 × 350px image. The 813px centered desktop composition becomes stacked mobile links. Merchant order is authoritative; no invented ranking or duplicate filler.

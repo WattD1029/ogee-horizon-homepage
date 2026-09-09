@@ -113,7 +113,9 @@
             "bundles_trigger_url": "/collections/bundles",
             "bundles_collection": "bundles",
             "new_trigger_url": "/collections/new",
-            "new_collection": "new"
+            "new_collection": "new",
+            "bestsellers_trigger_url": "/collections/bestsellers",
+            "bestsellers_collection": "bestsellers"
           },
           "blocks": {}
         }

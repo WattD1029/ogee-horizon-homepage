@@ -52,6 +52,8 @@
       {% render 'ogee-menu-collection', key: key, settings: settings, link: link, limit: 6, show_promo: false %}
     {% when 'new' %}
       {% render 'ogee-menu-favourites', key: key, settings: settings, limit: 3 %}
+    {% when 'bestsellers' %}
+      {% render 'ogee-menu-favourites', key: key, settings: settings, limit: 5 %}
     {% else %}
       {% for child in panel_links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}
   {% endcase %}
