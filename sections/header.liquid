@@ -511,7 +511,7 @@
 
   @media screen and (max-width: 749px) {
     #header-component[data-ogee-header-menu] {
-      --ogee-header-height: 56px;
+      --ogee-header-height: 50px;
     }
 
     #header-component[data-ogee-header-menu] .header__row--top .header__columns {
@@ -1185,6 +1185,36 @@
   .dropdown-localization:not(dropdown-localization-component) .language-selector {
     font-family: var(--menu-localization-font);
     font-size: var(--menu-localization-font-size);
+  }
+
+  @media screen and (max-width: 749px) {
+    #header-component[data-ogee-header-menu] {
+      --button-size: 44px;
+      --icon-size-md: 24px;
+    }
+
+    #header-component[data-ogee-header-menu] .header__row--top .header__columns {
+      padding-inline: 10px;
+    }
+
+    #header-component[data-ogee-header-menu] .header__columns .search-action {
+      grid-area: leftB;
+    }
+
+    #header-component[data-ogee-header-menu] .header__columns header-actions {
+      grid-column: 4 / 6;
+      grid-row: 1;
+      gap: 0;
+      margin-inline-start: 0;
+    }
+
+    #header-component[data-ogee-header-menu] .header-actions__action {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+  @media screen and (max-width: 749px) {
+    #header-component[data-ogee-header-menu] .header__drawer { --header-drawer-min-height: 50px; }
   }
 {% endstylesheet %}
 

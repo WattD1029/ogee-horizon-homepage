@@ -1,7 +1,7 @@
 ---
 title: "Header and utility actions"
 date: 2026-09-09
-status: planned
+status: implemented
 branch: codex/menu-footer-header
 base_commit: b845ee7406af4fb33a0499230f1d274715ae107f
 ---
@@ -100,3 +100,7 @@ All area branches begin at the shared planning commit and contain the other plan
 ## Completion boundary
 
 The current request is branches and plans. Future work should deliver this area and its relevant checks as a focused diff. Publishing, store-navigation mutations and external messages are outside this planning task.
+
+## Implementation — 2026-09-09
+
+Implemented on `codex/menu-footer-header`. Mobile rail is 50px plus the existing 1px divider; desktop remains 68px plus divider. Fallback logo is 100 × 27.007px mobile and 120 × 32.4px desktop. Merchant logo settings remain authoritative. Shopify Liquid validation passed. Browser measurements at 390 and 1920px confirmed rail dimensions and no horizontal overflow. Announcement and footer are unchanged.
