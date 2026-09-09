@@ -105,7 +105,9 @@
             "ogee_panels_enabled": true,
             "all_trigger_url": "/collections/all",
             "makeup_trigger_url": "/collections/makeup",
-            "makeup_collection": "makeup"
+            "makeup_collection": "makeup",
+            "skincare_trigger_url": "/collections/skincare",
+            "skincare_collection": "skincare"
           },
           "blocks": {}
         }
