@@ -1,0 +1,772 @@
+{% liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign card_count = section.blocks.size
+  assign show_header = false
+  assign show_arrows = false
+  assign social_product = product
+
+  if social_product == blank
+    assign social_product = closest.product
+  endif
+
+  assign social_media_url = social_product.metafields.custom.social_media_url.value
+
+  if heading != blank
+    assign show_header = true
+  endif
+
+  if subheading != blank
+    assign show_header = true
+  endif
+
+  if card_count > 1
+    if section.settings.show_arrows
+      assign show_arrows = true
+    endif
+  endif
+%}
+
+<section
+  class="shop-social-media-section"
+  style="
+    --shop-social-media-background: {{ section.settings.background_color }};
+    --shop-social-media-text: {{ section.settings.text_color }};
+    --shop-social-media-rail: {{ section.settings.rail_color }};
+    --shop-social-media-padding-top: {{ section.settings.padding_top }}px;
+    --shop-social-media-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --shop-social-media-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --shop-social-media-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+  "
+>
+  <shop-social-media-carousel class="shop-social-media">
+    <div class="shop-social-media__inner">
+      {% if show_header %}
+        <div class="shop-social-media__header">
+          {% if heading != blank %}
+            <h2 class="shop-social-media__heading">{{ heading | escape }}</h2>
+          {% endif %}
+
+          {% if subheading != blank %}
+            <p class="shop-social-media__subheading">{{ subheading | escape }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if card_count > 0 %}
+        <div class="shop-social-media__viewport">
+          <div
+            class="shop-social-media__scroller"
+            data-shop-social-media-scroller
+            tabindex="0"
+            aria-label="{{ heading | default: 'Shop social media gallery' | escape }}"
+          >
+            {% for block in section.blocks %}
+              {% liquid
+                assign image = block.settings.image
+                assign image_alt = block.settings.alt_text
+                assign card_link = block.settings.link
+                assign fallback_asset = 'shop-social-products-alt.png'
+                assign fallback_src = fallback_asset | asset_url
+                assign fallback_width = 462
+                assign fallback_height = 462
+
+                if card_link == blank
+                  assign card_link = social_media_url
+                endif
+
+                if card_link == blank
+                  assign card_link = section.settings.default_link
+                endif
+
+                if image_alt == blank
+                  if image != blank
+                    assign image_alt = image.alt
+                  endif
+                endif
+
+                if image_alt == blank
+                  assign image_alt = heading
+                endif
+
+                if image_alt == blank
+                  assign image_alt = 'Ogee social media post'
+                endif
+
+                if block.settings.fallback_image == 'eye_balm'
+                  assign fallback_src = 'https://cdn.shopify.com/s/files/1/0776/0766/5769/files/ogee-shop-social-eye-balm-closeup.png?v=1785494141'
+                  assign fallback_width = 564
+                  assign fallback_height = 564
+                endif
+
+                assign rendered_alt = image_alt
+                if card_link != blank
+                  assign rendered_alt = ''
+                endif
+              %}
+
+              {% if card_link != blank %}
+                <a
+                  class="shop-social-media__card{% if block.settings.show_overlay %} shop-social-media__card--overlay{% endif %}"
+                  href="{{ card_link | escape }}"
+                  aria-label="{{ image_alt | escape }}"
+                  {% if block.settings.open_in_new_tab %}
+                    target="_blank" rel="noopener noreferrer"
+                  {% endif %}
+                  {{ block.shopify_attributes }}
+                >
+              {% else %}
+                <div
+                  class="shop-social-media__card{% if block.settings.show_overlay %} shop-social-media__card--overlay{% endif %}"
+                  {{ block.shopify_attributes }}
+                >
+              {% endif %}
+                {% if image != blank %}
+                  {{
+                    image
+                    | image_url: width: 700
+                    | image_tag:
+                      widths: '264, 337, 462, 528, 700',
+                      sizes: '(max-width: 749px) 264px, 282px',
+                      loading: 'lazy',
+                      alt: rendered_alt,
+                      class: 'shop-social-media__image'
+                  }}
+                {% else %}
+                  <img
+                    src="{{ fallback_src | escape }}"
+                    alt="{{ rendered_alt | escape }}"
+                    class="shop-social-media__image"
+                    width="{{ fallback_width }}"
+                    height="{{ fallback_height }}"
+                    loading="lazy"
+                  >
+                {% endif %}
+
+                {% if block.settings.show_overlay %}
+                  <span class="shop-social-media__overlay" aria-hidden="true">
+                    <span class="shop-social-media__instagram">
+                      {{ 'shop-social-instagram.svg' | inline_asset_content }}
+                    </span>
+                    <span class="shop-social-media__shop-label">{{ section.settings.button_label | escape }}</span>
+                  </span>
+                {% endif %}
+              {% if card_link != blank %}
+                </a>
+              {% else %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          {% if show_arrows %}
+            <button
+              type="button"
+              class="shop-social-media__arrow shop-social-media__arrow--previous"
+              aria-label="Previous social media post"
+              data-shop-social-media-prev
+            >
+              {{ 'icon-chevron-left.svg' | inline_asset_content }}
+            </button>
+            <button
+              type="button"
+              class="shop-social-media__arrow shop-social-media__arrow--next"
+              aria-label="Next social media post"
+              data-shop-social-media-next
+            >
+              {{ 'icon-chevron-right.svg' | inline_asset_content }}
+            </button>
+          {% endif %}
+        </div>
+
+        <div class="shop-social-media__progress" aria-hidden="true">
+          <span data-shop-social-media-progress></span>
+        </div>
+      {% endif %}
+    </div>
+  </shop-social-media-carousel>
+</section>
+
+{% stylesheet %}
+  .shop-social-media-section {
+    overflow: hidden;
+    padding-block: var(--shop-social-media-padding-top-mobile) var(--shop-social-media-padding-bottom-mobile);
+    background: var(--shop-social-media-background);
+    color: var(--shop-social-media-text);
+  }
+
+  .shop-social-media {
+    display: block;
+  }
+
+  .shop-social-media__inner {
+    display: flex;
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: 20px;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .shop-social-media__header {
+    display: grid;
+    gap: 8px;
+  }
+
+  .shop-social-media__heading,
+  .shop-social-media__subheading {
+    margin: 0;
+    color: inherit;
+    letter-spacing: 0;
+  }
+
+  .shop-social-media__heading {
+    font-family: "Chronicle Display", Georgia, "Times New Roman", var(--font-heading--family), serif;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .shop-social-media__subheading {
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .shop-social-media__viewport {
+    position: relative;
+    min-width: 0;
+  }
+
+  .shop-social-media__scroller {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 0;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .shop-social-media__scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shop-social-media__scroller:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 6px;
+  }
+
+  .shop-social-media__card {
+    position: relative;
+    display: block;
+    width: 264px;
+    flex: 0 0 264px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    scroll-snap-align: start;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .shop-social-media__card:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 3px;
+  }
+
+  .shop-social-media__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .shop-social-media__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    background: rgb(0 0 0 / 0.2);
+    color: #fff;
+  }
+
+  .shop-social-media__instagram {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+  }
+
+  .shop-social-media__instagram svg {
+    display: block;
+    width: 40px;
+    height: 40px;
+  }
+
+  .shop-social-media__shop-label {
+    display: inline-flex;
+    width: 117px;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid currentcolor;
+    padding: 8px 16px;
+    font-family: "Helvetica Neue", Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.1px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .shop-social-media__progress {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    overflow: hidden;
+    background: rgb(0 0 0 / 0.2);
+  }
+
+  .shop-social-media__progress span {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    display: block;
+    width: calc(100% / 3);
+    background: var(--shop-social-media-rail);
+    transform-origin: left center;
+  }
+
+  .shop-social-media__arrow {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .shop-social-media-section {
+      padding-block: var(--shop-social-media-padding-top) var(--shop-social-media-padding-bottom);
+    }
+
+    .shop-social-media__inner {
+      gap: 32px;
+      padding-inline: 24px;
+    }
+
+    .shop-social-media__heading {
+      font-size: 32px;
+      line-height: 1.1;
+    }
+
+    .shop-social-media__subheading {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .shop-social-media__scroller {
+      gap: 24px;
+    }
+
+    .shop-social-media__card {
+      width: 282px;
+      flex-basis: 282px;
+    }
+
+    .shop-social-media__overlay {
+      display: none;
+    }
+
+    .shop-social-media__arrow {
+      position: absolute;
+      top: 50%;
+      z-index: 2;
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 0;
+      padding: 4px;
+      background: rgb(255 255 255 / 0.7);
+      color: #21272a;
+      cursor: pointer;
+      transform: translateY(-50%);
+    }
+
+    .shop-social-media__arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .shop-social-media__arrow--previous {
+      left: 8px;
+    }
+
+    .shop-social-media__arrow--next {
+      right: 8px;
+    }
+
+    .shop-social-media__arrow[disabled] {
+      cursor: default;
+      opacity: 0.2;
+    }
+
+    .shop-social-media__arrow:focus-visible {
+      outline: 2px solid currentcolor;
+      outline-offset: -4px;
+    }
+  }
+
+  @media screen and (min-width: 1328px) {
+    .shop-social-media__inner {
+      padding-inline: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ShopSocialMediaCarousel extends HTMLElement {
+    connectedCallback() {
+      this.scroller = this.querySelector('[data-shop-social-media-scroller]');
+      this.progress = this.querySelector('[data-shop-social-media-progress]');
+      this.previousButton = this.querySelector('[data-shop-social-media-prev]');
+      this.nextButton = this.querySelector('[data-shop-social-media-next]');
+      this.animationFrame = null;
+      this.isDragging = false;
+      this.dragStartX = 0;
+      this.dragStartScrollLeft = 0;
+
+      if (!this.scroller) return;
+
+      this.handleScroll = () => {
+        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+        this.animationFrame = requestAnimationFrame(() => this.update());
+      };
+
+      this.handleResize = () => this.update();
+      this.handlePrevious = () => this.scrollByCard(-1);
+      this.handleNext = () => this.scrollByCard(1);
+      this.handlePointerDown = (event) => this.startDrag(event);
+      this.handlePointerMove = (event) => this.drag(event);
+      this.handlePointerUp = () => this.stopDrag();
+
+      this.scroller.addEventListener('scroll', this.handleScroll, { passive: true });
+      window.addEventListener('resize', this.handleResize);
+      this.previousButton?.addEventListener('click', this.handlePrevious);
+      this.nextButton?.addEventListener('click', this.handleNext);
+      this.scroller.addEventListener('pointerdown', this.handlePointerDown);
+      this.scroller.addEventListener('pointermove', this.handlePointerMove);
+      this.scroller.addEventListener('pointerup', this.handlePointerUp);
+      this.scroller.addEventListener('pointercancel', this.handlePointerUp);
+      this.scroller.addEventListener('pointerleave', this.handlePointerUp);
+
+      this.update();
+    }
+
+    disconnectedCallback() {
+      if (!this.scroller) return;
+
+      this.scroller.removeEventListener('scroll', this.handleScroll);
+      window.removeEventListener('resize', this.handleResize);
+      this.previousButton?.removeEventListener('click', this.handlePrevious);
+      this.nextButton?.removeEventListener('click', this.handleNext);
+      this.scroller.removeEventListener('pointerdown', this.handlePointerDown);
+      this.scroller.removeEventListener('pointermove', this.handlePointerMove);
+      this.scroller.removeEventListener('pointerup', this.handlePointerUp);
+      this.scroller.removeEventListener('pointercancel', this.handlePointerUp);
+      this.scroller.removeEventListener('pointerleave', this.handlePointerUp);
+
+      if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+    }
+
+    startDrag(event) {
+      if (event.pointerType !== 'mouse') return;
+      if (event.button !== 0) return;
+
+      this.isDragging = true;
+      this.dragStartX = event.clientX;
+      this.dragStartScrollLeft = this.scroller.scrollLeft;
+      this.scroller.setPointerCapture(event.pointerId);
+    }
+
+    drag(event) {
+      if (!this.isDragging) return;
+
+      event.preventDefault();
+      this.scroller.scrollLeft = this.dragStartScrollLeft - (event.clientX - this.dragStartX);
+    }
+
+    stopDrag() {
+      this.isDragging = false;
+    }
+
+    scrollByCard(direction) {
+      const card = this.scroller.querySelector('.shop-social-media__card');
+      if (!card) return;
+
+      const styles = window.getComputedStyle(this.scroller);
+      const gap = parseFloat(styles.columnGap || styles.gap || 0);
+      const distance = card.getBoundingClientRect().width + gap;
+      const maxScroll = Math.max(this.scroller.scrollWidth - this.scroller.clientWidth, 0);
+      const currentScroll = this.scroller.scrollLeft;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let nextLeft = currentScroll + distance * direction;
+
+      if (direction > 0 && currentScroll >= maxScroll - 1) {
+        nextLeft = 0;
+      }
+
+      if (direction < 0 && currentScroll <= 1) {
+        nextLeft = maxScroll;
+      }
+
+      this.scroller.scrollTo({
+        left: nextLeft,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      });
+    }
+
+    update() {
+      const maxScroll = Math.max(this.scroller.scrollWidth - this.scroller.clientWidth, 0);
+      const scrollLeft = this.scroller.scrollLeft;
+      const hasOverflow = maxScroll > 1;
+      const minimumProgress = 100 / 3;
+      const progress = hasOverflow ? minimumProgress + (scrollLeft / maxScroll) * (100 - minimumProgress) : 100;
+
+      if (this.progress) {
+        this.progress.style.width = `${Math.min(Math.max(progress, 0), 100)}%`;
+      }
+
+      this.previousButton?.toggleAttribute('disabled', !hasOverflow);
+      this.nextButton?.toggleAttribute('disabled', !hasOverflow);
+      this.toggleAttribute('data-overflowing', hasOverflow);
+    }
+  }
+
+  if (!customElements.get('shop-social-media-carousel')) {
+    customElements.define('shop-social-media-carousel', ShopSocialMediaCarousel);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Shop social media",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "post",
+      "name": "Social post",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "fallback_image",
+          "label": "Bundled fallback",
+          "options": [
+            {
+              "value": "products",
+              "label": "Product tabletop"
+            },
+            {
+              "value": "eye_balm",
+              "label": "Eye balm close-up"
+            }
+          ],
+          "default": "products"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Social media link override"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_in_new_tab",
+          "label": "Open in new tab",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_overlay",
+          "label": "Show mobile shop overlay",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop @Ogee"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "# BeyoundCleanBeauty"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Overlay button label",
+      "default": "Shop"
+    },
+    {
+      "type": "url",
+      "id": "default_link",
+      "label": "Fallback social media link"
+    },
+    {
+      "type": "paragraph",
+      "content": "When a post link is blank, cards use product metafield custom.social_media_url before this fallback link."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#faf8f3"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#21272a"
+    },
+    {
+      "type": "color",
+      "id": "rail_color",
+      "label": "Progress rail",
+      "default": "#333333"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show desktop arrows",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Desktop padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Mobile padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop social media",
+      "category": "t:categories.storytelling",
+      "settings": {
+        "default_link": "https://www.instagram.com/ogee/"
+      },
+      "blocks": [
+        {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "show_overlay": true,
+            "link": ""
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": ""
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": ""
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": ""
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": ""
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
