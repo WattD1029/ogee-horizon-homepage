@@ -37,35 +37,25 @@
         "fallback_rating_count": 500
       }
     },
-    "ogee_look_upsell": {
-      "type": "ogee-look-upsell",
+    "how_to_use": {
+      "type": "how-to-use",
       "settings": {
-        "heading": "Complete The Look",
-        "products": [],
-        "fallback_product_handles": "complexion-perfecting-concealer,sculpted-complexion-foundation-stick,complexion-perfecting-tinted-serum,skin-enhancing-primer-spf-40",
-        "discount_percent": 20,
-        "offer_prefix": "Add all to cart with",
-        "offer_suffix": "off",
-        "add_all_label": "Add all [count] to cart",
-        "add_to_cart_label": "Add to cart",
-        "select_options_label": "Select shade",
-        "sold_out_label": "Sold out",
-        "adding_label": "Adding...",
-        "added_label": "Added",
-        "error_text": "Unable to add products to cart.",
-        "empty_text": "Choose up to four products for this upsell.",
-        "checkbox_label": "Include [product]",
-        "background_color": "#faf8f3",
-        "text_color": "#000000",
-        "muted_text_color": "#646464",
-        "border_color": "#dfdfdf",
-        "image_background_color": "#f1f1f1",
-        "button_background": "#000000",
-        "button_text_color": "#ffffff",
-        "padding_top": 64,
-        "padding_bottom": 64,
-        "padding_top_mobile": 24,
-        "padding_bottom_mobile": 40
+        "media_type": "image",
+        "fallback_image_asset": "how-to-use-poster.jpg",
+        "image_alt": "Model applying an Ogee lip product",
+        "video_loop": false,
+        "video_label": "How to use video",
+        "show_play_icon": true,
+        "video_link": "",
+        "play_label": "Play how to use video",
+        "heading": "How to use",
+        "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",
+        "content_width": 1200,
+        "mobile_media_height": 350,
+        "color_scheme": "scheme-1",
+        "background_color": "#FAF8F3",
+        "heading_color": "#21272A",
+        "text_color": "#333333"
       }
     },
     "main": {
