@@ -1,7 +1,7 @@
 ---
 title: "All products menu and shared panel contract"
 date: 2026-09-09
-status: planned
+status: implemented
 branch: codex/menu-footer-all-menu
 base_commit: b845ee7406af4fb33a0499230f1d274715ae107f
 ---
@@ -103,3 +103,9 @@ All area branches begin at the shared planning commit and contain the other plan
 ## Completion boundary
 
 The current request is branches and plans. Future work should deliver this area and its relevant checks as a focused diff. Publishing, store-navigation mutations and external messages are outside this planning task.
+
+## Implementation — 2026-09-09
+
+Added URL-based dispatch with duplicate detection, native menu fallback, four collection groups, reusable product/promotion snippets, original Figma imagery, and Escape/ArrowDown keyboard behavior. Shared rail: 1300px with 50px horizontal/32px vertical padding; All panel minimum 458px. Visual preview configuration remains under verification.
+
+Local Liquid/schema validation passed. Final responsive preview evidence is recorded in the integration report on the mobile-menu branch.

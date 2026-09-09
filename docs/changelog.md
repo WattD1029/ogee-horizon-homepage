@@ -71,3 +71,5 @@
 
 [2026-09-09][IMPLEMENT][header] Set the mobile header rail to 50px, resolved the drawer minimum-height conflict, and sized the fallback logo at 100px. Preserved the 68px desktop rail.
 [2026-09-09][VERIFY][header] Liquid validation passed. Unpublished preview measured 51/69px including the existing divider at 390/1920px, without page overflow.
+
+[2026-09-09][IMPLEMENT][all-menu] Added URL-based dispatch with duplicate detection, native menu fallback, four collection groups, reusable product/promotion snippets, original Figma imagery, and Escape/ArrowDown keyboard behavior. Shared rail: 1300px with 50px horizontal/32px vertical padding; All panel minimum 458px. Visual preview configuration remains under verification.
