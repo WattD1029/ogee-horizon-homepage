@@ -74,65 +74,172 @@
       elsif block_settings.menu_style == 'featured_products'
         assign ratio = block_settings.featured_products_aspect_ratio
       endif
+
+      assign menu_titles = ''
+      for link in block_settings.menu.links
+        assign menu_titles = menu_titles | append: link.title | append: '|'
+      endfor
+
+      assign use_ogee_menu_fallback = false
+      if menu_titles == 'Home|Catalog|Contact|'
+        assign use_ogee_menu_fallback = true
+      endif
     %}
 
     {% capture children %}
-      {% for link in block_settings.menu.links %}
-        <li
-          role="presentation"
-          class="menu-list__list-item"
-          on:focus="/activate"
-          on:blur="/deactivate"
-          on:pointerenter="/activate"
-          on:pointerleave="/deactivate"
-        >
-          <a
-            href="{{ link.url }}"
-            data-skip-node-update="true"
-            class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
-            {%- if link.links != blank -%}
-              aria-controls="submenu-{{ forloop.index }}"
-              aria-haspopup="true"
-              aria-expanded="false"
-            {%- endif -%}
-            {% if link.current %}
-              aria-current="page"
-            {% endif %}
-            ref="menuitem"
+      {% if use_ogee_menu_fallback %}
+        {% for fallback_index in (1..9) %}
+          {% liquid
+            assign fallback_title = ''
+            assign fallback_url = ''
+            assign fallback_handle = ''
+            assign fallback_page_handle = ''
+
+            case fallback_index
+              when 1
+                assign fallback_title = 'New'
+                assign fallback_handle = 'new'
+              when 2
+                assign fallback_title = 'Bestsellers'
+                assign fallback_handle = 'bestsellers'
+              when 3
+                assign fallback_title = 'All'
+                assign fallback_handle = 'all'
+              when 4
+                assign fallback_title = 'Makeup'
+                assign fallback_handle = 'makeup'
+              when 5
+                assign fallback_title = 'Skincare'
+                assign fallback_handle = 'skincare'
+              when 6
+                assign fallback_title = 'Accessories'
+                assign fallback_handle = 'accessories'
+              when 7
+                assign fallback_title = 'Bundles'
+                assign fallback_handle = 'bundles'
+              when 8
+                assign fallback_title = 'Quizzes'
+                assign fallback_page_handle = 'quizzes'
+              when 9
+                assign fallback_title = 'About'
+                assign fallback_page_handle = 'about'
+            endcase
+
+            if fallback_handle != blank
+              assign fallback_collection = collections[fallback_handle]
+              if fallback_collection != blank
+                assign fallback_url = fallback_collection.url
+              else
+                assign fallback_url = '/collections/' | append: fallback_handle
+              endif
+            endif
+
+            if fallback_page_handle != blank
+              assign fallback_page = pages[fallback_page_handle]
+              if fallback_page != blank
+                assign fallback_url = fallback_page.url
+              else
+                assign fallback_url = '/pages/' | append: fallback_page_handle
+              endif
+            endif
+
+            assign is_current = false
+            if fallback_handle != blank
+              if collection != blank
+                if collection.handle == fallback_handle
+                  assign is_current = true
+                endif
+              endif
+            endif
+            if fallback_page_handle != blank
+              if page != blank
+                if page.handle == fallback_page_handle
+                  assign is_current = true
+                endif
+              endif
+            endif
+            if template.name == 'index'
+              if fallback_index == 1
+                assign is_current = true
+              endif
+            endif
+          %}
+
+          <li
+            role="presentation"
+            class="menu-list__list-item"
           >
-            <span class="menu-list__link-title">{{- link.title -}}</span>
-          </a>
-          {%- if link.links != blank -%}
-            <div class="menu-list__submenu{{ color_scheme_classes }}" ref="submenu[]">
-              <div
-                id="submenu-{{ forloop.index }}"
-                class="menu-list__submenu-inner"
-                style="{% render 'submenu-font-styles', settings: block_settings %}"
-              >
-                {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
-                <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
-                  <div
-                    class="mega-menu__grid"
-                    data-menu-grid-id="{{ list_id }}"
-                  >
-                    {% render 'mega-menu-list',
-                      parent_link: link,
-                      id: list_id,
-                      section: section,
-                      grid_columns_count: 6,
-                      grid_columns_count_tablet: 4,
-                      grid_columns_count_collection_images: 8,
-                      menu_content_type: menu_content_type,
-                      content_aspect_ratio: ratio,
-                      image_border_radius: image_border_radius
-                    %}
+            <a
+              href="{{ fallback_url }}"
+              data-skip-node-update="true"
+              class="menu-list__link{% if is_current %} menu-list__link--active{% endif %}"
+              {% if is_current %}
+                aria-current="page"
+              {% endif %}
+              ref="menuitem"
+            >
+              <span class="menu-list__link-title">{{- fallback_title | escape -}}</span>
+            </a>
+          </li>
+        {% endfor %}
+      {% else %}
+        {% for link in block_settings.menu.links %}
+          <li
+            role="presentation"
+            class="menu-list__list-item"
+            on:focus="/activate"
+            on:blur="/deactivate"
+            on:pointerenter="/activate"
+            on:pointerleave="/deactivate"
+          >
+            <a
+              href="{{ link.url }}"
+              data-skip-node-update="true"
+              class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
+              {%- if link.links != blank -%}
+                aria-controls="submenu-{{ forloop.index }}"
+                aria-haspopup="true"
+                aria-expanded="false"
+              {%- endif -%}
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+              ref="menuitem"
+            >
+              <span class="menu-list__link-title">{{- link.title -}}</span>
+            </a>
+            {%- if link.links != blank -%}
+              <div class="menu-list__submenu{{ color_scheme_classes }}" ref="submenu[]">
+                <div
+                  id="submenu-{{ forloop.index }}"
+                  class="menu-list__submenu-inner"
+                  style="{% render 'submenu-font-styles', settings: block_settings %}"
+                >
+                  {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
+                  <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
+                    <div
+                      class="mega-menu__grid"
+                      data-menu-grid-id="{{ list_id }}"
+                    >
+                      {% render 'mega-menu-list',
+                        parent_link: link,
+                        id: list_id,
+                        section: section,
+                        grid_columns_count: 6,
+                        grid_columns_count_tablet: 4,
+                        grid_columns_count_collection_images: 8,
+                        menu_content_type: menu_content_type,
+                        content_aspect_ratio: ratio,
+                        image_border_radius: image_border_radius
+                      %}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          {%- endif -%}
-        </li>
-      {% endfor %}
+            {%- endif -%}
+          </li>
+        {% endfor %}
+      {% endif %}
       <li
         class="menu-list__list-item"
         role="presentation"
@@ -253,9 +360,27 @@
     height: 100%;
   }
 
+  #header-component[data-ogee-header-menu] .menu-list {
+    --menu-horizontal-gap: 32px;
+    --menu-vertical-gap: 32px;
+    align-items: stretch;
+  }
+
+  #header-component[data-ogee-header-menu] .header-menu,
+  #header-component[data-ogee-header-menu] .header-menu__inner,
+  #header-component[data-ogee-header-menu] .menu-list,
+  #header-component[data-ogee-header-menu] .overflow-menu {
+    height: 100%;
+  }
+
   .menu-list__list {
     display: flex;
     justify-content: var(--grid-area-alignment);
+  }
+
+  #header-component[data-ogee-header-menu] .menu-list__list {
+    align-items: stretch;
+    height: 100%;
   }
 
   .menu-list__list-item {
@@ -264,6 +389,11 @@
     display: flex;
     align-items: center;
     height: 100%;
+  }
+
+  #header-component[data-ogee-header-menu] .menu-list__list-item:not([slot='overflow']) {
+    min-height: 50px;
+    position: relative;
   }
 
   .menu-list__list-item[aria-hidden='true'] {
@@ -310,10 +440,44 @@
     }
   }
 
+  #header-component[data-ogee-header-menu] .menu-list__link {
+    color: #333333;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.3px;
+    line-height: 1.1;
+    position: relative;
+    text-transform: uppercase;
+  }
+
+  #header-component[data-ogee-header-menu] .menu-list__link:hover,
+  #header-component[data-ogee-header-menu] .menu-list__link:focus,
+  #header-component[data-ogee-header-menu] .menu-list__link--active {
+    color: #000000;
+  }
+
+  #header-component[data-ogee-header-menu] .menu-list__link--active {
+    font-weight: 700;
+  }
+
+  #header-component[data-ogee-header-menu] .menu-list__link--active::before {
+    background-color: #000000;
+    bottom: 0;
+    content: '';
+    height: 1px;
+    inset-inline: 0;
+    position: absolute;
+  }
+
   .menu-list__link-title {
     padding-inline: calc(var(--gap-xl) / 2);
   }
   [slot='overflow'] .menu-list__link-title {
+    padding-inline: 0;
+  }
+
+  #header-component[data-ogee-header-menu] .menu-list__link-title,
+  #header-component[data-ogee-header-menu] [slot='overflow'] .menu-list__link-title {
     padding-inline: 0;
   }
 
@@ -356,6 +520,13 @@
 
     gap: 0;
     margin-inline: calc(-1 * var(--menu-horizontal-gap) / 2);
+  }
+
+  #header-component[data-ogee-header-menu] .overflow-menu::part(list) {
+    align-items: stretch;
+    gap: var(--menu-horizontal-gap);
+    height: 100%;
+    margin-inline: 0;
   }
 
   .overflow-menu {
