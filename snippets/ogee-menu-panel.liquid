@@ -56,6 +56,8 @@
       {% render 'ogee-menu-favourites', key: key, settings: settings, limit: 5 %}
     {% when 'quizzes' %}
       {% render 'ogee-menu-quizzes', settings: settings %}
+    {% when 'about' %}
+      {% render 'ogee-menu-about', settings: settings, link: link %}
     {% else %}
       {% for child in panel_links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}
   {% endcase %}

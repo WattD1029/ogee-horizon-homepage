@@ -120,7 +120,12 @@
             "quiz_complexion_title": "Complexion",
             "quiz_complexion_description": "Find the shade that suits your skin tone, to amplify the appearance of flawless, glowing skin.",
             "quiz_contour_title": "Contour",
-            "quiz_contour_description": "Find the three crystal-inspired shades to bronze, blush, and highlight your way to our signature glow."
+            "quiz_contour_description": "Find the three crystal-inspired shades to bronze, blush, and highlight your way to our signature glow.",
+            "about_trigger_url": "/pages/about",
+            "about_1_title": "Our Story",
+            "about_2_title": "Press",
+            "about_3_title": "Ingredients",
+            "about_4_title": "Blog"
           },
           "blocks": {}
         }

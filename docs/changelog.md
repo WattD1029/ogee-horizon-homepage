@@ -87,3 +87,5 @@
 [2026-09-09][IMPLEMENT][bestsellers-menu] Implemented the final Figma two-column favourites/collections variant with native product links, collection counts and editable 250 × 350px image. The 813px centered desktop composition becomes stacked mobile links. Merchant order is authoritative; no invented ranking or duplicate filler.
 
 [2026-09-09][IMPLEMENT][quizzes-menu] Implemented two editable quiz cards with original art: desktop 650px columns/250 × 350px images and mobile 120px image columns. Mobile actions use 44px touch targets. CTA links appear only when a destination is selected or the corresponding existing quiz page resolves; merchant quiz URLs still need confirmation.
+
+[2026-09-09][IMPLEMENT][about-menu] Implemented four editorial tiles with keyboard-equivalent hover treatment and a simple mobile link list. Native menu destinations override individual editor URLs. Missing destinations render readable text without fake links. The source uses checker placeholders for the first three hover images; these remain merchant image settings. Original Blog artwork is included.
