@@ -1,0 +1,7 @@
+{% doc %}
+  Close and search controls repeated on each drawer level for keyboard access.
+{% enddoc %}
+<div class="ogee-drawer__rail">
+  <button type="button" on:click="header-drawer/close" aria-label="{{ 'actions.close' | t }}"><span class="svg-wrapper">{{ 'icon-close.svg' | inline_asset_content }}</span></button>
+  <button type="button" on:click="header-drawer/search" aria-label="{{ 'content.search_input_label' | t }}" aria-haspopup="dialog"><span class="svg-wrapper">{{ 'icon-search.svg' | inline_asset_content }}</span></button>
+</div>

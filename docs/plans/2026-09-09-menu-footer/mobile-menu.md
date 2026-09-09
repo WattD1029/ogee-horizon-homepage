@@ -1,7 +1,7 @@
 ---
 title: "Mobile menu drawer"
 date: 2026-09-09
-status: planned
+status: implemented
 branch: codex/menu-footer-mobile-menu
 base_commit: b845ee7406af4fb33a0499230f1d274715ae107f
 ---
@@ -126,3 +126,9 @@ All area branches begin at the shared planning commit and contain the other plan
 ## Completion boundary
 
 The current request is branches and plans. Future work should deliver this area and its relevant checks as a focused diff. Publishing, store-navigation mutations and external messages are outside this planning task.
+
+## Implementation — 2026-09-09
+
+Implemented the shared three-level drawer with 50px rails, 20px gutters, 50px link rows, 100px product images, one/two promotion states, and existing Horizon disclosure/scroll-lock controls. Fixed repeated Escape, restored focus on Back/close, and restricted Tab cycling to visible controls. Local Chromium tests passed at 320/390/749px and short-height reduced-motion settings. Shopify preview verification remains pending explicit sync approval.
+
+Local Liquid/schema validation passed. Final responsive preview evidence is recorded in the integration report on the mobile-menu branch.
