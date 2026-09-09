@@ -1,0 +1,49 @@
+{% doc %}
+  Two editorial quiz links. Destinations are merchant-selected; no quiz engine is created.
+  @param {object} settings - Header menu settings
+{% enddoc %}
+{% assign quiz_keys = 'complexion,contour' | split: ',' %}
+{% for quiz_key in quiz_keys %}
+  {% liquid
+    assign prefix = 'quiz_' | append: quiz_key
+    assign title_id = prefix | append: '_title'
+    assign description_id = prefix | append: '_description'
+    assign image_id = prefix | append: '_image'
+    assign url_id = prefix | append: '_url'
+    assign page_handle = quiz_key | append: '-quiz'
+    assign quiz_url = settings[url_id] | default: pages[page_handle].url
+    assign image_asset = 'ogee-menu-quiz-' | append: quiz_key | append: '.png'
+  %}
+  <div class="ogee-menu-quiz">
+    {% if settings[image_id] != blank %}{{ settings[image_id] | image_url: width: 750 | image_tag: loading: 'lazy', widths: '250,500,750', sizes: '(max-width:749px) 120px, 250px', class: 'ogee-menu-quiz__image' }}{% else %}<img class="ogee-menu-quiz__image" src="{{ image_asset | asset_url }}" alt="" width="250" height="350" loading="lazy">{% endif %}
+    <div class="ogee-menu-quiz__copy">
+      <span class="ogee-menu-quiz__eyebrow">{{ 'ogee_menu.find_your' | t }}</span>
+      <span class="ogee-menu-quiz__title">{{ settings[title_id] | escape }}</span>
+      <p>{{ settings[description_id] | escape }}</p>
+      {% if quiz_url != blank %}<a class="ogee-menu-quiz__button" href="{{ quiz_url }}">{{ 'ogee_menu.start_quiz' | t }}</a>{% endif %}
+    </div>
+  </div>
+{% endfor %}
+{% stylesheet %}
+  .ogee-menu-panel.ogee-menu-panel--quizzes { padding:0; gap:0; }
+  .ogee-menu-quiz { display:flex; flex:1; min-width:0; gap:24px; padding:32px 50px; align-items:center; }
+  .ogee-menu-quiz+.ogee-menu-quiz { border-left:1px solid #dfdfdf; }
+  .ogee-menu-quiz__image { display:block; width:250px; height:350px; object-fit:cover; flex:none; }
+  .ogee-menu-quiz__copy { flex:1; min-width:0; font-size:12px; font-weight:300; line-height:18px; }
+  .ogee-menu-quiz__eyebrow { display:block; text-transform:uppercase; }
+  .ogee-menu-quiz__title { display:block; font-family:var(--font-heading--family); font-size:20px; font-weight:300; line-height:30px; }
+  .ogee-menu-quiz__copy p { margin:4px 0 16px; }
+  .ogee-menu-quiz__button { display:flex; align-items:center; justify-content:center; min-height:30px; padding:8px 16px; color:#fff; background:#000; font-size:11px; line-height:1.1; text-transform:uppercase; letter-spacing:1.1px; }
+  @media(min-width:750px) and (max-width:1100px) { .ogee-menu-quiz { padding:24px; gap:16px; } .ogee-menu-quiz__image { width:40%; } }
+  [slot='overflow'] .ogee-menu-panel.ogee-menu-panel--quizzes { flex-direction:column; }
+  [slot='overflow'] .ogee-menu-quiz+.ogee-menu-quiz { border-left:0; border-top:1px solid #dfdfdf; }
+  @media(max-width:749px) {
+    .ogee-menu-quiz { padding:0; gap:0; border-bottom:1px solid #dfdfdf; align-items:stretch; }
+    .ogee-menu-quiz+.ogee-menu-quiz { border-left:0; }
+    .ogee-menu-quiz__image { width:120px; height:auto; min-height:190px; object-fit:cover; }
+    .ogee-menu-quiz__copy { padding:20px; font-size:14px; line-height:21px; }
+    .ogee-menu-quiz__title { font-size:18px; line-height:27px; }
+    .ogee-menu-quiz__eyebrow { font-size:12px; line-height:18px; }
+    .ogee-menu-quiz__button { min-height:44px; }
+  }
+{% endstylesheet %}
