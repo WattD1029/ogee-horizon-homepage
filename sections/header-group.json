@@ -111,7 +111,9 @@
             "accessories_trigger_url": "/collections/accessories",
             "accessories_collection": "accessories",
             "bundles_trigger_url": "/collections/bundles",
-            "bundles_collection": "bundles"
+            "bundles_collection": "bundles",
+            "new_trigger_url": "/collections/new",
+            "new_collection": "new"
           },
           "blocks": {}
         }
