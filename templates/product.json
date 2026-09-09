@@ -37,78 +37,25 @@
         "fallback_rating_count": 500
       }
     },
-    "ogee_faq": {
-      "type": "ogee-faq",
-      "blocks": {
-        "faq_item_1": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_2": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_3": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_4": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_5": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        },
-        "faq_item_6": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
-            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-            "open_by_default": false
-          }
-        }
-      },
-      "block_order": [
-        "faq_item_1",
-        "faq_item_2",
-        "faq_item_3",
-        "faq_item_4",
-        "faq_item_5",
-        "faq_item_6"
-      ],
+    "how_to_use": {
+      "type": "how-to-use",
       "settings": {
-        "heading": "FAQ",
+        "media_type": "image",
+        "fallback_image_asset": "how-to-use-poster.jpg",
+        "image_alt": "Model applying an Ogee lip product",
+        "video_loop": false,
+        "video_label": "How to use video",
+        "show_play_icon": true,
+        "video_link": "",
+        "play_label": "Play how to use video",
+        "heading": "How to use",
+        "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",
         "content_width": 1200,
-        "padding_top": 64,
-        "padding_bottom": 64,
-        "mobile_padding_top": 96,
-        "mobile_padding_bottom": 36,
-        "background_color": "#ffffff",
-        "heading_color": "#21272a",
-        "question_color": "#21272a",
-        "answer_color": "#21272a",
-        "divider_color": "#dfdfdf"
+        "mobile_media_height": 350,
+        "color_scheme": "scheme-1",
+        "background_color": "#FAF8F3",
+        "heading_color": "#21272A",
+        "text_color": "#333333"
       }
     },
     "main": {
@@ -371,6 +318,39 @@
         "padding-block-end": 0
       }
     },
+    "result_stats": {
+      "type": "result-stats",
+      "blocks": {
+        "stat_1": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_2": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_3": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_4": {
+          "type": "stat",
+          "settings": {}
+        },
+        "stat_5": {
+          "type": "stat",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "stat_1",
+        "stat_2",
+        "stat_3",
+        "stat_4",
+        "stat_5"
+      ],
+      "settings": {}
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -515,8 +495,9 @@
   },
   "order": [
     "ogee_product_buy",
-    "ogee_faq",
+    "ogee_look_upsell",
     "main",
+    "result_stats",
     "product_recommendations_qggXJq"
   ]
 }
