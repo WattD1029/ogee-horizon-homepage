@@ -3,26 +3,6 @@
   "baseCommit": "b845ee7406af4fb33a0499230f1d274715ae107f",
   "branches": [
     {
-      "branch": "codex/menu-footer-announcement-bar",
-      "plan": "announcement-bar.md",
-      "sourceNodes": [
-        "6054:506",
-        "6054:504",
-        "6054:505",
-        "6067:812",
-        "6067:819",
-        "6074:3019",
-        "6074:3020",
-        "6073:1833",
-        "6073:1920",
-        "6073:1924",
-        "6073:1928"
-      ],
-      "dependencies": [
-        "Coordinate height and sticky offsets with header."
-      ]
-    },
-    {
       "branch": "codex/menu-footer-header",
       "plan": "header.md",
       "sourceNodes": [
@@ -34,7 +14,7 @@
         "6073:1924"
       ],
       "dependencies": [
-        "Coordinate announcement-bar and mobile-menu; settle the shell before all-menu."
+        "Use the completed announcement bar unchanged; coordinate mobile-menu and settle remaining shell integration before all-menu."
       ]
     },
     {
@@ -193,32 +173,18 @@
       "dependencies": [
         "Requires header shell and all-menu configuration contract. Coordinate data with individual panel branches."
       ]
+    }
+  ],
+  "completedAreas": [
+    {
+      "area": "Announcement bar",
+      "status": "completed; excluded from remaining implementation",
+      "existingBranch": "codex/menu-footer-announcement-bar"
     },
     {
-      "branch": "codex/menu-footer-footer",
-      "plan": "footer.md",
-      "sourceNodes": [
-        "6074:3027",
-        "6066:1604",
-        "6066:1780",
-        "6066:1776",
-        "12001:1802",
-        "12001:1818",
-        "6080:3996",
-        "6080:3279",
-        "6080:3471",
-        "6080:3535",
-        "6080:3653",
-        "6080:3739",
-        "6080:3803",
-        "12001:1931",
-        "12001:1946",
-        "6066:1784",
-        "6080:3425"
-      ],
-      "dependencies": [
-        "Independent of menu/header implementation except shared locale-file integration."
-      ]
+      "area": "Footer, newsletter and regional states",
+      "status": "completed; excluded from remaining implementation",
+      "existingBranch": "codex/menu-footer-footer"
     }
   ]
 }

@@ -61,6 +61,8 @@ No new theme files are proposed. Shared snippets introduced by all-menu are depe
 
 `layout/theme.liquid` is an inspection-only mount point. Route templates and global product-card behavior are outside scope. This planning change does not modify any of these implementation files.
 
+The announcement bar and footer are completed and excluded. Header acceptance checks verify compatibility with their existing output; they do not authorize changes to those completed sections.
+
 ## Shopify data and proposed schema
 
 - Keep existing static header-logo/header-menu blocks, menu link_list, search and sticky/transparent settings.
@@ -71,7 +73,7 @@ Proposed setting IDs/types require validation against current Shopify schema lim
 
 ## Smallest viable implementation
 
-1. Document the 62.409px export versus the August 10 68px implementation decision before changing desktop sizing.
+1. Preserve the implemented 68px desktop header and completed announcement-bar dimensions. Use the export to identify remaining mobile/menu integration gaps; do not repeat the delivered desktop header work.
 2. Tune mobile rails/logo/action placement using the newly available mobile frame, retaining adequate touch targets.
 3. Check all menu entries and overflow behavior at intermediate widths; preserve header event/component references.
 
@@ -86,7 +88,7 @@ These are planned acceptance checks, not claims of tested implementation.
 
 ## Dependencies and integration
 
-- Coordinate announcement-bar and mobile-menu; settle the shell before all-menu.
+- Use the completed announcement bar unchanged; coordinate mobile-menu and settle remaining shell integration before all-menu.
 
 All area branches begin at the shared planning commit and contain the other plans for reference. Integrate the listed prerequisite implementations before coding; creating the branches does not create those future changes. Keep shared schema/group/locale edits focused and append an implementation changelog entry when work is delivered.
 

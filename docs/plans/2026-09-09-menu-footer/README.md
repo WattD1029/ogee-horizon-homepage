@@ -1,6 +1,12 @@
-# Ogee menu and footer — Compound Engineering plans
+# Ogee remaining menu work — Compound Engineering plans
 
-Status: planning only. Thirteen functional areas each have a local feature branch and plan. Existing implementation branches are preserved; new names use `codex/menu-footer-*` for this export-based planning pass.
+Status: planning only. Eleven remaining functional areas each have a local feature branch and plan. Existing implementation branches are preserved; new names use `codex/menu-footer-*` for this export-based planning pass.
+
+## Completed work excluded
+
+The announcement bar and footer are complete, as confirmed by the user. Their implementation plans and active branch-list entries have been removed. Preserve their existing behavior, dimensions and settings; references in the source inventory and prior solutions are historical context only. Existing branches are retained.
+
+~~Plan announcement-bar and footer implementation from this export.~~ Superseded by the user’s completion confirmation. Remaining header work must reuse the completed announcement bar, with no height change or newsletter/regional-footer work.
 
 ## Source and provenance
 
@@ -15,7 +21,6 @@ Status: planning only. Thirteen functional areas each have a local feature branc
 
 | Area | Local branch | Plan |
 | --- | --- | --- |
-| Announcement bar | `codex/menu-footer-announcement-bar` | [announcement-bar](announcement-bar.md) |
 | Header and utility actions | `codex/menu-footer-header` | [header](header.md) |
 | All products menu and shared panel contract | `codex/menu-footer-all-menu` | [all-menu](all-menu.md) |
 | Makeup mega menu | `codex/menu-footer-makeup-menu` | [makeup-menu](makeup-menu.md) |
@@ -27,15 +32,14 @@ Status: planning only. Thirteen functional areas each have a local feature branc
 | Quizzes mega menu | `codex/menu-footer-quizzes-menu` | [quizzes-menu](quizzes-menu.md) |
 | About mega menu | `codex/menu-footer-about-menu` | [about-menu](about-menu.md) |
 | Mobile menu drawer | `codex/menu-footer-mobile-menu` | [mobile-menu](mobile-menu.md) |
-| Footer, newsletter and regional states | `codex/menu-footer-footer` | [footer](footer.md) |
 
 ## Grouping and design revisions
 
 Figma SECTION containers mix components, device variants and revision boards. Functional areas receive branches; alternative artboards stay in their owning plan.
 
-- `6074:3024` (Announcement bar, Header & Mega Menu) and `6080:3998` (mobile Announcement bar & Header), including single/multi-message sections, map to announcement-bar, header and catalog panels.
+- `6074:3024` (Announcement bar, Header & Mega Menu) and `6080:3998` (mobile Announcement bar & Header) provide header/catalog context. Their announcement-bar states are completed and excluded.
 - `6074:3022` (Menu Drawer) maps to mobile-menu; each panel plan also records its corresponding mobile frames.
-- `6074:3027` and `6080:3996` (desktop/mobile Footer) map to footer, including regional, newsletter and accordion states.
+- `6074:3027` and `6080:3996` (desktop/mobile Footer), including regional, newsletter and accordion states, are completed and excluded.
 - `12855:2420` (250325), `12855:2421` (080425), `12877:2591` (160425) and `12904:916` (2500422) map to New, Bestsellers, Quizzes and About. Names are literal labels, not verified approval dates.
 - Element sets (icons, desktop/mobile links, product-card V1/V2, promotions and image-menu tabs) are dependencies. Cover, separator pages, connectors and mockup-size labels require no feature branch.
 
@@ -43,16 +47,16 @@ Later revision-board frames are provisional candidates for New/Bestsellers/Quizz
 
 ## Desktop and mobile dimensions
 
-Every plan includes a measured-dimensions table from the decoded export. Distinguish full artboard dimensions from the actual panel or component height. Desktop mockups are generally 1920 x 1080; mobile mockups generally 390 x 844, with footer expanded states using other heights.
+Every plan includes a measured-dimensions table from the decoded export. Distinguish full artboard dimensions from the actual panel or component height. Desktop mockups are generally 1920 x 1080; mobile mockups generally 390 x 844.
 
-The dimension checks are mandatory acceptance criteria: capture desktop at 1920px and mobile at 390px, verify panel/header/newsletter height, horizontal rail/gutters, image size/aspect ratio, spacing, type and expanded-state content. Check 320px mobile and 768/1024px tablet behavior too. No dedicated tablet source was found, so intermediate behavior is inferred and must be tested.
+The dimension checks are mandatory acceptance criteria: capture desktop at 1920px and mobile at 390px, verify panel/header height, horizontal rail/gutters, image size/aspect ratio, spacing, type and expanded-state content. Check 320px mobile and 768/1024px tablet behavior too. No dedicated tablet source was found, so intermediate behavior is inferred and must be tested.
 
 Source conflicts need explicit decisions:
 
 - Header: approximately 62.409px desktop in this export versus the implemented 68px height deliberately recorded August 10. Mobile export: 50px. Do not silently overwrite the newer behavior.
-- Announcement: 32px export versus current 44px implementation and earlier solution.
+- Announcement: retain the completed 44px implementation. The 32px export is historical context and does not reopen this work.
 - Quizzes and New/Bestsellers: multiple revision geometries; choose one revision consistently.
-- Footer: desktop newsletter 88px; mobile default 160px and completed candidate 189px. Heights must accommodate native errors and long translated content.
+- Footer and newsletter dimensions are outside the remaining work; preserve the completed implementation.
 
 Dimensions were checked from the supplied schema. No browser render or pixel comparison has been claimed.
 
@@ -70,7 +74,7 @@ Existing untracked files are not part of this documentation change.
 
 ## Shared implementation contract
 
-1. Header owns shell/actions. All-menu owns shared panel dispatch/settings and proposed panel/promo/product-card snippets. Other panels consume that interface; mobile-menu owns drawer state/layout using the same data. Footer is independent.
+1. Header owns shell/actions. All-menu owns shared panel dispatch/settings and proposed panel/promo/product-card snippets. Other panels consume that interface; mobile-menu owns drawer state/layout using the same data. The completed announcement bar and footer are outside implementation scope.
 2. The existing static `_header-menu` exposes no repeatable child schema. Start with focused panel settings and explicit trigger URLs, avoiding translated-title dispatch. Audit total Shopify setting limits before finalizing all groups; revise the data architecture before coding if it would be invalid.
 3. Use native navigation and resource settings. No custom data definitions are required initially. Artwork counts, prices, products, badges, addresses and destinations are sample content.
 4. New reusable snippets need LiquidDoc and explicit parameters. Keep CSS/JS scoped and retain component refs, hydration, observers/listener cleanup, scroll-lock, focus and failure fallbacks.
@@ -82,13 +86,13 @@ Official references checked: [Shopify navigation](https://shopify.dev/docs/store
 
 ## Implementation order
 
-1. Reconcile announcement/header sizing and land compatible shell changes.
+1. Reuse the existing header and completed announcement bar; address only remaining header/mobile-menu integration gaps.
 2. Implement all-menu and settle the shared configuration/rendering interfaces.
 3. Implement Makeup, Skincare, Accessories and Bundles, then New, Bestsellers, Quizzes and About. Integrate shared schema/group/locales edits in sequence.
 4. Implement mobile-menu against the settled contract and exercise every panel transition.
-5. Footer can proceed independently, coordinating locale edits.
 
-All thirteen branches start at the shared documentation commit on `codex/menu-footer-compound-plans`. Every branch contains the other plans for reference. No existing branch is reset and no branch is pushed. Integrate/rebase prerequisites before starting dependent implementation. [branches.json](branches.json) records ownership and source nodes.
+
+The eleven active branches share the revised documentation from `codex/menu-footer-compound-plans`. They contain the remaining plans for reference. The two completed-area branches are preserved outside the active plan. No branch is pushed. Integrate/rebase prerequisites before starting dependent implementation. [branches.json](branches.json) records ownership and source nodes.
 
 ## Verification plan
 
@@ -99,6 +103,6 @@ During implementation:
 - Check measured desktop/mobile geometry at reference sizes; additionally test 320px mobile, 768/1024px tablet, short landscape and the 749/750px boundary.
 - Check keyboard/focus, Escape/Back, reduced motion, scroll restoration, pointer transitions, long localized strings, missing assets/resources and deferred-render failures.
 - No automated test/spec suite or package manifest was found. For future behavior changes establish focused Playwright coverage with mobile/tablet/desktop projects and preserve screenshots/videos. Record artifacts and unavailable checks honestly.
-- Footer: verify newsletter errors/success and regional changes. Header: verify search/account/cart and collection sticky toolbar interactions. Menus: verify all panels, third levels, overflow and reconnect cleanup.
+- Header: verify search/account/cart and collection sticky toolbar interactions against the unchanged announcement bar. Menus: verify all panels, third levels, overflow and reconnect cleanup. Completed footer functionality is not a new acceptance deliverable.
 
-Planning verification: every referenced node and existing file must resolve; each branch must map uniquely to a plan; all thirteen branches must contain the planning commit; only new plan documents and the appended changelog entry are committed.
+Planning verification: every referenced node and existing file must resolve; each branch must map uniquely to a plan; all eleven active branches must contain the revised planning commit; only new plan documents and the appended changelog entry are committed.
