@@ -1,0 +1,224 @@
+{
+  "planningBranch": "codex/menu-footer-compound-plans",
+  "baseCommit": "b845ee7406af4fb33a0499230f1d274715ae107f",
+  "branches": [
+    {
+      "branch": "codex/menu-footer-announcement-bar",
+      "plan": "announcement-bar.md",
+      "sourceNodes": [
+        "6054:506",
+        "6054:504",
+        "6054:505",
+        "6067:812",
+        "6067:819",
+        "6074:3019",
+        "6074:3020",
+        "6073:1833",
+        "6073:1920",
+        "6073:1924",
+        "6073:1928"
+      ],
+      "dependencies": [
+        "Coordinate height and sticky offsets with header."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-header",
+      "plan": "header.md",
+      "sourceNodes": [
+        "6054:521",
+        "6067:939",
+        "12644:2195",
+        "6054:355",
+        "6073:1833",
+        "6073:1924"
+      ],
+      "dependencies": [
+        "Coordinate announcement-bar and mobile-menu; settle the shell before all-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-all-menu",
+      "plan": "all-menu.md",
+      "sourceNodes": [
+        "6057:1464",
+        "6057:1522",
+        "12342:1633",
+        "6057:1468",
+        "6073:1857"
+      ],
+      "dependencies": [
+        "Depends on header shell. Owns shared interfaces for eight other panel plans and mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-makeup-menu",
+      "plan": "makeup-menu.md",
+      "sourceNodes": [
+        "6057:1580",
+        "6057:1584",
+        "6073:1870",
+        "6073:1885"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-skincare-menu",
+      "plan": "skincare-menu.md",
+      "sourceNodes": [
+        "6057:1672",
+        "6057:1676",
+        "12342:1795",
+        "6073:2162",
+        "6073:2490"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-accessories-menu",
+      "plan": "accessories-menu.md",
+      "sourceNodes": [
+        "6057:1625",
+        "6057:1629",
+        "6073:2261",
+        "6073:2609"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-bundles-menu",
+      "plan": "bundles-menu.md",
+      "sourceNodes": [
+        "6057:1607",
+        "6057:1611",
+        "6073:2371",
+        "6073:2718"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-new-menu",
+      "plan": "new-menu.md",
+      "sourceNodes": [
+        "12904:917",
+        "12904:921",
+        "12877:2592",
+        "12855:2422",
+        "12644:2192",
+        "12644:2863"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-bestsellers-menu",
+      "plan": "bestsellers-menu.md",
+      "sourceNodes": [
+        "12904:934",
+        "12904:938",
+        "12877:2609",
+        "12855:2439",
+        "12644:2912",
+        "12644:2570"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-quizzes-menu",
+      "plan": "quizzes-menu.md",
+      "sourceNodes": [
+        "12904:953",
+        "12904:957",
+        "12877:2628",
+        "12855:3102",
+        "6057:1644",
+        "12342:1966",
+        "6074:2813"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-about-menu",
+      "plan": "about-menu.md",
+      "sourceNodes": [
+        "12644:2259",
+        "12644:3099",
+        "12644:3174",
+        "12644:3246",
+        "12644:3322",
+        "12644:3326",
+        "12644:2673",
+        "12644:3061"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-mobile-menu",
+      "plan": "mobile-menu.md",
+      "sourceNodes": [
+        "6074:3022",
+        "6073:1837",
+        "6073:1903",
+        "6073:1857",
+        "6073:1870",
+        "6073:1885",
+        "6073:2162",
+        "6073:2490",
+        "6073:2261",
+        "6073:2609",
+        "6073:2371",
+        "6073:2718",
+        "6074:2813",
+        "12644:2547",
+        "12644:2570",
+        "12644:2673",
+        "12644:2863",
+        "6054:521"
+      ],
+      "dependencies": [
+        "Requires header shell and all-menu configuration contract. Coordinate data with individual panel branches."
+      ]
+    },
+    {
+      "branch": "codex/menu-footer-footer",
+      "plan": "footer.md",
+      "sourceNodes": [
+        "6074:3027",
+        "6066:1604",
+        "6066:1780",
+        "6066:1776",
+        "12001:1802",
+        "12001:1818",
+        "6080:3996",
+        "6080:3279",
+        "6080:3471",
+        "6080:3535",
+        "6080:3653",
+        "6080:3739",
+        "6080:3803",
+        "12001:1931",
+        "12001:1946",
+        "6066:1784",
+        "6080:3425"
+      ],
+      "dependencies": [
+        "Independent of menu/header implementation except shared locale-file integration."
+      ]
+    }
+  ]
+}
