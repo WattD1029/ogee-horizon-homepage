@@ -103,7 +103,9 @@
             "drawer_accordion_expand_first": false,
             "drawer_dividers": false,
             "ogee_panels_enabled": true,
-            "all_trigger_url": "/collections/all"
+            "all_trigger_url": "/collections/all",
+            "makeup_trigger_url": "/collections/makeup",
+            "makeup_collection": "makeup"
           },
           "blocks": {}
         }
