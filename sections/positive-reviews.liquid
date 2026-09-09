@@ -1,0 +1,362 @@
+{%- liquid
+  assign section_settings = section.settings
+  assign product_resource = product
+  assign heading_id = 'PositiveReviewsLabel-' | append: section.id
+
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+
+  assign review_metric = ''
+  assign review_label = ''
+  assign review_quote = ''
+  assign review_author = ''
+
+  if product_resource != blank
+    assign review_metric = product_resource.metafields.custom.positive_reviews_metric.value
+    assign review_label = product_resource.metafields.custom.positive_reviews_label.value
+    assign review_quote = product_resource.metafields.custom.positive_review_quote.value
+    assign review_author = product_resource.metafields.custom.positive_review_author.value
+  endif
+
+  if review_metric == blank
+    assign review_metric = section_settings.metric_fallback
+  endif
+  if review_label == blank
+    assign review_label = section_settings.label_fallback
+  endif
+  if review_quote == blank
+    assign review_quote = section_settings.quote_fallback
+  endif
+  if review_author == blank
+    assign review_author = section_settings.author_fallback
+  endif
+
+  assign has_positive_reviews_content = false
+  if review_metric != blank
+    assign has_positive_reviews_content = true
+  endif
+  if review_label != blank
+    assign has_positive_reviews_content = true
+  endif
+  if review_quote != blank
+    assign has_positive_reviews_content = true
+  endif
+  if review_author != blank
+    assign has_positive_reviews_content = true
+  endif
+-%}
+
+{%- if has_positive_reviews_content -%}
+  <section
+    class="positive-reviews color-{{ section_settings.color_scheme }}"
+    style="
+      --positive-reviews-content-width: {{ section_settings.content_width }}px;
+      --positive-reviews-padding-top: {{ section_settings.padding_top }}px;
+      --positive-reviews-padding-bottom: {{ section_settings.padding_bottom }}px;
+      --positive-reviews-padding-top-mobile: {{ section_settings.padding_top_mobile }}px;
+      --positive-reviews-padding-bottom-mobile: {{ section_settings.padding_bottom_mobile }}px;
+      --positive-reviews-card-background: {{ section_settings.card_background }};
+      --positive-reviews-card-text: {{ section_settings.card_text_color }};
+      --positive-reviews-label-color: {{ section_settings.label_color }};
+    "
+    {% if review_label != blank %}
+      aria-labelledby="{{ heading_id }}"
+    {% endif %}
+  >
+    <div class="positive-reviews__inner">
+      {%- if review_metric != blank or review_label != blank -%}
+        <div class="positive-reviews__summary">
+          {%- if review_metric != blank -%}
+            <p class="positive-reviews__metric">{{ review_metric | escape }}</p>
+          {%- endif -%}
+
+          {%- if review_label != blank -%}
+            <h2 id="{{ heading_id }}" class="positive-reviews__label">{{ review_label | escape }}</h2>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if review_quote != blank or review_author != blank -%}
+        <figure class="positive-reviews__quote-card">
+          {%- if review_quote != blank -%}
+            <blockquote class="positive-reviews__quote">
+              <p>{{ review_quote | escape | newline_to_br }}</p>
+            </blockquote>
+          {%- endif -%}
+
+          {%- if review_author != blank -%}
+            <figcaption class="positive-reviews__author">{{ review_author | escape }}</figcaption>
+          {%- endif -%}
+        </figure>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% stylesheet %}
+  .positive-reviews {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  .positive-reviews__inner {
+    width: min(var(--positive-reviews-content-width), calc(100vw - 40px));
+    margin-inline: auto;
+    padding-block: var(--positive-reviews-padding-top) var(--positive-reviews-padding-bottom);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+  }
+
+  .positive-reviews__summary {
+    width: min(350px, 100%);
+    flex: 0 0 min(350px, 32%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .positive-reviews__metric,
+  .positive-reviews__label,
+  .positive-reviews__quote,
+  .positive-reviews__quote p,
+  .positive-reviews__author {
+    margin: 0;
+  }
+
+  .positive-reviews__metric {
+    max-width: 100%;
+    color: var(--color-foreground);
+    font-family: 'Times New Roman', Times, var(--font-heading--family), serif;
+    font-size: 80px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+    text-transform: capitalize;
+  }
+
+  .positive-reviews__label {
+    max-width: 100%;
+    color: var(--positive-reviews-label-color);
+    font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+    text-transform: uppercase;
+  }
+
+  .positive-reviews__quote-card {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    background: var(--positive-reviews-card-background);
+    color: var(--positive-reviews-card-text);
+    font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-body--family), sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .positive-reviews__quote {
+    width: min(100%, 620px);
+    color: inherit;
+  }
+
+  .positive-reviews__author {
+    max-width: 100%;
+    color: inherit;
+    overflow-wrap: anywhere;
+  }
+
+  @media screen and (max-width: 989px) {
+    .positive-reviews__inner {
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .positive-reviews__summary,
+    .positive-reviews__quote-card {
+      width: 100%;
+    }
+
+    .positive-reviews__summary {
+      flex-basis: auto;
+    }
+
+    .positive-reviews__metric {
+      font-size: 48px;
+      line-height: 1;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .positive-reviews__inner {
+      width: 100%;
+      padding: var(--positive-reviews-padding-top-mobile) 20px var(--positive-reviews-padding-bottom-mobile);
+      gap: 24px;
+    }
+
+    .positive-reviews__metric {
+      font-size: 32px;
+      line-height: 0.8;
+    }
+
+    .positive-reviews__label {
+      font-size: 12px;
+    }
+
+    .positive-reviews__quote-card {
+      padding: 16px;
+      gap: 16px;
+      font-size: 14px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Positive reviews",
+  "tag": "section",
+  "class": "positive-reviews-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Reads product metafields custom.positive_reviews_metric, custom.positive_reviews_label, custom.positive_review_quote, and custom.positive_review_author before using these fallbacks."
+    },
+    {
+      "type": "header",
+      "content": "Fallback content"
+    },
+    {
+      "type": "text",
+      "id": "metric_fallback",
+      "label": "Metric fallback",
+      "default": "30,000+"
+    },
+    {
+      "type": "text",
+      "id": "label_fallback",
+      "label": "Label fallback",
+      "default": "Positive reviews"
+    },
+    {
+      "type": "textarea",
+      "id": "quote_fallback",
+      "label": "Quote fallback",
+      "default": "\"It evens out my skin tone and is so lightweight I forget I'm even wearing it. It stayed on all day.\""
+    },
+    {
+      "type": "text",
+      "id": "author_fallback",
+      "label": "Author fallback",
+      "default": "Katie F."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label",
+      "default": "#21272a"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Quote card background",
+      "default": "#faf8f3"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Quote card text",
+      "default": "#333333"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Positive reviews"
+    }
+  ]
+}
+{% endschema %}

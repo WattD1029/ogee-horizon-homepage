@@ -9,6 +9,14 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-08-01][PLAN] Planned a full PDP customer reviews widget section matching the Ogee desktop and mobile Figma review layouts, with summary metrics, filters, sorting, review rows, and Shopify-safe fallback content.
+[2026-08-01][IMPLEMENT] Added `sections/ogee-customer-reviews.liquid` with aggregate review summary, rating histogram, effect scale, filter/sort controls, seeded review blocks, and show-more behavior.
+[2026-08-01][IMPLEMENT] Wired the Ogee customer reviews section into `templates/product.json` after the custom product buy section with six PDP review blocks matching the Figma reference content.
+[2026-08-01][FIX] Added a hidden fallback heading and synchronized dynamic aggregate counts so blank visual headings and product review metafields remain accessible and internally consistent.
+[2026-08-01][REVIEW] Compound review found no remaining blocking issues after the hidden-heading and dynamic-count fixes; residual risk is live Shopify preview/pixel tuning and real reviews-provider integration.
+[2026-08-01][VERIFY] Ran Shopify Liquid validation on the reviews section and product template, embedded JavaScript syntax check, and `git diff --check`; all passed, with validator docs loaded from cache after a network fetch miss.
+[2026-08-01][COMPOUND] Captured the reusable Figma PDP reviews widget pattern in `docs/solutions/design-patterns/2026-08-01-figma-pdp-customer-reviews-widget-section.md`.
+[2026-08-01][FIX] Changed the reviews section fallback review count from a 0-5000 range setting to text so Shopify upload accepts the schema's 101-step range limit.
 [2026-08-03][PLAN] Planned the CLP intro hero from Figma desktop and mobile nodes, targeting the collection template heading above `main-collection` with responsive Ogee typography, collection-backed title/description content, and preview verification across desktop, tablet, and mobile.
 [2026-08-03][IMPLEMENT] Added `sections/clp-intro.liquid` and wired it into `templates/collection.json` above `main-collection` so the collection page shows the Figma CLP intro with scoped Ogee typography.
 [2026-08-03][REVIEW] Compound review tightened the placeholder description fallback to the `all` collection handle so lorem copy does not leak to other blank-description collection pages.
@@ -69,3 +77,10 @@
 [2026-08-07][FIX] Added an `all` collection fallback so the recently viewed rail still renders product cards when no local recently viewed IDs are available.
 [2026-08-07][FIX] Rendered the `all` collection fallback directly in `main-collection` so recently viewed product cards appear before client-side section rendering runs.
 [2026-08-07][FIX] Matched nested recently viewed product media slideshow backgrounds to the card media color so mobile does not show a white strip inside product imagery.
+[2026-08-10][PLAN] Planned the Ogee header menu redesign from the desktop Figma node, targeting the existing Horizon header, logo, menu, search, account, cart, and drawer primitives with the Figma-provided logo asset and inferred mobile behavior.
+[2026-08-10][IMPLEMENT] Implemented the Ogee header menu pass on Horizon primitives with the committed Figma logo asset, scoped desktop header/menu/action styling, centered navigation defaults, icon-only actions, and a full-width bordered header group.
+[2026-08-10][REVIEW] Compound review found and fixed one issue: 24px action icon sizing originally leaked into mobile touch targets, so those overrides are now desktop/tablet-only.
+[2026-08-10][VERIFY] Parsed changed header JSON and Liquid schema blocks, verified the Figma logo asset dimensions, and ran `git diff --check`; the local Shopify validator remains blocked by a missing `@shopify/theme-check-common` dependency.
+[2026-08-10][COMPOUND] Captured the reusable Figma header-on-Horizon-primitives pattern in `docs/solutions/design-patterns/2026-08-10-figma-header-menu-on-horizon-primitives.md`.
+[2026-08-10][FIX] Matched the provided screenshot by raising the Ogee header rail to 68px, removing scoped top-edge chrome, and adding a fallback Ogee nav when the selected Shopify menu is still the default `Home|Catalog|Contact|` dev menu.
+[2026-08-10][VERIFY] Re-ran Shopify docs search, parsed changed JSON and Liquid schema blocks, ran `git diff --check`, and re-attempted the Shopify validator; validation remains blocked by the missing `@shopify/theme-check-common` dependency.

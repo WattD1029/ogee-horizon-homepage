@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "ogee_product_buy": {
       "type": "ogee-product-buy",
@@ -32,14 +32,133 @@
         "benefits_fallback": "",
         "shipping_returns_fallback": "",
         "press_quote": "Making its way into the hearts of skincare fanatics.",
-        "press_logo": "",
         "fallback_rating": 5,
         "fallback_rating_count": 500
       }
     },
+    "ogee_look_upsell": {
+      "type": "ogee-look-upsell",
+      "settings": {
+        "heading": "Complete The Look",
+        "products": [],
+        "fallback_product_handles": "complexion-perfecting-concealer,sculpted-complexion-foundation-stick,complexion-perfecting-tinted-serum,skin-enhancing-primer-spf-40",
+        "discount_percent": 20,
+        "offer_prefix": "Add all to cart with",
+        "offer_suffix": "off",
+        "add_all_label": "Add all [count] to cart",
+        "add_to_cart_label": "Add to cart",
+        "select_options_label": "Select shade",
+        "sold_out_label": "Sold out",
+        "adding_label": "Adding...",
+        "added_label": "Added",
+        "error_text": "Unable to add products to cart.",
+        "empty_text": "Choose up to four products for this upsell.",
+        "checkbox_label": "Include [product]",
+        "background_color": "#faf8f3",
+        "text_color": "#000000",
+        "muted_text_color": "#646464",
+        "border_color": "#dfdfdf",
+        "image_background_color": "#f1f1f1",
+        "button_background": "#000000",
+        "button_text_color": "#ffffff",
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 40
+      }
+    },
+    "plant_derived_ingredients_AFPkrY": {
+      "type": "plant-derived-ingredients",
+      "blocks": {
+        "plant_ingredient_card_GjwUXt": {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "butterfly_bush",
+            "image_position": "center center",
+            "image_alt": "",
+            "metric": "60%",
+            "title": "BUTTERFLY BUSH EXTRACT",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          },
+          "blocks": {}
+        },
+        "plant_ingredient_card_LMP7QL": {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "yellow_flower",
+            "image_position": "center center",
+            "image_alt": "",
+            "metric": "",
+            "title": "LOREM IPSUM DOLOR SIT AMET",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          },
+          "blocks": {}
+        },
+        "plant_ingredient_card_MJYTU8": {
+          "type": "_plant-ingredient-card",
+          "settings": {
+            "bundled_image": "white_flower",
+            "image_position": "center center",
+            "image_alt": "",
+            "metric": "",
+            "title": "ONSECTETUR ADIPISCING ELIT",
+            "body": "Powerful antioxidants help to strengthen and regenerate skin cells, protecting against signs of aging."
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "plant_ingredient_card_GjwUXt",
+        "plant_ingredient_card_LMP7QL",
+        "plant_ingredient_card_MJYTU8"
+      ],
+      "name": "Plant-derived ingredients",
+      "settings": {
+        "heading": "Powered By High-Performance\nPlant-Derived Ingredients",
+        "description": "Each powerhouse product is formulated with science-backed benefits, sustainably sourced ingredients, and naturally derived alternatives, while avoiding plastics, silicones, petroleum, synthetic fragrances, harmful chemicals, and artificial additives.",
+        "color_scheme": "",
+        "background_color": "#ffffff",
+        "heading_color": "#000000",
+        "text_color": "#646464",
+        "card_text_color": "#ffffff",
+        "overlay_color": "#000000b3",
+        "progress_color": "#333333",
+        "progress_muted_color": "#00000033",
+        "desktop_content_width": 1200,
+        "heading_width": 588,
+        "desktop_card_height": 400,
+        "mobile_card_width": 350,
+        "mobile_card_height": 350,
+        "desktop_gap": 8,
+        "mobile_gap": 4,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
+    "beyond_clean_certification_4WhziD": {
+      "type": "beyond-clean-certification",
+      "name": "Clean certification",
+      "settings": {
+        "heading": "Uncompromising Standards\nThat Go Beyond Clean Beauty.",
+        "text": "We are committed to creating the ultimate certified organic collection of high-performance, multifunctional beauty. Our renowned NSF certification ensures that we adhere to the most stringent standards: utilizing a minimum percentage of 70% organic ingredients; the highest percentage in personal care.",
+        "media_asset": "ogee-certification-media.png",
+        "media_alt": "",
+        "seals_asset": "ogee-certification-seals.png",
+        "seals_alt": "Contains organic ingredients, cruelty-free, not tested on animals, Organic Farming Research Foundation",
+        "desktop_content_width": 1200,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "background_color": "#f9f8f3",
+        "heading_color": "#202426",
+        "text_color": "#414141"
+      }
+    },
     "main": {
       "type": "product-information",
-      "disabled": true,
       "blocks": {
         "media-gallery": {
           "type": "_product-media-gallery",
@@ -54,6 +173,7 @@
             "slideshow_mobile_controls_style": "dots",
             "thumbnail_position": "right",
             "thumbnail_width": 44,
+            "thumbnail_radius": 0,
             "aspect_ratio": "adapt",
             "constrain_to_viewport": true,
             "media_fit": "contain",
@@ -100,8 +220,6 @@
               "type": "group",
               "name": "Header",
               "settings": {
-                "link": "",
-                "open_in_new_tab": false,
                 "content_direction": "column",
                 "vertical_on_mobile": true,
                 "horizontal_alignment": "flex-start",
@@ -125,11 +243,13 @@
                 "border_width": 1,
                 "border_opacity": 100,
                 "border_radius": 0,
-                "placeholder": "",
                 "toggle_overlay": false,
                 "overlay_color": "#00000026",
                 "overlay_style": "solid",
                 "gradient_direction": "to top",
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -286,15 +406,260 @@
           ]
         }
       },
+      "disabled": true,
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",
         "equal_columns": false,
         "limit_details_width": false,
         "gap": 48,
+        "enable_sticky_add_to_cart": true,
         "color_scheme": "",
         "padding-block-start": 0,
         "padding-block-end": 0
+      }
+    },
+    "ogee_faq_knKyeR": {
+      "type": "ogee-faq",
+      "blocks": {
+        "faq_item_eeTH7y": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_4xWtfk": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_prJmfC": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_9qDnc4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_rFkTTM": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        },
+        "faq_item_pLNiX4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed?",
+            "answer": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
+            "open_by_default": false
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_eeTH7y",
+        "faq_item_4xWtfk",
+        "faq_item_prJmfC",
+        "faq_item_9qDnc4",
+        "faq_item_rFkTTM",
+        "faq_item_pLNiX4"
+      ],
+      "name": "Ogee FAQ",
+      "settings": {
+        "heading": "FAQ",
+        "content_width": 1200,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 96,
+        "mobile_padding_bottom": 36,
+        "background_color": "#ffffff",
+        "heading_color": "#21272a",
+        "question_color": "#21272a",
+        "answer_color": "#21272a",
+        "divider_color": "#dfdfdf"
+      }
+    },
+    "how_to_use_KURqN9": {
+      "type": "how-to-use",
+      "name": "How to use",
+      "settings": {
+        "media_type": "image",
+        "fallback_image_asset": "how-to-use-poster.jpg",
+        "image_alt": "Model applying an Ogee lip product",
+        "video_loop": false,
+        "video_label": "How to use video",
+        "show_play_icon": true,
+        "video_link": "",
+        "play_label": "Play how to use video",
+        "heading": "How to use",
+        "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",
+        "content_width": 1200,
+        "mobile_media_height": 350,
+        "color_scheme": "",
+        "background_color": "#faf8f3",
+        "heading_color": "#21272a",
+        "text_color": "#333333"
+      }
+    },
+    "result_stats": {
+      "type": "result-stats",
+      "blocks": {
+        "stat_1": {
+          "type": "stat",
+          "settings": {
+            "image_alt": "Model wearing Ogee makeup",
+            "title": "99% Agreed",
+            "text": "Id eros pellentesque facilisi id mollis faucibus commodo enim."
+          }
+        },
+        "stat_2": {
+          "type": "stat",
+          "settings": {
+            "image_alt": "Model wearing Ogee makeup",
+            "title": "99% Agreed",
+            "text": "Id eros pellentesque facilisi id mollis faucibus commodo enim."
+          }
+        },
+        "stat_3": {
+          "type": "stat",
+          "settings": {
+            "image_alt": "Model wearing Ogee makeup",
+            "title": "99% Agreed",
+            "text": "Id eros pellentesque facilisi id mollis faucibus commodo enim."
+          }
+        },
+        "stat_4": {
+          "type": "stat",
+          "settings": {
+            "image_alt": "Model wearing Ogee makeup",
+            "title": "99% Agreed",
+            "text": "Id eros pellentesque facilisi id mollis faucibus commodo enim."
+          }
+        },
+        "stat_5": {
+          "type": "stat",
+          "settings": {
+            "image_alt": "Model wearing Ogee makeup",
+            "title": "99% Agreed",
+            "text": "Id eros pellentesque facilisi id mollis faucibus commodo enim."
+          }
+        }
+      },
+      "block_order": [
+        "stat_1",
+        "stat_2",
+        "stat_3",
+        "stat_4",
+        "stat_5"
+      ],
+      "settings": {
+        "heading": "Results",
+        "description": "Rhoncus morbi et augue nec, in id ullamcorper at sit. Condimentum sit nunc in eros scelerisque sed.",
+        "carousel_label": "Product results statistics",
+        "desktop_content_width": 1200,
+        "cards_visible_desktop": 4,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "background_color": "#ffffff",
+        "text_color": "#21272a",
+        "muted_text_color": "#333333",
+        "border_color": "#dde1e6",
+        "progress_color": "#333333",
+        "progress_muted_color": "#cccccc"
+      }
+    },
+    "shop_social_media_VxVw6T": {
+      "type": "shop-social-media",
+      "blocks": {
+        "post_MiHnNF": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": true
+          }
+        },
+        "post_4aLbcE": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_YcKe7X": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_Hd6RMT": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "eye_balm",
+            "alt_text": "A customer holding Ogee Brightening Botanical Eye Balm.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        },
+        "post_nQUnTF": {
+          "type": "post",
+          "settings": {
+            "fallback_image": "products",
+            "alt_text": "Ogee makeup products arranged on a wooden table.",
+            "link": "",
+            "open_in_new_tab": true,
+            "show_overlay": false
+          }
+        }
+      },
+      "block_order": [
+        "post_MiHnNF",
+        "post_4aLbcE",
+        "post_YcKe7X",
+        "post_Hd6RMT",
+        "post_nQUnTF"
+      ],
+      "name": "Shop social media",
+      "settings": {
+        "heading": "Shop @Ogee",
+        "subheading": "# BeyoundCleanBeauty",
+        "button_label": "Shop",
+        "default_link": "https://www.instagram.com/ogee/",
+        "background_color": "#faf8f3",
+        "text_color": "#21272a",
+        "rail_color": "#333333",
+        "show_arrows": true,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
       }
     },
     "product_recommendations_qggXJq": {
@@ -437,11 +802,38 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "positive_reviews_6WPUHr": {
+      "type": "positive-reviews",
+      "name": "Positive reviews",
+      "settings": {
+        "metric_fallback": "30,000+",
+        "label_fallback": "Positive reviews",
+        "quote_fallback": "\"It evens out my skin tone and is so lightweight I forget I'm even wearing it. It stayed on all day.\"",
+        "author_fallback": "Katie F.",
+        "color_scheme": "",
+        "content_width": 1200,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "label_color": "#21272a",
+        "card_background": "#faf8f3",
+        "card_text_color": "#333333"
+      }
     }
   },
   "order": [
     "ogee_product_buy",
+    "ogee_look_upsell",
+    "plant_derived_ingredients_AFPkrY",
+    "beyond_clean_certification_4WhziD",
     "main",
+    "ogee_faq_knKyeR",
+    "how_to_use_KURqN9",
+    "result_stats",
+    "positive_reviews_6WPUHr",
+    "shop_social_media_VxVw6T",
     "product_recommendations_qggXJq"
   ]
 }
