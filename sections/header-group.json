@@ -109,7 +109,9 @@
             "skincare_trigger_url": "/collections/skincare",
             "skincare_collection": "skincare",
             "accessories_trigger_url": "/collections/accessories",
-            "accessories_collection": "accessories"
+            "accessories_collection": "accessories",
+            "bundles_trigger_url": "/collections/bundles",
+            "bundles_collection": "bundles"
           },
           "blocks": {}
         }
