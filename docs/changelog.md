@@ -73,3 +73,5 @@
 [2026-09-09][VERIFY][header] Liquid validation passed. Unpublished preview measured 51/69px including the existing divider at 390/1920px, without page overflow.
 
 [2026-09-09][IMPLEMENT][all-menu] Added URL-based dispatch with duplicate detection, native menu fallback, four collection groups, reusable product/promotion snippets, original Figma imagery, and Escape/ArrowDown keyboard behavior. Shared rail: 1300px with 50px horizontal/32px vertical padding; All panel minimum 458px. Visual preview configuration remains under verification.
+
+[2026-09-09][IMPLEMENT][makeup-menu] Implemented makeup navigation using selected products or the native collection, live counts, optional prices, and a five-card desktop rail with an editable 250 × 350px promotion. Mobile cards use 100px images with 16px text gaps. Empty collections do not create duplicate products.
