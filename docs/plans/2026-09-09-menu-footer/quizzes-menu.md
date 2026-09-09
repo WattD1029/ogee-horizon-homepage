@@ -1,7 +1,7 @@
 ---
 title: "Quizzes mega menu"
 date: 2026-09-09
-status: planned
+status: implemented
 branch: codex/menu-footer-quizzes-menu
 base_commit: b845ee7406af4fb33a0499230f1d274715ae107f
 ---
@@ -103,3 +103,9 @@ All area branches begin at the shared planning commit and contain the other plan
 ## Completion boundary
 
 The current request is branches and plans. Future work should deliver this area and its relevant checks as a focused diff. Publishing, store-navigation mutations and external messages are outside this planning task.
+
+## Implementation — 2026-09-09
+
+Implemented two editable quiz cards with original art: desktop 650px columns/250 × 350px images and mobile 120px image columns. Mobile actions use 44px touch targets. CTA links appear only when a destination is selected or the corresponding existing quiz page resolves; merchant quiz URLs still need confirmation.
+
+Local Liquid/schema validation passed. Final responsive preview evidence is recorded in the integration report on the mobile-menu branch.
