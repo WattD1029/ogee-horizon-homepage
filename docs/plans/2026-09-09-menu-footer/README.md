@@ -1,6 +1,6 @@
 # Ogee menu plans and implementation
 
-Status: all eleven remaining plans are implemented on separate local branches. Local Liquid/schema and browser checks passed. Final combined Shopify preview verification awaits explicit upload approval. See the [implementation report](implementation-report.md) for exact evidence and remaining checks.
+Status: all eleven remaining plans are implemented on separate branches pushed to GitHub. Local Liquid/schema and browser checks passed. Full combined Shopify preview verification remains pending; the user requested GitHub delivery only. See the [implementation report](implementation-report.md) for exact evidence and remaining checks.
 
 The completed announcement bar and footer are excluded and unchanged. The original working checkout is preserved; implementation lives in the isolated `.tmp/menu-footer-work` worktree.
 
@@ -37,3 +37,7 @@ The supplied `[Site Redesign] Ogee- Menu & footer-Dev.fig` export contains 1,796
 ## Verification
 
 Desktop at 1920px and mobile at 390px were checked, together with 320, 749, 750, 768, 1024 and 1440px widths. The report distinguishes actual unpublished-header measurements from local fixture measurements and lists remaining Shopify/editor checks. See it before treating this as ready to publish.
+
+## Review handoff
+
+[Basecamp summary, all 12 PR links and image links](basecamp-summary.md). [Desktop/mobile screenshot gallery](../../pr-assets/menu-footer/README.md).

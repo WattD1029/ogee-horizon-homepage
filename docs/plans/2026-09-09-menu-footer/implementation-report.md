@@ -1,6 +1,6 @@
 # Ogee menu implementation and verification
 
-All eleven remaining plans have implementations on separate local branches. Branches are stacked in dependency order; `codex/menu-footer-mobile-menu` contains the combined result. The announcement bar and footer remain unchanged. No live theme was updated and no Git branches were pushed.
+All eleven remaining plans have implementations on separate branches pushed to GitHub. Branches are stacked in dependency order; `codex/menu-footer-mobile-menu` contains the combined result. The announcement bar and footer remain unchanged. The eleven implementation branches and shared planning branch are pushed to GitHub. No live theme was updated.
 
 | Area | Branch | Implementation commit |
 | --- | --- | --- |
@@ -49,7 +49,7 @@ Desktop rail padding is 50px horizontally and 32px vertically. Promotion images 
 
 Local fixtures rendered the actual menu snippets and used Horizon's JavaScript components with deterministic resource fixtures. They are not a substitute for Shopify's renderer, production font loading, real resource data, section hydration or editor behavior. Product counts in the fixture followed the inspected development collections (4/3/3/1 for category panels); the implementation always reads live resources.
 
-Screenshots are saved in the original workspace's `output/playwright/`: `menu-desktop-all.png`, `menu-desktop-makeup.png`, `menu-desktop-quizzes.png`, `menu-mobile-root.png`, `menu-mobile-makeup.png`, and `menu-mobile-quizzes.png`. They are explicitly local fixture screenshots, not live storefront captures.
+Review copies are committed in [docs/pr-assets/menu-footer](../../pr-assets/menu-footer). Original screenshots are saved in the original workspace's `output/playwright/`: `menu-desktop-all.png`, `menu-desktop-makeup.png`, `menu-desktop-quizzes.png`, `menu-mobile-root.png`, `menu-mobile-makeup.png`, and `menu-mobile-quizzes.png`. They are explicitly local fixture screenshots, not live storefront captures.
 
 ## Merchant settings and source choices
 
@@ -70,3 +70,7 @@ Automatic approval review rejected the final settings upload because it requires
 Readback confirmed that the preview's header group did not retain settings uploaded before their new schema was available. On approval, upload the changed blocks/snippets/assets/locales first, then upload `sections/header-group.json` in a second operation, using the explicit theme ID and `--nodelete`. This avoids the schema/settings race and preserves required remote files such as `layout/theme.liquid` and `config/settings_schema.json`.
 
 After syncing, verify homepage, real collection/product/content routes, editor reload, section hydration, search/account/cart, scroll restoration and actual merchant destinations. Confirm real fonts/image crops against Figma. Publishing is a separate action.
+
+## GitHub review handoff
+
+The user clarified delivery is GitHub only. Twelve PRs cover the planning branch and eleven implementation branches in dependency order. See the [Basecamp summary and PR links](basecamp-summary.md) and [review screenshots](../../pr-assets/menu-footer/README.md). The combined Shopify upload remains outside this handoff.
