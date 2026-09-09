@@ -8,6 +8,7 @@
   @param {boolean} [should_render_clear] - Whether to render the clear button
   @param {boolean} [show_swatch_label] - Whether to show the swatch label
   @param {boolean} [in_drawer] - Whether the filter is in a drawer
+  @param {boolean} [force_checkbox] - Whether to render text values as checkbox rows instead of pills
 {%- enddoc -%}
 
 {% liquid
@@ -153,6 +154,10 @@
           endfor
 
           if filter.type == 'boolean'
+            assign should_use_pills = false
+          endif
+
+          if force_checkbox
             assign should_use_pills = false
           endif
         %}

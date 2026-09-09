@@ -121,6 +121,7 @@
     "resource_reference_product_price": "Displays price from parent product",
     "resource_reference_product_recommendations": "Displays recommendations based on parent product",
     "resource_reference_product_sku": "Displays SKU from parent product",
+    "resource_reference_product_subtitle": "Displays subtitle from parent product",
     "resource_reference_product_review": "Displays reviews from parent product",
     "resource_reference_product_swatches": "Displays swatches from parent product",
     "resource_reference_product_title": "Displays title from parent product",
@@ -385,6 +386,7 @@
     "product_price": "Price",
     "product_recommendations": "Recommended products",
     "product_sku": "SKU",
+    "product_subtitle": "Product subtitle",
     "product_review_stars": "Review stars",
     "product_variant_picker": "Variant picker",
     "products_carousel": "Featured collection: Carousel",
@@ -447,6 +449,7 @@
     "arrows_large": "Large arrows",
     "aspect_ratio": "Aspect ratio",
     "auto": "Auto",
+    "auto_load": "Auto load",
     "balance": "Balance",
     "banana": "Banana",
     "below_image": "Below image",
@@ -589,6 +592,7 @@
     "link": "Link",
     "linkedin": "LinkedIn",
     "lipstick": "Lipstick",
+    "load_more": "Load more",
     "lock": "Lock",
     "loose": "Loose",
     "lowercase": "lowercase",
@@ -598,6 +602,7 @@
     "map_pin": "Map pin",
     "media_first": "Media first",
     "media_second": "Media second",
+    "metafield": "Metafield",
     // Size/weight option between small/light and large/heavy
     "medium": "Medium",
     "modal": "Modal",
@@ -646,6 +651,7 @@
     "price_tag": "Price tag",
     "primary": "Primary",
     "primary_style": "Primary style",
+    "product_type": "Product type",
     "question_mark": "Question mark",
     "rectangle": "Rectangle",
     // Icon option for displaying a recycling symbol
@@ -740,6 +746,7 @@
     "video": "Video",
     "video_external_url": "External URL",
     "video_uploaded": "Uploaded",
+    "vendor": "Vendor",
     "vimeo": "Vimeo",
     // Icon option for washing machine or laundry symbol
     "washing": "Washing",
@@ -988,6 +995,7 @@
     "page_transition_enabled": "Page transition",
     "page_width": "Page width",
     "pagination": "Pagination",
+    "pagination_style": "Pagination style",
     "percent_height": "Percent height",
     "percent_size": "Percent size",
     "percent_size_mobile": "Percent size",
@@ -1019,6 +1027,7 @@
     // Setting label for text capitalization of product titles
     "product_title_case": "Product title case",
     "product_type": "Product type",
+    "subtitle_source": "Subtitle source",
     "products": "Products",
     "products_per_page": "Products per page",
     "product_custom_property": {
@@ -1135,6 +1144,7 @@
     "underline_thickness": "Underline thickness",
     // Measurement unit selector (pixel vs percent)
     "unit": "Unit",
+    "use_vendor_fallback": "Use vendor fallback",
     "use_inverse_logo": "Use inverse logo",
     "variant_images": "Variant images",
     "variant_per_page": "Variants per page",

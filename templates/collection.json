@@ -10,92 +10,27 @@
  {
   "sections": {
     "section": {
-      "type": "section",
-      "blocks": {
-        "text_tqQTNE": {
-          "type": "text",
-          "name": "Title",
-          "settings": {
-            "text": "<h1>{{ closest.collection.title }}</h1>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_twGGkJ": {
-          "type": "text",
-          "name": "Description",
-          "settings": {
-            "text": "{{ closest.collection.description }}",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "rte",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "text_tqQTNE",
-        "text_twGGkJ"
-      ],
-      "name": "Collection heading",
+      "type": "clp-intro",
+      "name": "CLP intro",
       "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
+        "heading_override": "",
+        "description_override": "",
+        "description_fallback": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+        "description_fallback_collection_handle": "all",
+        "desktop_content_width": 1200,
+        "desktop_gutter": 0,
+        "mobile_gutter": 20,
         "color_scheme": "scheme-1",
-        "background_media": "none",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "padding_top": 68,
+        "padding_bottom": 32,
+        "padding_top_mobile": 36,
+        "padding_bottom_mobile": 24,
+        "navigation_aria_label": "Collection categories",
+        "navigation_text_color": "#333333",
+        "navigation_border_color": "#dfdfdf",
+        "navigation_active_border_color": "#000000",
+        "navigation_margin_top": 32,
+        "navigation_margin_top_mobile": 32
       }
     },
     "main": {
@@ -144,7 +79,7 @@
             "card-gallery": {
               "type": "_product-card-gallery",
               "settings": {
-                "image_ratio": "adapt",
+                "image_ratio": "square",
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
@@ -181,6 +116,13 @@
               },
               "blocks": {}
             },
+            "product_subtitle": {
+              "type": "custom-liquid",
+              "settings": {
+                "custom_liquid": "{% liquid\n  assign subtitle = closest.product.metafields.custom.subtitle.value\n\n  if subtitle == blank\n    assign subtitle = closest.product.metafields.custom.short_description.value\n  endif\n\n  if subtitle == blank\n    assign subtitle = closest.product.metafields.descriptors.subtitle.value\n  endif\n\n  if subtitle == blank\n    assign subtitle = closest.product.type\n  endif\n%}\n{% if subtitle != blank %}\n  <p class=\"product-card__subtitle spacing-style\">{{ subtitle | strip_html | escape }}</p>\n{% endif %}"
+              },
+              "blocks": {}
+            },
             "price_EzJzMm": {
               "type": "price",
               "settings": {
@@ -203,11 +145,25 @@
               },
               "blocks": {}
             },
+            "review": {
+              "type": "review",
+              "name": "t:names.product_review_stars",
+              "settings": {
+                "stars_style": "shaded",
+                "show_number": false,
+                "rating_color": "foreground",
+                "type_preset": "paragraph",
+                "width": "100%",
+                "alignment": "left"
+              },
+              "blocks": {}
+            },
             "swatches": {
               "type": "swatches",
               "name": "t:names.swatches",
               "settings": {
                 "product_swatches_alignment": "flex-start",
+                "product_swatches_alignment_mobile": "flex-start",
                 "product_swatches_padding_top": 4,
                 "product_swatches_padding_bottom": 0,
                 "product_swatches_padding_left": 0,
@@ -218,7 +174,9 @@
           "block_order": [
             "card-gallery",
             "product_title_4nY4eT",
+            "product_subtitle",
             "price_EzJzMm",
+            "review",
             "swatches"
           ]
         }
@@ -227,10 +185,13 @@
         "layout_type": "grid",
         "product_card_size": "medium",
         "mobile_product_card_size": "small",
+        "enable_infinite_scroll": true,
+        "pagination_style": "manual",
+        "products_per_page": 16,
         "product_grid_width": "centered",
         "full_width_on_mobile": true,
-        "columns_gap_horizontal": 16,
-        "columns_gap_vertical": 24,
+        "columns_gap_horizontal": 8,
+        "columns_gap_vertical": 8,
         "padding-inline-start": 0,
         "padding-inline-end": 0,
         "color_scheme": "scheme-1",
