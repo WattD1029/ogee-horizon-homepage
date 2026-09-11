@@ -37,7 +37,7 @@
             assign rendered_count = rendered_count | plus: 1
             assign slide_index = rendered_count | minus: 1
             capture slide_children
-              render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-' | append: section.id | append: '-' | append: recently_viewed_product.id, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy'
+              render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-', append: recently_viewed_product.id, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy'
             endcapture
             render 'slideshow-slide', slide_id: recently_viewed_product.id, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
           endif
@@ -47,7 +47,7 @@
           assign rendered_count = rendered_count | plus: 1
           assign slide_index = rendered_count | minus: 1
           capture slide_children
-            render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-' | append: section.id | append: '-' | append: recently_viewed_product.id, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy'
+            render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-', append: recently_viewed_product.id, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy'
           endcapture
           render 'slideshow-slide', slide_id: recently_viewed_product.id, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
         endfor
@@ -59,9 +59,9 @@
         assign rendered_count = rendered_count | plus: 1
         assign slide_index = rendered_count | minus: 1
         capture slide_children
-          render 'product-carousel-card', product: blank, section_id: section.id, card_id: 'recently-viewed-placeholder-' | append: placeholder_index, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, show_reviews: section.settings.show_reviews, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label
+          render 'product-carousel-card', product: "", section_id: section.id, card_id: 'recently-viewed-placeholder-', append: placeholder_index, badge_label: section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count, card_index: rendered_count, show_reviews: section.settings.show_reviews, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label
         endcapture
-        render 'slideshow-slide', slide_id: 'placeholder-' | append: placeholder_index, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
+        render 'slideshow-slide', slide_id: 'placeholder-', append: placeholder_index, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
       endfor
     endif
   endcapture
@@ -638,3 +638,78 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "              render 'product-carousel-card', product: recently_viewed_product,
+    section_id: section.id, card_id: 'recently-viewed-' | append: section.id | append:
+    '-' | append: recently_viewed_product.id, badge_label: section.settings.badge_label,
+    show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count,
+    card_index: rendered_count, subtitle_source: section.settings.subtitle_source,
+    show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews,
+    show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist,
+    fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count,
+    add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label,
+    quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product,
+    loading: 'lazy'"
+  to: "              render 'product-carousel-card', product: recently_viewed_product,
+    section_id: section.id, card_id: 'recently-viewed-', append: recently_viewed_product.id,
+    badge_label: section.settings.badge_label, show_badge: section.settings.show_badge,
+    badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source:
+    section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews:
+    section.settings.show_reviews, show_swatches: section.settings.show_swatches,
+    show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating,
+    fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label:
+    add_to_cart_label, choose_options_label: choose_options_label, quick_view_label:
+    quick_view_label, transition_to_main_product: section.settings.transition_to_main_product,
+    loading: 'lazy'"
+  position: 1321..2198
+- from: "            render 'product-carousel-card', product: recently_viewed_product,
+    section_id: section.id, card_id: 'recently-viewed-' | append: section.id | append:
+    '-' | append: recently_viewed_product.id, badge_label: section.settings.badge_label,
+    show_badge: section.settings.show_badge, badge_limit: section.settings.badge_count,
+    card_index: rendered_count, subtitle_source: section.settings.subtitle_source,
+    show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews,
+    show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist,
+    fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count,
+    add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label,
+    quick_view_label: quick_view_label, transition_to_main_product: section.settings.transition_to_main_product,
+    loading: 'lazy'"
+  to: "            render 'product-carousel-card', product: recently_viewed_product,
+    section_id: section.id, card_id: 'recently-viewed-', append: recently_viewed_product.id,
+    badge_label: section.settings.badge_label, show_badge: section.settings.show_badge,
+    badge_limit: section.settings.badge_count, card_index: rendered_count, subtitle_source:
+    section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews:
+    section.settings.show_reviews, show_swatches: section.settings.show_swatches,
+    show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating,
+    fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label:
+    add_to_cart_label, choose_options_label: choose_options_label, quick_view_label:
+    quick_view_label, transition_to_main_product: section.settings.transition_to_main_product,
+    loading: 'lazy'"
+  position: 2644..3519
+- from: "          render 'product-carousel-card', product: blank, section_id: section.id,
+    card_id: 'recently-viewed-placeholder-' | append: placeholder_index, badge_label:
+    section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit:
+    section.settings.badge_count, card_index: rendered_count, show_reviews: section.settings.show_reviews,
+    show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating,
+    fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label:
+    add_to_cart_label, choose_options_label: choose_options_label, quick_view_label:
+    quick_view_label"
+  to: '          render ''product-carousel-card'', product: "", section_id: section.id,
+    card_id: ''recently-viewed-placeholder-'', append: placeholder_index, badge_label:
+    section.settings.badge_label, show_badge: section.settings.show_badge, badge_limit:
+    section.settings.badge_count, card_index: rendered_count, show_reviews: section.settings.show_reviews,
+    show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating,
+    fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label:
+    add_to_cart_label, choose_options_label: choose_options_label, quick_view_label:
+    quick_view_label'
+  position: 3972..4596
+- from: "        render 'slideshow-slide', slide_id: 'placeholder-' | append: placeholder_index,
+    index: slide_index, class: 'recently-viewed-products__slide', children: slide_children"
+  to: "        render 'slideshow-slide', slide_id: 'placeholder-', append: placeholder_index,
+    index: slide_index, class: 'recently-viewed-products__slide', children: slide_children"
+  position: 4616..4789
+{% endcomment %}

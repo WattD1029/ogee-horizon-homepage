@@ -113,7 +113,7 @@
           assign recently_viewed_rendered_count = recently_viewed_rendered_count | plus: 1
           assign slide_index = recently_viewed_rendered_count | minus: 1
           capture slide_children
-            render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-main-' | append: recently_viewed_product.id, badge_label: 'Best-Seller', show_badge: true, badge_limit: 2, card_index: recently_viewed_rendered_count, subtitle_source: 'metafield', show_vendor: false, show_reviews: true, show_swatches: true, show_wishlist: true, fallback_rating: 5, fallback_rating_count: 1, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: false, loading: 'lazy'
+            render 'product-carousel-card', product: recently_viewed_product, section_id: section.id, card_id: 'recently-viewed-main-', append: recently_viewed_product.id, badge_label: 'Best-Seller', show_badge: true, badge_limit: 2, card_index: recently_viewed_rendered_count, subtitle_source: 'metafield', show_vendor: false, show_reviews: true, show_swatches: true, show_wishlist: true, fallback_rating: 5, fallback_rating_count: 1, add_to_cart_label: add_to_cart_label, choose_options_label: choose_options_label, quick_view_label: quick_view_label, transition_to_main_product: false, loading: 'lazy'
           endcapture
           render 'slideshow-slide', slide_id: recently_viewed_product.id, index: slide_index, class: 'recently-viewed-products__slide', children: slide_children
         endfor
@@ -718,3 +718,25 @@
   "presets": []
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "            render 'product-carousel-card', product: recently_viewed_product,
+    section_id: section.id, card_id: 'recently-viewed-main-' | append: recently_viewed_product.id,
+    badge_label: 'Best-Seller', show_badge: true, badge_limit: 2, card_index: recently_viewed_rendered_count,
+    subtitle_source: 'metafield', show_vendor: false, show_reviews: true, show_swatches:
+    true, show_wishlist: true, fallback_rating: 5, fallback_rating_count: 1, add_to_cart_label:
+    add_to_cart_label, choose_options_label: choose_options_label, quick_view_label:
+    quick_view_label, transition_to_main_product: false, loading: 'lazy'"
+  to: "            render 'product-carousel-card', product: recently_viewed_product,
+    section_id: section.id, card_id: 'recently-viewed-main-', append: recently_viewed_product.id,
+    badge_label: 'Best-Seller', show_badge: true, badge_limit: 2, card_index: recently_viewed_rendered_count,
+    subtitle_source: 'metafield', show_vendor: false, show_reviews: true, show_swatches:
+    true, show_wishlist: true, fallback_rating: 5, fallback_rating_count: 1, add_to_cart_label:
+    add_to_cart_label, choose_options_label: choose_options_label, quick_view_label:
+    quick_view_label, transition_to_main_product: false, loading: 'lazy'"
+  position: 4059..4663
+{% endcomment %}
