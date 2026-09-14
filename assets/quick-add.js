@@ -36,6 +36,10 @@ export class QuickAddComponent extends Component {
     return url.toString();
   }
 
+  get quickAddSurface() {
+    return this.dataset.quickAddSurface || 'modal';
+  }
+
   /**
    * Gets the currently selected variant ID from the product card
    * @returns {string | null} The variant ID or null
@@ -91,19 +95,26 @@ export class QuickAddComponent extends Component {
     event.preventDefault();
 
     const currentUrl = this.productPageUrl;
+    const cacheKey = `${this.quickAddSurface}:${currentUrl}`;
 
     // Check if we have cached content for this URL
-    let productGrid = this.#cachedContent.get(currentUrl);
+    let productGrid = this.#cachedContent.get(cacheKey);
 
     if (!productGrid) {
       // Fetch and cache the content
-      const html = await this.fetchProductPage(currentUrl);
+      const html =
+        this.quickAddSurface === 'quick-shop-drawer'
+          ? await this.fetchProductSection(currentUrl, 'quick-shop-drawer')
+          : await this.fetchProductPage(currentUrl);
       if (html) {
-        const gridElement = html.querySelector('[data-product-grid-content]');
+        const gridElement =
+          this.quickAddSurface === 'quick-shop-drawer'
+            ? html.body
+            : html.querySelector('[data-product-grid-content]');
         if (gridElement) {
           // Cache the cloned element to avoid modifying the original
           productGrid = /** @type {Element} */ (gridElement.cloneNode(true));
-          this.#cachedContent.set(currentUrl, productGrid);
+          this.#cachedContent.set(cacheKey, productGrid);
         }
       }
     }
@@ -111,7 +122,11 @@ export class QuickAddComponent extends Component {
     if (productGrid) {
       // Use a fresh clone from the cache
       const freshContent = /** @type {Element} */ (productGrid.cloneNode(true));
-      await this.updateQuickAddModal(freshContent);
+      if (this.quickAddSurface === 'quick-shop-drawer') {
+        await this.updateQuickShopDrawer(freshContent);
+      } else {
+        await this.updateQuickAddModal(freshContent);
+      }
       this.#updateVariantPicker(productGrid);
     }
 
@@ -124,6 +139,8 @@ export class QuickAddComponent extends Component {
 
     const productDetails = dialogComponent.querySelector('.product-details');
     const productMedia = dialogComponent.querySelector('.product-information__media');
+    const quickShopDrawer = dialogComponent.querySelector('quick-shop-drawer');
+    quickShopDrawer?.scrollTo({ top: 0, behavior: 'instant' });
     productDetails?.scrollTo({ top: 0, behavior: 'instant' });
     productMedia?.scrollTo({ top: 0, behavior: 'instant' });
   }
@@ -143,11 +160,13 @@ export class QuickAddComponent extends Component {
 
     this.#stayVisibleUntilDialogCloses(dialogComponent);
 
+    const dialog = dialogComponent.refs?.dialog;
+    if (dialog) dialog.dataset.quickAddSurface = this.quickAddSurface;
+
     dialogComponent.showDialog();
 
     // is nondeterministic when the open attribute is set on the dialog element after .showDialog() is called.
     // Waiting until the open animation starts seemed to be the most reliable metric here.
-    const dialog = dialogComponent.refs?.dialog;
     if (!dialog) return;
     dialog.addEventListener('animationstart', this.#resetScroll.bind(this), { once: true });
   };
@@ -196,6 +215,21 @@ export class QuickAddComponent extends Component {
   }
 
   /**
+   * Fetches a product section through the Section Rendering API.
+   * @param {string} productPageUrl - The URL of the product page to fetch
+   * @param {string} sectionId - The section file to render
+   * @returns {Promise<Document | null>}
+   */
+  async fetchProductSection(productPageUrl, sectionId) {
+    if (!productPageUrl) return null;
+
+    const url = new URL(productPageUrl, window.location.origin);
+    url.searchParams.set('section_id', sectionId);
+
+    return this.fetchProductPage(url.toString());
+  }
+
+  /**
    * Re-renders the variant picker.
    * @param {Element} productGrid - The product grid element
    */
@@ -235,6 +269,20 @@ export class QuickAddComponent extends Component {
     }
 
     morph(modalContent, productGrid);
+
+    this.#syncVariantSelection(modalContent);
+  }
+
+  /**
+   * Re-renders the quick shop drawer content.
+   * @param {Element} drawerContent - The drawer content element
+   */
+  async updateQuickShopDrawer(drawerContent) {
+    const modalContent = document.getElementById('quick-add-modal-content');
+
+    if (!drawerContent || !modalContent) return;
+
+    morph(modalContent, drawerContent);
 
     this.#syncVariantSelection(modalContent);
   }
@@ -309,6 +357,16 @@ class QuickAddDialog extends DialogComponent {
     );
     const viewMoreDetailsLink = /** @type {HTMLAnchorElement} */ (this.querySelector('.view-product-title a'));
     const mobileProductTitle = /** @type {HTMLAnchorElement} */ (this.querySelector('.product-header a'));
+    const quickShopDetailsLink = /** @type {HTMLAnchorElement} */ (
+      event.detail.data.html?.querySelector('.quick-shop-drawer__details-link')
+    );
+    const currentQuickShopDetailsLink = /** @type {HTMLAnchorElement} */ (
+      this.querySelector('.quick-shop-drawer__details-link')
+    );
+
+    if (quickShopDetailsLink && currentQuickShopDetailsLink) {
+      currentQuickShopDetailsLink.href = quickShopDetailsLink.href;
+    }
 
     if (!anchorElement) return;
 
