@@ -15,7 +15,12 @@
       ],
       "dependencies": [
         "Use the completed announcement bar unchanged; coordinate mobile-menu and settle remaining shell integration before all-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "92117f074a17799866f6295bc772fa178b3f49c3",
+      "stackBase": "codex/menu-footer-compound-plans",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/36"
     },
     {
       "branch": "codex/menu-footer-all-menu",
@@ -29,7 +34,12 @@
       ],
       "dependencies": [
         "Depends on header shell. Owns shared interfaces for eight other panel plans and mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "bf3091241ad4470d569589416e08ce7e52c76598",
+      "stackBase": "codex/menu-footer-header",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/37"
     },
     {
       "branch": "codex/menu-footer-makeup-menu",
@@ -42,7 +52,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "69ceef41da50ff70e86d0889190dbcec8cbc7096",
+      "stackBase": "codex/menu-footer-all-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/38"
     },
     {
       "branch": "codex/menu-footer-skincare-menu",
@@ -56,7 +71,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "cffd89e0bafd88536722c5f2e86703ba453766f1",
+      "stackBase": "codex/menu-footer-makeup-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/39"
     },
     {
       "branch": "codex/menu-footer-accessories-menu",
@@ -69,7 +89,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "ba1bc10900176eb7893f2c010e70d44654187a53",
+      "stackBase": "codex/menu-footer-skincare-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/40"
     },
     {
       "branch": "codex/menu-footer-bundles-menu",
@@ -82,7 +107,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "4f05774f125fecb3fad5ba1b0ea230b1fe59209a",
+      "stackBase": "codex/menu-footer-accessories-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/41"
     },
     {
       "branch": "codex/menu-footer-new-menu",
@@ -97,7 +127,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "e1d9cf9f901b8b1c61435a70ebeafce3860e2390",
+      "stackBase": "codex/menu-footer-bundles-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/42"
     },
     {
       "branch": "codex/menu-footer-bestsellers-menu",
@@ -112,7 +147,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "514b732188a44e3a3cb68d3fc44b747bfb527ac0",
+      "stackBase": "codex/menu-footer-new-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/43"
     },
     {
       "branch": "codex/menu-footer-quizzes-menu",
@@ -128,7 +168,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "30bc94055410d927cdd3c9e3b7d97add13229d20",
+      "stackBase": "codex/menu-footer-bestsellers-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/44"
     },
     {
       "branch": "codex/menu-footer-about-menu",
@@ -145,7 +190,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu shared interface; mobile rendering requires mobile-menu."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "5bb354c6451ad5ab8b8f83df7c032fda5643a0bb",
+      "stackBase": "codex/menu-footer-quizzes-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/45"
     },
     {
       "branch": "codex/menu-footer-mobile-menu",
@@ -172,7 +222,12 @@
       ],
       "dependencies": [
         "Requires header shell and all-menu configuration contract. Coordinate data with individual panel branches."
-      ]
+      ],
+      "status": "implemented",
+      "implementationCommit": "8dcc81cce9a90e84378a6a81edcc5c9b63911829",
+      "stackBase": "codex/menu-footer-about-menu",
+      "verification": "Local Liquid/schema checks and Chromium integration fixtures passed; combined Shopify preview verification pending; latest requested delivery is GitHub only.",
+      "pullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/46"
     }
   ],
   "completedAreas": [
@@ -186,5 +241,15 @@
       "status": "completed; excluded from remaining implementation",
       "existingBranch": "codex/menu-footer-footer"
     }
-  ]
+  ],
+  "integrationBranch": "codex/menu-footer-mobile-menu",
+  "implementationBase": "0a8f410b5ff4705e0fc1f90b507315be20ffc73b",
+  "branchStrategy": "Stacked in listed order. Each branch contains its prerequisites.",
+  "preview": {
+    "themeId": "162340274281",
+    "name": "Codex menu plans verification",
+    "store": "ogee-li63n1as.myshopify.com",
+    "status": "Combined implementation not synced. User clarified delivery is GitHub only; nothing published."
+  },
+  "planningPullRequest": "https://github.com/WattD1029/ogee-horizon-homepage/pull/35"
 }
