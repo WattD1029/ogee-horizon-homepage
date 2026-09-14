@@ -1,0 +1,32 @@
+{% doc %}
+  Finds a panel using an explicit navigation URL. Duplicate mappings fall back to Horizon.
+  @param {object} settings - Header menu block settings
+  @param {string} url - Native navigation URL
+{% enddoc %}
+{%- liquid
+  assign matched_key = ''
+  assign matches = 0
+  assign keys = 'all,makeup,skincare,accessories,bundles,new,bestsellers,quizzes,about' | split: ','
+  if settings.ogee_panels_enabled
+    for key in keys
+      assign setting_id = key | append: '_trigger_url'
+      assign trigger = settings[setting_id]
+      if trigger != blank
+        assign localized_trigger = trigger
+        if routes.root_url != '/'
+          assign first_character = trigger | slice: 0
+          if first_character == '/'
+            assign localized_trigger = routes.root_url | append: trigger
+          endif
+        endif
+        if trigger == url or localized_trigger == url
+          assign matched_key = key
+          assign matches = matches | plus: 1
+        endif
+      endif
+    endfor
+  endif
+  if matches == 1
+    echo matched_key
+  endif
+-%}
