@@ -7,6 +7,7 @@
   @param {string} [color_scheme] - The color scheme to use
   @param {string} [quick_add_ref] - Optional component ref attribute
   @param {string} [quick_add_class] - Optional classes for contextual styling
+  @param {string} [quick_add_surface] - Optional quick-add surface to open
   @param {string} [add_to_cart_text] - Optional add-to-cart label
   @param {string} [choose_options_text] - Optional choose-options label
   @param {boolean} [icon_only_on_mobile] - Whether to hide labels on mobile
@@ -21,6 +22,7 @@
   assign color_scheme = color_scheme | default: settings.quick_add_color_scheme
   assign quick_add_ref = quick_add_ref | default: 'quickAdd'
   assign quick_add_class = quick_add_class | default: ''
+  assign quick_add_surface = quick_add_surface | default: 'modal'
 
   unless icon_only_on_mobile == false
     assign icon_only_on_mobile = true
@@ -48,6 +50,7 @@
   {% endif %}
   data-product-title="{{ product.title }}"
   data-quick-add-button="{{ quick_add_button }}"
+  data-quick-add-surface="{{ quick_add_surface }}"
   data-product-options-count="{{ product.options.size }}"
 >
   <product-form-component

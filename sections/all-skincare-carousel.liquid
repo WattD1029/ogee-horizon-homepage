@@ -219,24 +219,7 @@
               {% capture slides %}
                 {% for product in tab_collection.products limit: product_limit %}
                   {% capture slide_children %}
-                    {% render 'product-carousel-card',
-                      product: product,
-                      section_id: section.id,
-                      card_id: tab_block.id | append: '-' | append: product.id,
-                      show_badge: false,
-                      subtitle_source: section.settings.subtitle_source,
-                      show_vendor: section.settings.show_vendor,
-                      show_reviews: section.settings.show_reviews,
-                      show_swatches: section.settings.show_swatches,
-                      show_wishlist: section.settings.show_wishlist,
-                      fallback_rating: section.settings.fallback_rating,
-                      fallback_rating_count: section.settings.fallback_rating_count,
-                      add_to_cart_label: section.settings.add_to_cart_label,
-                      choose_options_label: section.settings.choose_options_label,
-                      quick_view_label: section.settings.quick_view_label,
-                      transition_to_main_product: section.settings.transition_to_main_product,
-                      loading: 'lazy'
-                    %}
+                    {% render 'product-carousel-card', product: product, section_id: section.id, card_id: tab_block.id, append: product.id, show_badge: false, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label, quick_view_label: section.settings.quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy' %}
                   {% endcapture %}
 
                   {% render 'slideshow-slide',
@@ -263,18 +246,7 @@
             {% else %}
               <div class="all-skincare-carousel__placeholder-grid" aria-label="{{ panel_label | escape }}">
                 {% for placeholder_index in (1..4) %}
-                  {% render 'product-carousel-card',
-                    product: blank,
-                    section_id: section.id,
-                    card_id: tab_block.id | append: '-placeholder-' | append: placeholder_index,
-                    show_badge: false,
-                    show_reviews: section.settings.show_reviews,
-                    show_wishlist: section.settings.show_wishlist,
-                    fallback_rating: section.settings.fallback_rating,
-                    fallback_rating_count: section.settings.fallback_rating_count,
-                    add_to_cart_label: section.settings.add_to_cart_label,
-                    choose_options_label: section.settings.choose_options_label
-                  %}
+                  {% render 'product-carousel-card', product: "", section_id: section.id, card_id: tab_block.id, append: placeholder_index, show_badge: false, show_reviews: section.settings.show_reviews, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label %}
                 {% endfor %}
               </div>
             {% endif %}
@@ -323,24 +295,7 @@
             {% capture slides %}
               {% for product in fallback_collection.products limit: product_limit %}
                 {% capture slide_children %}
-                  {% render 'product-carousel-card',
-                    product: product,
-                    section_id: section.id,
-                    card_id: 'fallback-' | append: product.id,
-                    show_badge: false,
-                    subtitle_source: section.settings.subtitle_source,
-                    show_vendor: section.settings.show_vendor,
-                    show_reviews: section.settings.show_reviews,
-                    show_swatches: section.settings.show_swatches,
-                    show_wishlist: section.settings.show_wishlist,
-                    fallback_rating: section.settings.fallback_rating,
-                    fallback_rating_count: section.settings.fallback_rating_count,
-                    add_to_cart_label: section.settings.add_to_cart_label,
-                    choose_options_label: section.settings.choose_options_label,
-                    quick_view_label: section.settings.quick_view_label,
-                    transition_to_main_product: section.settings.transition_to_main_product,
-                    loading: 'lazy'
-                  %}
+                  {% render 'product-carousel-card', product: product, section_id: section.id, card_id: 'fallback-', append: product.id, show_badge: false, subtitle_source: section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews: section.settings.show_reviews, show_swatches: section.settings.show_swatches, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label, quick_view_label: section.settings.quick_view_label, transition_to_main_product: section.settings.transition_to_main_product, loading: 'lazy' %}
                 {% endcapture %}
 
                 {% render 'slideshow-slide',
@@ -365,18 +320,7 @@
           {% else %}
             <div class="all-skincare-carousel__placeholder-grid" aria-label="{{ fallback_panel_label | escape }}">
               {% for placeholder_index in (1..4) %}
-                {% render 'product-carousel-card',
-                  product: blank,
-                  section_id: section.id,
-                  card_id: 'fallback-placeholder-' | append: placeholder_index,
-                  show_badge: false,
-                  show_reviews: section.settings.show_reviews,
-                  show_wishlist: section.settings.show_wishlist,
-                  fallback_rating: section.settings.fallback_rating,
-                  fallback_rating_count: section.settings.fallback_rating_count,
-                  add_to_cart_label: section.settings.add_to_cart_label,
-                  choose_options_label: section.settings.choose_options_label
-                %}
+                {% render 'product-carousel-card', product: "", section_id: section.id, card_id: 'fallback-placeholder-', append: placeholder_index, show_badge: false, show_reviews: section.settings.show_reviews, show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label: section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label %}
               {% endfor %}
             </div>
           {% endif %}
@@ -1285,3 +1229,108 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% render 'product-carousel-card',
+                          product: product,
+                          section_id: section.id,
+                          card_id: tab_block.id | append: '-' | append: product.id,
+                          show_badge: false,
+                          subtitle_source: section.settings.subtitle_source,
+                          show_vendor: section.settings.show_vendor,
+                          show_reviews: section.settings.show_reviews,
+                          show_swatches: section.settings.show_swatches,
+                          show_wishlist: section.settings.show_wishlist,
+                          fallback_rating: section.settings.fallback_rating,
+                          fallback_rating_count: section.settings.fallback_rating_count,
+                          add_to_cart_label: section.settings.add_to_cart_label,
+                          choose_options_label: section.settings.choose_options_label,
+                          quick_view_label: section.settings.quick_view_label,
+                          transition_to_main_product: section.settings.transition_to_main_product,
+                          loading: 'lazy'
+                        %}
+  to: "{% render 'product-carousel-card', product: product, section_id: section.id,
+    card_id: tab_block.id, append: product.id, show_badge: false, subtitle_source:
+    section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews:
+    section.settings.show_reviews, show_swatches: section.settings.show_swatches,
+    show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating,
+    fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label:
+    section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label,
+    quick_view_label: section.settings.quick_view_label, transition_to_main_product:
+    section.settings.transition_to_main_product, loading: 'lazy' %}"
+  position: 9184..9930
+- from: |-
+    {% render 'product-carousel-card',
+                        product: blank,
+                        section_id: section.id,
+                        card_id: tab_block.id | append: '-placeholder-' | append: placeholder_index,
+                        show_badge: false,
+                        show_reviews: section.settings.show_reviews,
+                        show_wishlist: section.settings.show_wishlist,
+                        fallback_rating: section.settings.fallback_rating,
+                        fallback_rating_count: section.settings.fallback_rating_count,
+                        add_to_cart_label: section.settings.add_to_cart_label,
+                        choose_options_label: section.settings.choose_options_label
+                      %}
+  to: '{% render ''product-carousel-card'', product: "", section_id: section.id, card_id:
+    tab_block.id, append: placeholder_index, show_badge: false, show_reviews: section.settings.show_reviews,
+    show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating,
+    fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label:
+    section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label
+    %}'
+  position: 11017..11481
+- from: |-
+    {% render 'product-carousel-card',
+                        product: product,
+                        section_id: section.id,
+                        card_id: 'fallback-' | append: product.id,
+                        show_badge: false,
+                        subtitle_source: section.settings.subtitle_source,
+                        show_vendor: section.settings.show_vendor,
+                        show_reviews: section.settings.show_reviews,
+                        show_swatches: section.settings.show_swatches,
+                        show_wishlist: section.settings.show_wishlist,
+                        fallback_rating: section.settings.fallback_rating,
+                        fallback_rating_count: section.settings.fallback_rating_count,
+                        add_to_cart_label: section.settings.add_to_cart_label,
+                        choose_options_label: section.settings.choose_options_label,
+                        quick_view_label: section.settings.quick_view_label,
+                        transition_to_main_product: section.settings.transition_to_main_product,
+                        loading: 'lazy'
+                      %}
+  to: "{% render 'product-carousel-card', product: product, section_id: section.id,
+    card_id: 'fallback-', append: product.id, show_badge: false, subtitle_source:
+    section.settings.subtitle_source, show_vendor: section.settings.show_vendor, show_reviews:
+    section.settings.show_reviews, show_swatches: section.settings.show_swatches,
+    show_wishlist: section.settings.show_wishlist, fallback_rating: section.settings.fallback_rating,
+    fallback_rating_count: section.settings.fallback_rating_count, add_to_cart_label:
+    section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label,
+    quick_view_label: section.settings.quick_view_label, transition_to_main_product:
+    section.settings.transition_to_main_product, loading: 'lazy' %}"
+  position: 13338..14083
+- from: |-
+    {% render 'product-carousel-card',
+                      product: blank,
+                      section_id: section.id,
+                      card_id: 'fallback-placeholder-' | append: placeholder_index,
+                      show_badge: false,
+                      show_reviews: section.settings.show_reviews,
+                      show_wishlist: section.settings.show_wishlist,
+                      fallback_rating: section.settings.fallback_rating,
+                      fallback_rating_count: section.settings.fallback_rating_count,
+                      add_to_cart_label: section.settings.add_to_cart_label,
+                      choose_options_label: section.settings.choose_options_label
+                    %}
+  to: '{% render ''product-carousel-card'', product: "", section_id: section.id, card_id:
+    ''fallback-placeholder-'', append: placeholder_index, show_badge: false, show_reviews:
+    section.settings.show_reviews, show_wishlist: section.settings.show_wishlist,
+    fallback_rating: section.settings.fallback_rating, fallback_rating_count: section.settings.fallback_rating_count,
+    add_to_cart_label: section.settings.add_to_cart_label, choose_options_label: section.settings.choose_options_label
+    %}'
+  position: 15002..15477
+{% endcomment %}

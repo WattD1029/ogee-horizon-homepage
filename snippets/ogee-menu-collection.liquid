@@ -1,0 +1,55 @@
+{% doc %}
+  Collection-backed product navigation shared by the category panels.
+  @param {string} key - Panel key
+  @param {object} settings - Menu block settings
+  @param {object} [link] - Native navigation resource
+  @param {number} [limit] - Maximum cards to render
+  @param {boolean} [show_promo] - Render the category promotion
+{% enddoc %}
+{% liquid
+  assign collection_id = key | append: '_collection'
+  assign products_id = key | append: '_products'
+  assign heading_id = key | append: '_heading'
+  assign price_id = key | append: '_show_prices'
+  assign menu_id = key | append: '_menu'
+  assign menu_collection = settings[collection_id] | default: collections[key]
+  assign featured_products = settings[products_id] | default: menu_collection.products
+  assign panel_heading = settings[heading_id] | default: menu_collection.title | default: link.title
+  assign product_limit = limit | default: 5
+  assign promo_asset = 'ogee-menu-' | append: key | append: '-promo.png'
+%}
+<div class="ogee-menu-panel__main">
+  <div class="ogee-menu-collection__top"><span class="ogee-menu-heading">{{ panel_heading | escape }}</span></div>
+  {% if settings[menu_id].links != blank %}
+    <div class="ogee-menu-collection__links">{% for child in settings[menu_id].links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}</div>
+  {% endif %}
+  <div class="ogee-menu-products" style="--ogee-menu-card-count: {{ product_limit }}">
+    {% for featured_product in featured_products limit: product_limit %}
+      {% render 'ogee-menu-product-card', product: featured_product, show_price: settings[price_id] %}
+    {% endfor %}
+  </div>
+  {% if menu_collection != blank %}<a class="ogee-menu-shop-all" href="{{ menu_collection.url }}">{{ 'ogee_menu.shop_all' | t }} ({{ menu_collection.all_products_count }}) <span class="svg-wrapper">{{ 'icon-arrow.svg' | inline_asset_content }}</span></a>{% endif %}
+</div>
+{% if show_promo %}{% render 'ogee-menu-promo', key: key, settings: settings, fallback_asset: promo_asset, fallback_url: menu_collection.url %}{% endif %}
+{% stylesheet %}
+  .ogee-menu-products { display:grid; grid-template-columns:repeat(var(--ogee-menu-card-count),minmax(0,155px)); gap:15px; justify-content:space-between; margin-top:16px; }
+  .ogee-menu-collection__links { display:flex; flex-wrap:wrap; gap:4px 16px; }
+  .ogee-menu-panel:has(.ogee-menu-products) { min-height:414px; }
+  .ogee-menu-panel--bundles:has(.ogee-menu-products) { min-height:327px; }
+  @media(min-width:750px) {
+    .ogee-menu-panel--bundles .ogee-menu-panel__main { display:grid; grid-template-columns:1fr auto; grid-template-rows:40px 1fr; gap:16px; }
+    .ogee-menu-panel--bundles .ogee-menu-collection__top { grid-column:1; grid-row:1; }
+    .ogee-menu-panel--bundles .ogee-menu-products { grid-column:1 / -1; grid-row:2; margin-top:0; align-content:start; }
+    .ogee-menu-panel--bundles .ogee-menu-shop-all { grid-column:2; grid-row:1; padding-top:0; margin:0; min-height:40px; }
+    .ogee-menu-panel--bundles .ogee-menu-collection__links { grid-column:1 / -1; grid-row:2; }
+    .ogee-menu-panel--bundles .ogee-menu-collection__links + .ogee-menu-products { grid-row:3; }
+  }
+  @media(max-width:749px) {
+    .ogee-menu-products { display:flex; flex-direction:column; gap:12px; margin:16px 0; }
+    .ogee-menu-products .ogee-menu-product { display:grid; grid-template-columns:100px 1fr; gap:16px; align-items:center; }
+    .ogee-menu-products .ogee-menu-product__media { width:100px; }
+    .ogee-menu-panel:has(.ogee-menu-products) { min-height:0; }
+    .ogee-menu-collection__top { display:none; }
+    .ogee-menu-panel:has(.ogee-menu-products)>.ogee-menu-promo { display:none; }
+  }
+{% endstylesheet %}

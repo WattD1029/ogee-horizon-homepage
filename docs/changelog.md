@@ -9,6 +9,14 @@
 [2026-06-28][VERIFY] Parsed the new block and section schema JSON successfully and ran `git diff --check` with no whitespace errors; Shopify validator could not run because `@shopify/theme-check-common` is missing from the plugin cache.
 [2026-06-28][COMPOUND] Captured the reusable promotion-block carousel pattern in `docs/solutions/design-patterns/2026-06-28-figma-promotion-block-carousel.md`.
 [2026-06-28][IMPLEMENT] Added the second `Try Before You Buy` promotion block to the homepage section and section preset, then aligned desktop and mobile block dimensions to the Figma metadata.
+[2026-08-01][PLAN] Planned a full PDP customer reviews widget section matching the Ogee desktop and mobile Figma review layouts, with summary metrics, filters, sorting, review rows, and Shopify-safe fallback content.
+[2026-08-01][IMPLEMENT] Added `sections/ogee-customer-reviews.liquid` with aggregate review summary, rating histogram, effect scale, filter/sort controls, seeded review blocks, and show-more behavior.
+[2026-08-01][IMPLEMENT] Wired the Ogee customer reviews section into `templates/product.json` after the custom product buy section with six PDP review blocks matching the Figma reference content.
+[2026-08-01][FIX] Added a hidden fallback heading and synchronized dynamic aggregate counts so blank visual headings and product review metafields remain accessible and internally consistent.
+[2026-08-01][REVIEW] Compound review found no remaining blocking issues after the hidden-heading and dynamic-count fixes; residual risk is live Shopify preview/pixel tuning and real reviews-provider integration.
+[2026-08-01][VERIFY] Ran Shopify Liquid validation on the reviews section and product template, embedded JavaScript syntax check, and `git diff --check`; all passed, with validator docs loaded from cache after a network fetch miss.
+[2026-08-01][COMPOUND] Captured the reusable Figma PDP reviews widget pattern in `docs/solutions/design-patterns/2026-08-01-figma-pdp-customer-reviews-widget-section.md`.
+[2026-08-01][FIX] Changed the reviews section fallback review count from a 0-5000 range setting to text so Shopify upload accepts the schema's 101-step range limit.
 [2026-08-03][PLAN] Planned the CLP intro hero from Figma desktop and mobile nodes, targeting the collection template heading above `main-collection` with responsive Ogee typography, collection-backed title/description content, and preview verification across desktop, tablet, and mobile.
 [2026-08-03][IMPLEMENT] Added `sections/clp-intro.liquid` and wired it into `templates/collection.json` above `main-collection` so the collection page shows the Figma CLP intro with scoped Ogee typography.
 [2026-08-03][REVIEW] Compound review tightened the placeholder description fallback to the `all` collection handle so lorem copy does not leak to other blank-description collection pages.
@@ -64,3 +72,52 @@
 [2026-08-06][COMPOUND] Captured the CLP load-more progress and Promotion This Month implementation pattern in `docs/solutions/design-patterns/2026-08-06-figma-clp-load-more-progress-promotion-this-month.md`.
 [2026-08-06][FIX] Corrected the CLP manual load-more status and progress to count rendered product cards instead of adding `paginate.current_offset`, so direct mobile page states no longer claim all products are visible when only the current page is rendered.
 [2026-08-06][FIX] Kept the CLP manual Load More button available when a direct paginated mobile state renders fewer products than the collection total, and stopped manual clicks from pushing `?page=2` into browser history.
+[2026-08-06][PLAN] Planned a reusable recently viewed product carousel section from the desktop and mobile Figma references, reusing the existing localStorage viewed product ids, search section-rendering pattern, and product carousel card styling to match the CLP product-card treatment below the promotion module.
+[2026-08-06][IMPLEMENT] Added a reusable `recently-viewed-products` section and client module that read existing viewed product ids, fetch search-context section-rendered product cards, and render the Figma-aligned carousel on the collection template.
+[2026-08-06][UPDATE] Wired the recently viewed section after the collection `main` section and added a render-section fallback so the loader tries the live section id before the static section file.
+[2026-08-06][VERIFY] Checked `assets/recently-viewed-section.js` with `node --check`, parsed `templates/collection.json` and the new section schema JSON, ran `git diff --check`, and attempted Shopify Liquid validation, which is blocked because `@shopify/theme-check-common` is missing from the local skill bundle.
+[2026-08-06][FIX] Hardened recently viewed loading against malformed `viewedProducts` localStorage and clamped the section max-product value to the storage contract.
+[2026-08-06][REVIEW] Compound review found no remaining code-level blockers after the localStorage guard and render-section fallback; residual risk is Shopify preview verification of Section Rendering API behavior and responsive visual parity.
+[2026-08-06][COMPOUND] Captured the reusable recently viewed Section Rendering pattern in `docs/solutions/design-patterns/2026-08-06-recently-viewed-products-section-rendering.md`.
+[2026-08-06][FIX] Moved the collection page recently viewed shell into the existing `main-collection` section and removed the `recently-viewed-products` JSON template dependency so Shopify upload validation no longer requires a new template section type.
+[2026-08-07][FIX] Restored recently viewed product output by using `search.results` directly like the existing predictive-search recently viewed flow, and set the recently viewed heading to Times New Roman.
+[2026-08-07][FIX] Added an `all` collection fallback so the recently viewed rail still renders product cards when no local recently viewed IDs are available.
+[2026-08-07][FIX] Rendered the `all` collection fallback directly in `main-collection` so recently viewed product cards appear before client-side section rendering runs.
+[2026-08-07][FIX] Matched nested recently viewed product media slideshow backgrounds to the card media color so mobile does not show a white strip inside product imagery.
+[2026-08-10][PLAN] Planned the Ogee header menu redesign from the desktop Figma node, targeting the existing Horizon header, logo, menu, search, account, cart, and drawer primitives with the Figma-provided logo asset and inferred mobile behavior.
+[2026-08-10][IMPLEMENT] Implemented the Ogee header menu pass on Horizon primitives with the committed Figma logo asset, scoped desktop header/menu/action styling, centered navigation defaults, icon-only actions, and a full-width bordered header group.
+[2026-08-10][REVIEW] Compound review found and fixed one issue: 24px action icon sizing originally leaked into mobile touch targets, so those overrides are now desktop/tablet-only.
+[2026-08-10][VERIFY] Parsed changed header JSON and Liquid schema blocks, verified the Figma logo asset dimensions, and ran `git diff --check`; the local Shopify validator remains blocked by a missing `@shopify/theme-check-common` dependency.
+[2026-08-10][COMPOUND] Captured the reusable Figma header-on-Horizon-primitives pattern in `docs/solutions/design-patterns/2026-08-10-figma-header-menu-on-horizon-primitives.md`.
+[2026-08-10][FIX] Matched the provided screenshot by raising the Ogee header rail to 68px, removing scoped top-edge chrome, and adding a fallback Ogee nav when the selected Shopify menu is still the default `Home|Catalog|Contact|` dev menu.
+[2026-08-10][VERIFY] Re-ran Shopify docs search, parsed changed JSON and Liquid schema blocks, ran `git diff --check`, and re-attempted the Shopify validator; validation remains blocked by the missing `@shopify/theme-check-common` dependency.
+
+[2026-09-09][PLAN] Planned 13 menu/footer areas from the supplied Figma export, with per-area branches, source-node inventory, measured desktop/mobile dimensions, schema/data proposals, dependencies and acceptance checks in docs/plans/2026-09-09-menu-footer/. Recorded existing sizing and revision conflicts; implementation remains a subsequent phase.
+
+[2026-09-09][PLAN] Removed completed announcement-bar and footer work from the menu redesign plans at the user’s request. Eleven active plans remain; updated branch mapping, implementation order and header dependencies to preserve completed chrome. Retained desktop/mobile dimension checks for remaining work.
+
+[2026-09-09][IMPLEMENT][header] Set the mobile header rail to 50px, resolved the drawer minimum-height conflict, and sized the fallback logo at 100px. Preserved the 68px desktop rail.
+[2026-09-09][VERIFY][header] Liquid validation passed. Unpublished preview measured 51/69px including the existing divider at 390/1920px, without page overflow.
+
+[2026-09-09][IMPLEMENT][all-menu] Added URL-based dispatch with duplicate detection, native menu fallback, four collection groups, reusable product/promotion snippets, original Figma imagery, and Escape/ArrowDown keyboard behavior. Shared rail: 1300px with 50px horizontal/32px vertical padding; All panel minimum 458px. Visual preview configuration remains under verification.
+
+[2026-09-09][IMPLEMENT][makeup-menu] Implemented makeup navigation using selected products or the native collection, live counts, optional prices, and a five-card desktop rail with an editable 250 × 350px promotion. Mobile cards use 100px images with 16px text gaps. Empty collections do not create duplicate products.
+
+[2026-09-09][IMPLEMENT][skincare-menu] Implemented skincare navigation using selected products or the native collection, live counts, optional prices, and a five-card desktop rail with an editable 250 × 350px promotion. Mobile cards use 100px images with 16px text gaps. Empty collections do not create duplicate products.
+
+[2026-09-09][IMPLEMENT][accessories-menu] Implemented accessories navigation using selected products or the native collection, live counts, optional prices, and a five-card desktop rail with an editable 250 × 350px promotion. Mobile cards use 100px images with 16px text gaps. Empty collections do not create duplicate products.
+
+[2026-09-09][IMPLEMENT][bundles-menu] Implemented bundles navigation using selected products or the native collection, live counts, optional prices, and a six-card rail without promotion. Mobile cards use 100px images with 16px text gaps. Empty collections do not create duplicate products.
+
+[2026-09-09][IMPLEMENT][new-menu] Implemented the final Figma two-column favourites/collections variant with native product links, collection counts and editable 250 × 350px image. The 813px centered desktop composition becomes stacked mobile links. Merchant order is authoritative; no invented ranking or duplicate filler.
+
+[2026-09-09][IMPLEMENT][bestsellers-menu] Implemented the final Figma two-column favourites/collections variant with native product links, collection counts and editable 250 × 350px image. The 813px centered desktop composition becomes stacked mobile links. Merchant order is authoritative; no invented ranking or duplicate filler.
+
+[2026-09-09][IMPLEMENT][quizzes-menu] Implemented two editable quiz cards with original art: desktop 650px columns/250 × 350px images and mobile 120px image columns. Mobile actions use 44px touch targets. CTA links appear only when a destination is selected or the corresponding existing quiz page resolves; merchant quiz URLs still need confirmation.
+
+[2026-09-09][IMPLEMENT][about-menu] Implemented four editorial tiles with keyboard-equivalent hover treatment and a simple mobile link list. Native menu destinations override individual editor URLs. Missing destinations render readable text without fake links. The source uses checker placeholders for the first three hover images; these remain merchant image settings. Original Blog artwork is included.
+
+[2026-09-09][IMPLEMENT][mobile-menu] Implemented the shared three-level drawer with 50px rails, 20px gutters, 50px link rows, 100px product images, one/two promotion states, and existing Horizon disclosure/scroll-lock controls. Fixed repeated Escape, restored focus on Back/close, and restricted Tab cycling to visible controls. Local Chromium tests passed at 320/390/749px and short-height reduced-motion settings. Shopify preview verification remains pending explicit sync approval.
+
+[2026-09-09][REVIEW][menu-integration] Fixed full-width panel positioning inherited from relative menu items, stylesheet-order conflicts, Bundles CTA placement, locale URL matching, and drawer focus navigation.
+[2026-09-09][VERIFY][menu-integration] All changed Liquid/schema files passed Shopify validation. Local browser fixtures passed desktop panel dimensions, hover/ArrowDown/Escape, 320–1920px overflow checks, nested drawer Back/close, and short-screen reduced-motion focus cycling. Final Shopify preview sync awaits explicit user approval.

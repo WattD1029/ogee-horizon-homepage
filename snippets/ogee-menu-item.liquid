@@ -1,0 +1,51 @@
+{% doc %}
+  Renders one native or development fallback menu entry with Horizon interaction refs.
+  @param {string} title - Link title
+  @param {string} url - Link URL
+  @param {number} index - Unique index within the header
+  @param {object} settings - Header menu settings
+  @param {object} section - Header section
+  @param {object} [link] - Native menu link and children
+  @param {boolean} [current] - Whether this is the current page
+  @param {string} [color_classes] - Submenu color classes
+{% enddoc %}
+{%- capture panel_key -%}{%- render 'ogee-menu-key', settings: settings, url: url -%}{%- endcapture -%}
+{%- liquid
+  assign panel_key = panel_key | strip
+  assign ratio = settings.featured_products_aspect_ratio
+  if settings.menu_style == 'featured_collections'
+    assign ratio = settings.featured_collections_aspect_ratio
+  endif
+  assign has_submenu = false
+  if panel_key != blank or link.links != blank
+    assign has_submenu = true
+  endif
+  assign submenu_id = 'OgeeSubmenu-' | append: section.id | append: '-' | append: index
+-%}
+<li role="presentation" class="menu-list__list-item" on:focus="/activate" on:blur="/deactivate" on:pointerenter="/activate" on:pointerleave="/deactivate">
+  <a href="{{ url }}" data-skip-node-update="true" class="menu-list__link{% if current %} menu-list__link--active{% endif %}" ref="menuitem"
+    {% if current %}aria-current="page"{% endif %}
+    {% if has_submenu %}aria-controls="{{ submenu_id }}" aria-haspopup="true" aria-expanded="false"{% endif %}>
+    <span class="menu-list__link-title">{{ title | escape }}</span>
+  </a>
+  {% if has_submenu %}
+    <div class="menu-list__submenu{{ color_classes }}" ref="submenu[]">
+      <div id="{{ submenu_id }}" class="menu-list__submenu-inner{% if panel_key != blank %} ogee-submenu-inner{% endif %}" style="{% render 'submenu-font-styles', settings: settings %}">
+        {% if panel_key != blank %}
+          {% render 'ogee-menu-panel', key: panel_key, settings: settings, link: link %}
+        {% else %}
+          <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
+            <div class="mega-menu__grid" data-menu-grid-id="{{ submenu_id }}-grid">
+              {% render 'mega-menu-list', parent_link: link, id: submenu_id, section: section, grid_columns_count: 6, grid_columns_count_tablet: 4, grid_columns_count_collection_images: 8, menu_content_type: settings.menu_style, content_aspect_ratio: ratio, image_border_radius: settings.image_border_radius %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</li>
+
+{% stylesheet %}
+  #header-component[data-ogee-header-menu] .menu-list__list-item:not([slot='overflow']):has(> .menu-list__submenu) { position:static; }
+  .ogee-submenu-inner { white-space:normal; }
+{% endstylesheet %}

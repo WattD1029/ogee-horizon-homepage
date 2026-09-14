@@ -27,12 +27,14 @@ class HeaderMenu extends Component {
 
     onDocumentLoaded(this.#preloadImages);
     window.addEventListener('resize', this.#resizeListener);
+    this.addEventListener('keydown', this.#onMenuKeydown);
     this.overflowMenu?.addEventListener('pointerleave', this.#overflowSubmenuListener);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener('resize', this.#resizeListener);
+    this.removeEventListener('keydown', this.#onMenuKeydown);
     document.body.removeEventListener('pointermove', this.#onPointerMove);
     if (this.#state.activeItem) {
       this.#stopPointerTracking(this.#state.activeItem);
@@ -47,6 +49,21 @@ class HeaderMenu extends Component {
   #resizeListener = debounce(() => {
     setHeaderMenuStyle();
   }, 100);
+
+  /** @param {KeyboardEvent} event */
+  #onMenuKeydown = (event) => {
+    const item = this.#state.activeItem;
+    if (!item) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      item.focus();
+      this.#deactivate(item, true);
+    } else if (event.key === 'ArrowDown' && event.target === item) {
+      event.preventDefault();
+      findSubmenu(item)?.querySelector('a, button')?.focus();
+    }
+  };
 
   #overflowSubmenuListener = () => {
     this.#deactivate();
@@ -275,12 +292,13 @@ class HeaderMenu extends Component {
   /**
    * Deactivate the active item immediately
    * @param {HTMLElement | null} [item]
+   * @param {boolean} [force] - Close even when a pointer remains over the overflow.
    */
-  #deactivate = (item = this.#state.activeItem) => {
+  #deactivate = (item = this.#state.activeItem, force = false) => {
     if (!item || item != this.#state.activeItem) return;
 
     // Don't deactivate if the overflow menu or overflow list is still being hovered
-    if (this.overflowListHovered || this.overflowMenu?.matches(':hover')) return;
+    if (!force && (this.overflowListHovered || this.overflowMenu?.matches(':hover'))) return;
 
     this.headerComponent?.style.setProperty('--submenu-height', '0px');
     this.#setFullOpenHeaderHeight(0);
@@ -352,7 +370,7 @@ class HeaderMenu extends Component {
    * Preload images that are set to load lazily.
    */
   #preloadImages = () => {
-    const images = this.querySelectorAll('img[loading="lazy"]');
+    const images = this.querySelectorAll('img[loading="lazy"]:not(.ogee-menu-panel img)');
     images?.forEach((image) => image.removeAttribute('loading'));
   };
 
@@ -374,7 +392,7 @@ if (!customElements.get('header-menu')) {
 function findMenuItem(element) {
   if (!(element instanceof Element)) return null;
 
-  if (element?.matches('[slot="more"')) {
+  if (element?.matches('[slot="more"]')) {
     // Select the first overflowing menu item when hovering over the "More" item
     return findMenuItem(element.parentElement?.querySelector('[slot="overflow"]'));
   }

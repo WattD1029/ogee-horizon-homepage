@@ -3,12 +3,22 @@
   type="module"
   fetchpriority="low"
 ></script>
+<script
+  src="{{ 'quick-shop-drawer.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
 <quick-add-dialog id="quick-add-dialog">
   <dialog
     class="quick-add-modal dialog-modal color-{{ settings.popover_color_scheme }}"
     ref="dialog"
     scroll-lock
+    aria-labelledby="quick-add-modal-title"
   >
+    <div class="quick-add-modal__header">
+      <h2 id="quick-add-modal-title" class="quick-add-modal__title">{{ 'quick_shop_drawer.quick_view' | t }}</h2>
+    </div>
+
     <button
       ref="closeButton"
       on:click="/closeDialog"
