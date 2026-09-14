@@ -1224,6 +1224,7 @@
     "where_are_products_made": "Where are your products manufactured?"
   },
   "ogee_menu": {
+    "mobile_promo_count": "Number of mobile promotions",
     "all": "All menu",
     "enabled": "Enable designed panels",
     "trigger": "Navigation link URL",

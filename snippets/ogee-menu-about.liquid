@@ -1,0 +1,59 @@
+{% doc %}
+  Four editorial navigation tiles; hover imagery stays optional and links are native/editor-selected.
+  @param {object} settings - Header menu settings
+  @param {object} [link] - Native About link
+{% enddoc %}
+{% liquid
+  assign about_links = settings.about_menu.links | default: link.links
+  assign default_handles = 'our-story,press,ingredients,news' | split: ','
+%}
+{% for i in (1..4) %}
+  {% liquid
+    assign index = i | minus: 1
+    assign prefix = 'about_' | append: i
+    assign title_id = prefix | append: '_title'
+    assign url_id = prefix | append: '_url'
+    assign image_id = prefix | append: '_image'
+    assign title = about_links[index].title | default: settings[title_id]
+    assign tile_url = about_links[index].url | default: settings[url_id]
+    assign handle = default_handles[index]
+    if tile_url == blank
+      if i == 4
+        assign tile_url = blogs[handle].url
+      else
+        assign tile_url = pages[handle].url
+      endif
+    endif
+    assign has_image = false
+    if settings[image_id] != blank or i == 4
+      assign has_image = true
+    endif
+  %}
+  <div class="ogee-menu-about__cell">
+    {% if tile_url != blank %}<a href="{{ tile_url }}" class="ogee-menu-about__tile{% if has_image %} ogee-menu-about__tile--image{% endif %}">{% else %}<div class="ogee-menu-about__tile">{% endif %}
+      {% if settings[image_id] != blank %}{{ settings[image_id] | image_url: width: 750 | image_tag: loading: 'lazy', widths: '255,510,750', sizes: '255px' }}{% elsif i == 4 %}<img src="{{ 'ogee-menu-about-blog.png' | asset_url }}" alt="" width="255" height="255" loading="lazy">{% endif %}
+      <span>{{ title | escape }}</span>
+    {% if tile_url != blank %}</a>{% else %}</div>{% endif %}
+  </div>
+{% endfor %}
+{% stylesheet %}
+  .ogee-menu-panel.ogee-menu-panel--about { padding:0; gap:0; display:grid; grid-template-columns:repeat(4,minmax(0,319px)); justify-content:center; }
+  .ogee-menu-about__cell { padding:32px; border-right:1px solid #dfdfdf; }
+  .ogee-menu-about__cell:last-child { border-right:0; }
+  .ogee-menu-about__tile { position:relative; display:flex; align-items:center; justify-content:center; aspect-ratio:1; background:#faf8f3; font-family:var(--font-heading--family); font-weight:300; font-size:24px; line-height:36px; color:#333; text-align:center; }
+  .ogee-menu-about__tile img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .2s; }
+  .ogee-menu-about__tile span { position:relative; z-index:1; padding:12px; }
+  .ogee-menu-about__tile--image:hover img,.ogee-menu-about__tile--image:focus-visible img { opacity:1; }
+  .ogee-menu-about__tile--image:hover span,.ogee-menu-about__tile--image:focus-visible span { color:white; text-shadow:0 1px 4px #000; }
+  [slot='overflow'] .ogee-menu-panel.ogee-menu-panel--about { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  [slot='overflow'] .ogee-menu-about__cell { padding:16px; }
+  @media(max-width:749px) {
+    .ogee-menu-panel.ogee-menu-panel--about { display:block; }
+    .ogee-menu-about__cell { padding:0; border:0; }
+    .ogee-menu-about__tile { min-height:50px; aspect-ratio:auto; background:white; font-family:var(--font-body--family); font-size:14px; line-height:21px; justify-content:flex-start; }
+    .ogee-menu-about__tile img { display:none; }
+    .ogee-menu-about__tile span { padding:0; }
+    .ogee-menu-about__tile--image:hover span,.ogee-menu-about__tile--image:focus-visible span { color:#333; text-shadow:none; }
+  }
+  @media(prefers-reduced-motion:reduce) { .ogee-menu-about__tile img { transition:none; } }
+{% endstylesheet %}
