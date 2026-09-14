@@ -1,4 +1,14 @@
 {%- assign block_settings = block.settings -%}
+{% liquid
+  assign active_type = search.types | first | default: 'product'
+  if active_type == 'article'
+    assign active_type = 'article'
+  elsif active_type == 'page'
+    assign active_type = 'page'
+  else
+    assign active_type = 'product'
+  endif
+%}
 
 <script
   src="{{ 'search-page-input.js' | asset_url }}"
@@ -10,30 +20,19 @@
   {% assign color_scheme = block_settings.color_scheme | prepend: ' color-' %}
 {% endif %}
 
-<form
-  action="{{ routes.search_url }}"
-  method="get"
-  role="search"
-  class="search-page-input__parent"
->
+<form action="{{ routes.search_url }}" method="get" role="search" class="search-page-input__parent">
   <search-page-input-component
+    class="search-page-input-component--ogee"
     style="{% render 'size-style', settings: block_settings %}{% render 'spacing-style', settings: block_settings %}"
     {{ block.shopify_attributes }}
   >
-    <label
-      for="SearchPageInput--{{ block.id }}"
-      class="visually-hidden"
-    >
+    <label for="SearchPageInput--{{ block.id }}" class="visually-hidden">
       {{ 'content.search_input_label' | t }}
     </label>
     <span class="svg-wrapper search__icon{{ color_scheme }}">
       {{ 'icon-search.svg' | inline_asset_content }}
     </span>
-    <input
-      name="type"
-      value="product"
-      type="hidden"
-    >
+    <input name="type" value="{{ active_type }}" type="hidden">
     <input
       class="search-page-input{{ color_scheme }}"
       id="SearchPageInput--{{ block.id }}"
@@ -45,53 +44,30 @@
       placeholder="{{ 'content.search_input_placeholder' | t }}"
     >
     <a
-      href="{{ routes.search_url }}?type=product&q="
+      href="{{ routes.search_url }}?type={{ active_type }}&q="
       class="search__reset-button{{ color_scheme }}"
       aria-label="{{ 'accessibility.reset_search' | t }}"
     >
       <span class="svg-wrapper search__reset-button-icon">
         {{ 'icon-reset.svg' | inline_asset_content }}
       </span>
-      <span class="search__reset-button-text">
-        {{ 'actions.clear' | t }}
-      </span>
+      <span class="search__reset-button-text">{{ 'actions.clear' | t }}</span>
     </a>
   </search-page-input-component>
 
-  {% if search.results.size == 0 and search.terms != blank %}
+  {% if active_type == 'product' and search.results.size == 0 and search.terms != blank %}
     <div class="search-results__no-results">
-      <p>
-        {{ 'content.search_results_no_results_check_spelling' | t: terms: search.terms }}
-      </p>
+      <p>{{ 'content.search_results_no_results_check_spelling' | t: terms: search.terms }}</p>
     </div>
   {% endif %}
 </form>
 
 {% stylesheet %}
-  .search-page-input {
-    width: 100%;
-    color: var(--color-input-text);
-    background-color: var(--color-input-background);
-    padding-block: var(--padding-lg);
-    padding-inline: calc(var(--icon-size-lg) + var(--margin-xl) * 1.5);
-    text-overflow: ellipsis;
-    overflow: hidden;
-    border-radius: var(--style-border-radius-inputs);
-    border: var(--style-border-width-inputs) solid var(--color-input-border);
-
-    @media screen and (max-width: 749px) {
-      padding-inline: calc(var(--margin-xs) + var(--icon-size-lg) + var(--padding-md));
-    }
-  }
-
-  .search-page-input::placeholder {
-    color: rgb(var(--color-input-text-rgb) / var(--opacity-subdued-text));
-  }
-
   .search-page-input__parent {
     display: flex;
     flex-direction: column;
     align-items: var(--horizontal-alignment);
+    width: 100%;
   }
 
   .search-results__no-results {
@@ -102,60 +78,62 @@
     position: relative;
     width: 100%;
     display: flex;
-    top: 0;
-    max-width: var(--size-style-width);
     align-items: center;
     background-color: var(--color-background);
-    margin: var(--margin-2xl) 0 var(--margin-md);
+  }
 
-    @media screen and (max-width: 749px) {
-      max-width: 100%;
-    }
+  .search-page-input-component--ogee {
+    max-width: 600px;
+    margin: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-page-input {
+    width: 100%;
+    min-height: 54px;
+    color: var(--color-input-text);
+    background: transparent;
+    padding: 12px 48px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+  }
+
+  .search-page-input::placeholder {
+    color: rgb(var(--color-input-text-rgb) / var(--opacity-subdued-text));
   }
 
   search-page-input-component .search__icon,
-  search-page-input-component .search__icon:hover,
-  search-page-input-component .search__reset-button,
-  search-page-input-component .search__reset-button:hover {
-    background: transparent;
+  search-page-input-component .search__reset-button {
     position: absolute;
-    top: auto;
-    width: var(--icon-size-lg);
-    height: var(--icon-size-lg);
-  }
-
-  search-page-input-component .search__icon svg,
-  search-page-input-component .search__reset-button svg {
-    width: var(--icon-size-md);
-    height: var(--icon-size-md);
-  }
-
-  search-page-input-component .search__icon svg {
-    color: var(--color-input-text);
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
   }
 
   search-page-input-component .search__icon {
-    left: var(--margin-lg);
-
-    @media screen and (max-width: 749px) {
-      left: var(--margin-md);
-    }
+    left: 0;
+    pointer-events: none;
   }
 
   search-page-input-component .search__reset-button {
-    border-radius: 100%;
+    right: 0;
+    border-radius: 50%;
     color: var(--color-input-text);
-    right: var(--margin-lg);
     cursor: pointer;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity var(--animation-speed) var(--animation-easing),
-      visibility var(--animation-speed) var(--animation-easing);
+  }
 
-    @media screen and (max-width: 749px) {
-      right: var(--margin-md);
-    }
+  search-page-input-component .search__icon svg,
+  search-page-input-component .search__reset-button svg {
+    width: 18px;
+    height: 18px;
   }
 
   search-page-input-component:has(.search-page-input:not(:placeholder-shown)) .search__reset-button {
@@ -164,35 +142,18 @@
     pointer-events: auto;
   }
 
-  search-page-input-component .search__reset-button-icon {
-    vertical-align: middle;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--icon-size-lg);
-    height: var(--icon-size-lg);
-    transition: transform var(--animation-speed) var(--animation-easing);
-  }
-
-  search-page-input-component .search__reset-button:active .search__reset-button-icon {
-    transform: scale(0.9);
-  }
-
-  search-page-input-component .search__reset-button-icon svg {
-    width: var(--icon-size-md);
-    height: var(--icon-size-md);
-  }
-
-  search-page-input-component .search__reset-button--hidden {
-    cursor: default;
-    opacity: 0;
-    transition: opacity var(--animation-speed) var(--animation-easing);
-    pointer-events: none;
-    visibility: hidden;
-  }
-
   search-page-input-component .search__reset-button-text {
     display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .search-page-input-component--ogee {
+      max-width: 100%;
+    }
+
+    .search-page-input {
+      min-height: 48px;
+    }
   }
 {% endstylesheet %}
 
@@ -206,14 +167,8 @@
       "id": "width",
       "label": "t:settings.width",
       "options": [
-        {
-          "value": "fill",
-          "label": "t:options.fill"
-        },
-        {
-          "value": "custom",
-          "label": "t:options.custom"
-        }
+        { "value": "fill", "label": "t:options.fill" },
+        { "value": "custom", "label": "t:options.custom" }
       ],
       "default": "custom"
     },

@@ -9,6 +9,7 @@
   @param {string} [image_aspect_ratio] - The aspect ratio to display the image. Defaults to image's natural ratio
   @param {boolean} [image_hover] - Whether to show a secondary image on hover and focus
   @param {string} [image_sizes] - The sizes attribute for responsive images. Defaults to 'auto'
+  @param {string} [variant] - Optional visual variant
 {%- enddoc -%}
 
 {% liquid
@@ -42,7 +43,7 @@
   >
 {%- endif -%}
 <div
-  class="resource-card{% if style == 'overlay' %} resource-card--overlay{% endif %}"
+  class="resource-card{% if style == 'overlay' %} resource-card--overlay{% endif %}{% if variant == 'ogee-search' %} resource-card--ogee-search{% endif %}"
   data-resource-type="{{ resource_type }}"
 >
   <a
@@ -61,7 +62,7 @@
       data-view-transition-to-main-product
     {% endif %}
   >
-    {%- if resource_type == 'product' or single_thumbnail_collection -%}
+    {%- if resource_type == 'product' or single_thumbnail_collection or resource_type == 'article' -%}
       {% comment %}
         In a search context, product.featured_media is updated to reflect the most appropriate variant
         Use featured_media.preview_image over featured_image
@@ -312,4 +313,48 @@
       --resource-card-secondary-image-opacity: 1;
     }
   }
-{% endstylesheet %}
+
+  .resource-card--ogee-search {
+    gap: 10px;
+    opacity: 1;
+    animation: none;
+  }
+
+  .resource-card--ogee-search .resource-card__media {
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 4%);
+  }
+
+  .resource-card--ogee-search .resource-card__image {
+    width: 100%;
+    aspect-ratio: var(--resource-card-aspect-ratio, 1);
+  }
+
+  .resource-card--ogee-search .resource-card__content {
+    gap: 4px;
+  }
+
+  .resource-card--ogee-search .resource-card__title {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .resource-card--ogee-search .resource-card__subtext {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .resource-card--ogee-search[data-resource-type='page'],
+    .resource-card--ogee-search[data-resource-type='article'] {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      align-items: center;
+      gap: 16px;
+    }
+
+    .resource-card--ogee-search[data-resource-type='page'] .resource-card__media:empty {
+      display: block;
+      min-height: 76px;
+      background: rgb(var(--color-foreground-rgb) / 4%);
+    }
+  }{% endstylesheet %}

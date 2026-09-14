@@ -39,6 +39,8 @@
       class="predictive-search color-{{ settings.popover_color_scheme }}{% if class != blank %} {{ class | strip }}{% endif %}"
       style="--product-corner-radius: {{ settings.product_corner_radius | default: 8 | append: 'px' }}; --card-corner-radius: {{ settings.card_corner_radius | default: 8 | append: 'px' }};{% if settings.card_title_case == 'uppercase' %} --title-case: uppercase;{% endif %}"
       data-section-id="predictive-search"
+      data-search-prompts="{{ settings.search_trending_menu.links | map: 'title' | json | escape }}"
+      data-search-prompt-prefix="{{ 'content.search' | t | escape }}"
       data-testid="{{ 'search-component--modal' }}"
       role="search"
       aria-label="{{ 'content.search_input_label' | t }}"
@@ -82,6 +84,12 @@
               name="options[prefix]"
               type="hidden"
               value="last"
+            >
+            <input
+              name="type"
+              type="hidden"
+              value="product"
+              ref="searchTypeInput"
             >
             <span class="svg-wrapper predictive-search__icon">
               {{ 'icon-search.svg' | inline_asset_content }}
@@ -514,4 +522,57 @@
     --button-color: var(--color-foreground);
     --button-background-color: transparent;
   }
-{% endstylesheet %}
+
+  .search-modal__content {
+    --modal-width: min(1000px, calc(100dvw - 40px));
+    --modal-max-height: min(750px, calc(100dvh - 96px));
+  }
+
+  .search-modal .predictive-search-form__header {
+    min-height: 70px;
+    padding-inline: 24px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-modal .predictive-search-form__header-inner {
+    border: 0;
+  }
+
+  .search-modal .predictive-search-form__content {
+    max-height: calc(var(--modal-max-height) - 70px);
+  }
+
+  .search-modal .predictive-search-form__content-wrapper {
+    box-shadow: 0 18px 40px rgb(0 0 0 / 12%);
+  }
+
+  .search-modal .predictive-search__search-button {
+    min-width: 180px;
+    border-radius: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .search-modal__content {
+      width: var(--modal-width);
+      margin-block-start: 96px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .search-modal__content {
+      width: 100dvw;
+      max-width: none;
+      height: 100dvh;
+      max-height: none;
+      margin: 0;
+    }
+
+    .search-modal .predictive-search-form__header {
+      min-height: 71px;
+      padding-inline: 16px 12px;
+    }
+
+    .search-modal .predictive-search-form__content {
+      max-height: calc(100dvh - 71px);
+    }
+  }{% endstylesheet %}

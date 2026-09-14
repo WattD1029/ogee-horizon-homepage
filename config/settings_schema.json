@@ -2116,6 +2116,16 @@
         "info": "t:settings.empty_state_collection_info"
       },
       {
+        "type": "collection",
+        "id": "search_new_collection",
+        "label": "t:settings.new_arrivals"
+      },
+      {
+        "type": "link_list",
+        "id": "search_trending_menu",
+        "label": "t:settings.menu"
+      },
+      {
         "type": "header",
         "content": "t:names.predictive_search"
       },
