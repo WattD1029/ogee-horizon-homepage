@@ -18,13 +18,35 @@ class HeaderDrawer extends Component {
     super.connectedCallback();
 
     this.addEventListener('keyup', this.#onKeyUp);
+    this.addEventListener('keydown', this.#onOgeeTab);
     this.#setupAnimatedElementListeners();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('keyup', this.#onKeyUp);
+    this.removeEventListener('keydown', this.#onOgeeTab);
   }
+
+  /** Keep Tab cycling among visible controls, excluding closed nested disclosures.
+   * @param {KeyboardEvent} event
+   */
+  #onOgeeTab = (event) => {
+    if (!this.hasAttribute('data-ogee-drawer') || !this.isOpen || event.key !== 'Tab') return;
+    const levels = [...this.querySelectorAll('.ogee-drawer__details[open] > .ogee-drawer__level')];
+    const container = levels.at(-1) || this.refs.menuDrawer;
+    const controls = [...container.querySelectorAll('button:enabled, a[href], summary')]
+      .filter(element => element instanceof HTMLElement && element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden');
+    const first = controls[0];
+    const last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
+  };
 
   /**
    * Close the main menu drawer when the Escape key is pressed
@@ -33,7 +55,10 @@ class HeaderDrawer extends Component {
   #onKeyUp = (event) => {
     if (event.key !== 'Escape') return;
 
-    this.#close(this.#getDetailsElement(event));
+    const details = this.hasAttribute('data-ogee-drawer') && event.target instanceof Element
+      ? event.target.closest('details[open]')
+      : this.#getDetailsElement(event);
+    if (details instanceof HTMLDetailsElement) this.#close(details);
   };
 
   /**
@@ -57,6 +82,12 @@ class HeaderDrawer extends Component {
   /**
    * Toggle the main menu drawer
    */
+  /** Close the drawer before opening the existing search dialog. */
+  search() {
+    this.close();
+    onAnimationEnd(this.refs.menuDrawer, () => document.querySelector('#search-modal')?.showDialog());
+  }
+
   toggle() {
     return this.isOpen ? this.close() : this.open();
   }
@@ -84,7 +115,11 @@ class HeaderDrawer extends Component {
 
       // Wait for the drawer animation to complete before trapping focus
       const drawer = details.querySelector('.menu-drawer, .menu-drawer__submenu');
-      onAnimationEnd(drawer || details, () => trapFocus(details), { subtree: false });
+      onAnimationEnd(drawer || details, () => {
+        const container = this.hasAttribute('data-ogee-drawer') ? (drawer || details) : details;
+        trapFocus(container);
+        if (this.hasAttribute('data-ogee-drawer')) container.querySelector('button')?.focus();
+      }, { subtree: false });
     });
   }
 
@@ -129,8 +164,15 @@ class HeaderDrawer extends Component {
           removeTrapFocus();
           const openDetails = this.querySelectorAll('details[open]:not(accordion-custom > details)');
           openDetails.forEach(reset);
+          if (this.hasAttribute('data-ogee-drawer')) summary.focus();
         } else {
-          trapFocus(this.refs.details);
+          if (this.hasAttribute('data-ogee-drawer')) {
+            const parent = details.parentElement?.closest('.ogee-drawer__level') || this.refs.menuDrawer;
+            trapFocus(parent);
+            summary.focus();
+          } else {
+            trapFocus(this.refs.details);
+          }
         }
       },
       { subtree: false }
