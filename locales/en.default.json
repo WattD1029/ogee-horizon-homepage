@@ -385,5 +385,30 @@
       "default_title": "Default Title",
       "sticky_add_to_cart": "Quick add to cart bar"
     }
+  },
+  "ogee_menu": {
+    "all_products": "All products",
+    "shop_all": "Shop all",
+    "back": "Back",
+    "favourites": "Favourites",
+    "collections": "Collections",
+    "start_quiz": "Start quiz",
+    "previous": "Previous promotion",
+    "next": "Next promotion",
+    "promotion": "Promotion {{ index }} of {{ total }}",
+    "makeup": "Makeup",
+    "skincare": "Skincare",
+    "accessories": "Accessories",
+    "bundles": "Bundles",
+    "new": "New",
+    "bestsellers": "Bestsellers",
+    "all": "All",
+    "quizzes": "Quizzes",
+    "about": "About",
+    "our_story": "Our story",
+    "press": "Press",
+    "ingredients": "Ingredients",
+    "blog": "Blog",
+    "find_your": "Find your"
   }
 }

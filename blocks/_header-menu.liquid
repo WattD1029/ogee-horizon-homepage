@@ -53,8 +53,6 @@
   {% else %}
     {% liquid
       assign block_settings = block.settings
-      assign menu_content_type = block_settings.menu_style | default: 'text'
-      assign image_border_radius = block_settings.image_border_radius
       assign color_scheme_classes = ''
       assign color_scheme_setting_id = 'color_scheme_' | append: section.settings.menu_row
       assign current_color_scheme = block_settings.color_scheme
@@ -69,11 +67,6 @@
         assign color_scheme_classes = color_scheme_classes | append: ' color-scheme-matches-parent'
       endif
 
-      if block_settings.menu_style == 'featured_collections'
-        assign ratio = block_settings.featured_collections_aspect_ratio
-      elsif block_settings.menu_style == 'featured_products'
-        assign ratio = block_settings.featured_products_aspect_ratio
-      endif
 
       assign menu_titles = ''
       for link in block_settings.menu.links
@@ -158,86 +151,13 @@
                 endif
               endif
             endif
-            if template.name == 'index'
-              if fallback_index == 1
-                assign is_current = true
-              endif
-            endif
           %}
 
-          <li
-            role="presentation"
-            class="menu-list__list-item"
-          >
-            <a
-              href="{{ fallback_url }}"
-              data-skip-node-update="true"
-              class="menu-list__link{% if is_current %} menu-list__link--active{% endif %}"
-              {% if is_current %}
-                aria-current="page"
-              {% endif %}
-              ref="menuitem"
-            >
-              <span class="menu-list__link-title">{{- fallback_title | escape -}}</span>
-            </a>
-          </li>
+          {% render 'ogee-menu-item', title: fallback_title, url: fallback_url, index: fallback_index, settings: block_settings, section: section, current: is_current, color_classes: color_scheme_classes %}
         {% endfor %}
       {% else %}
         {% for link in block_settings.menu.links %}
-          <li
-            role="presentation"
-            class="menu-list__list-item"
-            on:focus="/activate"
-            on:blur="/deactivate"
-            on:pointerenter="/activate"
-            on:pointerleave="/deactivate"
-          >
-            <a
-              href="{{ link.url }}"
-              data-skip-node-update="true"
-              class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
-              {%- if link.links != blank -%}
-                aria-controls="submenu-{{ forloop.index }}"
-                aria-haspopup="true"
-                aria-expanded="false"
-              {%- endif -%}
-              {% if link.current %}
-                aria-current="page"
-              {% endif %}
-              ref="menuitem"
-            >
-              <span class="menu-list__link-title">{{- link.title -}}</span>
-            </a>
-            {%- if link.links != blank -%}
-              <div class="menu-list__submenu{{ color_scheme_classes }}" ref="submenu[]">
-                <div
-                  id="submenu-{{ forloop.index }}"
-                  class="menu-list__submenu-inner"
-                  style="{% render 'submenu-font-styles', settings: block_settings %}"
-                >
-                  {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
-                  <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
-                    <div
-                      class="mega-menu__grid"
-                      data-menu-grid-id="{{ list_id }}"
-                    >
-                      {% render 'mega-menu-list',
-                        parent_link: link,
-                        id: list_id,
-                        section: section,
-                        grid_columns_count: 6,
-                        grid_columns_count_tablet: 4,
-                        grid_columns_count_collection_images: 8,
-                        menu_content_type: menu_content_type,
-                        content_aspect_ratio: ratio,
-                        image_border_radius: image_border_radius
-                      %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            {%- endif -%}
-          </li>
+          {% render 'ogee-menu-item', title: link.title, url: link.url, link: link, index: forloop.index, settings: block_settings, section: section, current: link.current, color_classes: color_scheme_classes %}
         {% endfor %}
       {% endif %}
       <li
@@ -1077,6 +997,503 @@
       "id": "drawer_dividers",
       "label": "t:settings.dividers",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.all"
+    },
+    {
+      "type": "checkbox",
+      "id": "ogee_panels_enabled",
+      "label": "t:ogee_menu.enabled",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "all_trigger_url",
+      "label": "t:ogee_menu.trigger",
+      "default": "/collections/all"
+    },
+    {
+      "type": "link_list",
+      "id": "all_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_promo_image",
+      "label": "t:ogee_menu.promo"
+    },
+    {
+      "type": "text",
+      "id": "all_promo_heading",
+      "label": "t:ogee_menu.promo_heading"
+    },
+    {
+      "type": "url",
+      "id": "all_promo_url",
+      "label": "t:ogee_menu.promo_link"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_promo_second_image",
+      "label": "t:ogee_menu.promo_second"
+    },
+    {
+      "type": "text",
+      "id": "all_promo_second_heading",
+      "label": "t:ogee_menu.promo_second_heading"
+    },
+    {
+      "type": "url",
+      "id": "all_promo_second_url",
+      "label": "t:ogee_menu.promo_second_link"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_makeup_image",
+      "label": "t:ogee_menu.makeup"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_skincare_image",
+      "label": "t:ogee_menu.skincare"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_accessories_image",
+      "label": "t:ogee_menu.accessories"
+    },
+    {
+      "type": "image_picker",
+      "id": "all_bundles_image",
+      "label": "t:ogee_menu.bundles"
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.makeup"
+    },
+    {
+      "type": "url",
+      "id": "makeup_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "collection",
+      "id": "makeup_collection",
+      "label": "t:ogee_menu.collection"
+    },
+    {
+      "type": "product_list",
+      "id": "makeup_products",
+      "label": "t:ogee_menu.products",
+      "limit": 6
+    },
+    {
+      "type": "link_list",
+      "id": "makeup_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "text",
+      "id": "makeup_heading",
+      "label": "t:ogee_menu.heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "makeup_show_prices",
+      "label": "t:ogee_menu.show_prices",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "makeup_promo_image",
+      "label": "t:ogee_menu.promo"
+    },
+    {
+      "type": "text",
+      "id": "makeup_promo_heading",
+      "label": "t:ogee_menu.promo_heading"
+    },
+    {
+      "type": "url",
+      "id": "makeup_promo_url",
+      "label": "t:ogee_menu.promo_link"
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.skincare"
+    },
+    {
+      "type": "url",
+      "id": "skincare_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "collection",
+      "id": "skincare_collection",
+      "label": "t:ogee_menu.collection"
+    },
+    {
+      "type": "product_list",
+      "id": "skincare_products",
+      "label": "t:ogee_menu.products",
+      "limit": 6
+    },
+    {
+      "type": "link_list",
+      "id": "skincare_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "text",
+      "id": "skincare_heading",
+      "label": "t:ogee_menu.heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "skincare_show_prices",
+      "label": "t:ogee_menu.show_prices",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "skincare_promo_image",
+      "label": "t:ogee_menu.promo"
+    },
+    {
+      "type": "text",
+      "id": "skincare_promo_heading",
+      "label": "t:ogee_menu.promo_heading"
+    },
+    {
+      "type": "url",
+      "id": "skincare_promo_url",
+      "label": "t:ogee_menu.promo_link"
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.accessories"
+    },
+    {
+      "type": "url",
+      "id": "accessories_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "collection",
+      "id": "accessories_collection",
+      "label": "t:ogee_menu.collection"
+    },
+    {
+      "type": "product_list",
+      "id": "accessories_products",
+      "label": "t:ogee_menu.products",
+      "limit": 6
+    },
+    {
+      "type": "link_list",
+      "id": "accessories_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "text",
+      "id": "accessories_heading",
+      "label": "t:ogee_menu.heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "accessories_show_prices",
+      "label": "t:ogee_menu.show_prices",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "accessories_promo_image",
+      "label": "t:ogee_menu.promo"
+    },
+    {
+      "type": "text",
+      "id": "accessories_promo_heading",
+      "label": "t:ogee_menu.promo_heading"
+    },
+    {
+      "type": "url",
+      "id": "accessories_promo_url",
+      "label": "t:ogee_menu.promo_link"
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.bundles"
+    },
+    {
+      "type": "url",
+      "id": "bundles_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "collection",
+      "id": "bundles_collection",
+      "label": "t:ogee_menu.collection"
+    },
+    {
+      "type": "product_list",
+      "id": "bundles_products",
+      "label": "t:ogee_menu.products",
+      "limit": 6
+    },
+    {
+      "type": "link_list",
+      "id": "bundles_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "text",
+      "id": "bundles_heading",
+      "label": "t:ogee_menu.heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "bundles_show_prices",
+      "label": "t:ogee_menu.show_prices",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.new"
+    },
+    {
+      "type": "url",
+      "id": "new_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "collection",
+      "id": "new_collection",
+      "label": "t:ogee_menu.collection"
+    },
+    {
+      "type": "product_list",
+      "id": "new_products",
+      "label": "t:ogee_menu.products",
+      "limit": 5
+    },
+    {
+      "type": "link_list",
+      "id": "new_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "image_picker",
+      "id": "new_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.bestsellers"
+    },
+    {
+      "type": "url",
+      "id": "bestsellers_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "collection",
+      "id": "bestsellers_collection",
+      "label": "t:ogee_menu.collection"
+    },
+    {
+      "type": "product_list",
+      "id": "bestsellers_products",
+      "label": "t:ogee_menu.products",
+      "limit": 5
+    },
+    {
+      "type": "link_list",
+      "id": "bestsellers_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "image_picker",
+      "id": "bestsellers_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.quizzes"
+    },
+    {
+      "type": "url",
+      "id": "quizzes_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "text",
+      "id": "quiz_complexion_title",
+      "label": "t:ogee_menu.title"
+    },
+    {
+      "type": "textarea",
+      "id": "quiz_complexion_description",
+      "label": "t:ogee_menu.description"
+    },
+    {
+      "type": "image_picker",
+      "id": "quiz_complexion_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "url",
+      "id": "quiz_complexion_url",
+      "label": "t:ogee_menu.link"
+    },
+    {
+      "type": "text",
+      "id": "quiz_contour_title",
+      "label": "t:ogee_menu.title"
+    },
+    {
+      "type": "textarea",
+      "id": "quiz_contour_description",
+      "label": "t:ogee_menu.description"
+    },
+    {
+      "type": "image_picker",
+      "id": "quiz_contour_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "url",
+      "id": "quiz_contour_url",
+      "label": "t:ogee_menu.link"
+    },
+    {
+      "type": "header",
+      "content": "t:ogee_menu.about"
+    },
+    {
+      "type": "url",
+      "id": "about_trigger_url",
+      "label": "t:ogee_menu.trigger"
+    },
+    {
+      "type": "link_list",
+      "id": "about_menu",
+      "label": "t:ogee_menu.menu"
+    },
+    {
+      "type": "text",
+      "id": "about_1_title",
+      "label": "t:ogee_menu.title"
+    },
+    {
+      "type": "url",
+      "id": "about_1_url",
+      "label": "t:ogee_menu.link"
+    },
+    {
+      "type": "image_picker",
+      "id": "about_1_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "text",
+      "id": "about_2_title",
+      "label": "t:ogee_menu.title"
+    },
+    {
+      "type": "url",
+      "id": "about_2_url",
+      "label": "t:ogee_menu.link"
+    },
+    {
+      "type": "image_picker",
+      "id": "about_2_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "text",
+      "id": "about_3_title",
+      "label": "t:ogee_menu.title"
+    },
+    {
+      "type": "url",
+      "id": "about_3_url",
+      "label": "t:ogee_menu.link"
+    },
+    {
+      "type": "image_picker",
+      "id": "about_3_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "text",
+      "id": "about_4_title",
+      "label": "t:ogee_menu.title"
+    },
+    {
+      "type": "url",
+      "id": "about_4_url",
+      "label": "t:ogee_menu.link"
+    },
+    {
+      "type": "image_picker",
+      "id": "about_4_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "header",
+      "content": "Mobile drawer promotions"
+    },
+    {
+      "type": "select",
+      "id": "mobile_promo_count",
+      "label": "t:ogee_menu.mobile_promo_count",
+      "options": [
+        {
+          "value": "0",
+          "label": "None"
+        },
+        {
+          "value": "1",
+          "label": "One"
+        },
+        {
+          "value": "2",
+          "label": "Two"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_promo_1_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "text",
+      "id": "mobile_promo_1_heading",
+      "label": "t:ogee_menu.heading"
+    },
+    {
+      "type": "url",
+      "id": "mobile_promo_1_url",
+      "label": "t:ogee_menu.link"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_promo_2_image",
+      "label": "t:ogee_menu.image"
+    },
+    {
+      "type": "text",
+      "id": "mobile_promo_2_heading",
+      "label": "t:ogee_menu.heading"
+    },
+    {
+      "type": "url",
+      "id": "mobile_promo_2_url",
+      "label": "t:ogee_menu.link"
     }
   ]
 }
