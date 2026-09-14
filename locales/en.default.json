@@ -43,6 +43,7 @@
     "play_model": "Play 3D model",
     "play_video": "Play video",
     "loading_product_recommendations": "Loading product recommendations",
+    "load_more_progress": "Product loading progress",
     "rating": "Rating of this product is {{ rating }} out of 5",
     "remove_item": "Remove {{ title}}",
     "remove": "Remove",
