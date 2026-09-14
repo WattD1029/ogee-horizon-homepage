@@ -1,3 +1,7 @@
+{% doc %}
+  Renders the static header logo using merchant image settings or the Ogee fallback artwork.
+  Desktop and mobile fallback dimensions follow the global header design.
+{% enddoc %}
 {% liquid
   assign block_settings = block.settings
   assign use_inverse_logo = false
@@ -41,7 +45,7 @@
   {{ block.shopify_attributes }}
 >
   {% liquid
-    assign logo_style = '--header-logo-image-width: 120px; --header-logo-image-width-mobile: 96px; --header-logo-image-height: 32.4px; --header-logo-image-height-mobile: 26px;'
+    assign logo_style = '--header-logo-image-width: 120px; --header-logo-image-width-mobile: 100px; --header-logo-image-height: 32.4px; --header-logo-image-height-mobile: 27.007px;'
 
     if settings.logo != blank
       assign logo_width = settings.logo_height | times: settings.logo.aspect_ratio | ceil
