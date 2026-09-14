@@ -59,7 +59,7 @@ Read the [shared contract and verification plan](README.md#shared-implementation
 
 No new theme files are proposed. Shared snippets introduced by all-menu are dependencies, not duplicate files to create.
 
-`layout/theme.liquid` is an inspection-only mount point. Route templates and global product-card behavior are outside scope. This planning change does not modify any of these implementation files.
+`layout/theme.liquid` is an inspection-only mount point. Route templates and global product-card behavior are outside scope. The implementation uses these integration points; new scoped snippets are listed in the branch diff.
 
 The announcement bar and footer are completed and excluded. Header acceptance checks verify compatibility with their existing output; they do not authorize changes to those completed sections.
 
@@ -84,13 +84,13 @@ Proposed setting IDs/types require validation against current Shopify schema lim
 - [ ] No logo/action collisions, unreachable overflow links or focus loss on resize.
 - [ ] Run the shared schema/Theme Check, unpublished Shopify preview and desktop/tablet/mobile checks in the index. Record screenshots/videos and any unavailable checks.
 
-These are planned acceptance checks, not claims of tested implementation.
+The checklist records the original acceptance scope. Completed checks and remaining external verification are distinguished in [implementation-report.md](implementation-report.md).
 
 ## Dependencies and integration
 
 - Use the completed announcement bar unchanged; coordinate mobile-menu and settle remaining shell integration before all-menu.
 
-All area branches begin at the shared planning commit and contain the other plans for reference. Integrate the listed prerequisite implementations before coding; creating the branches does not create those future changes. Keep shared schema/group/locale edits focused and append an implementation changelog entry when work is delivered.
+Area branches are stacked in the order recorded in [branches.json](branches.json). Each includes its implemented prerequisites and a focused change for its own area. Shared review fixes were folded into the owning branch.
 
 ## Risks and decisions
 
@@ -99,8 +99,8 @@ All area branches begin at the shared planning commit and contain the other plan
 
 ## Completion boundary
 
-The current request is branches and plans. Future work should deliver this area and its relevant checks as a focused diff. Publishing, store-navigation mutations and external messages are outside this planning task.
+Implementation is complete locally on the named branch. See [implementation report](implementation-report.md) for integrated verification, measured dimensions and remaining Shopify preview/configuration work. Publishing remains outside this task.
 
-## Implementation — 2026-09-09
+## Implementation â€” 2026-09-09
 
-Implemented on `codex/menu-footer-header`. Mobile rail is 50px plus the existing 1px divider; desktop remains 68px plus divider. Fallback logo is 100 × 27.007px mobile and 120 × 32.4px desktop. Merchant logo settings remain authoritative. Shopify Liquid validation passed. Browser measurements at 390 and 1920px confirmed rail dimensions and no horizontal overflow. Announcement and footer are unchanged.
+Implemented on `codex/menu-footer-header`. Mobile rail is 50px plus the existing 1px divider; desktop remains 68px plus divider. Fallback logo is 100 Ã— 27.007px mobile and 120 Ã— 32.4px desktop. Merchant logo settings remain authoritative. Shopify Liquid validation passed. Browser measurements at 390 and 1920px confirmed rail dimensions and no horizontal overflow. Announcement and footer are unchanged.
