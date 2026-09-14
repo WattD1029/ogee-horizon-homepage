@@ -48,6 +48,16 @@
       {% render 'ogee-menu-collection', key: key, settings: settings, link: link, limit: 5, show_promo: true %}
     {% when 'accessories' %}
       {% render 'ogee-menu-collection', key: key, settings: settings, link: link, limit: 5, show_promo: true %}
+    {% when 'bundles' %}
+      {% render 'ogee-menu-collection', key: key, settings: settings, link: link, limit: 6, show_promo: false %}
+    {% when 'new' %}
+      {% render 'ogee-menu-favourites', key: key, settings: settings, limit: 3 %}
+    {% when 'bestsellers' %}
+      {% render 'ogee-menu-favourites', key: key, settings: settings, limit: 5 %}
+    {% when 'quizzes' %}
+      {% render 'ogee-menu-quizzes', settings: settings %}
+    {% when 'about' %}
+      {% render 'ogee-menu-about', settings: settings, link: link %}
     {% else %}
       {% for child in panel_links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}
   {% endcase %}

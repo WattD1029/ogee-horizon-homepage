@@ -1,0 +1,58 @@
+{% doc %}
+  One mobile entry, with up to three native navigation levels and shared panel data.
+  @param {string} title - Entry title
+  @param {string} url - Entry URL
+  @param {object} settings - Header menu settings
+  @param {string} id - Unique path within this drawer
+  @param {number} [depth] - Current navigation level
+  @param {object} [link] - Native menu entry
+{% enddoc %}
+{%- capture panel_key -%}{% render 'ogee-menu-key', settings: settings, url: url %}{%- endcapture -%}
+{% liquid
+  assign panel_key = panel_key | strip
+  assign level = depth | default: 1
+  assign next_level = level | plus: 1
+  assign has_panel = false
+  if panel_key != blank or link.links != blank
+    if level < 3
+      assign has_panel = true
+    endif
+  endif
+%}
+<li>
+  {% if has_panel %}
+    <details class="ogee-drawer__details" id="OgeeDrawer-{{ id }}">
+      <summary class="ogee-drawer__link" on:click="header-drawer/open/submenu" aria-expanded="false" aria-controls="OgeeDrawerPanel-{{ id }}">
+        <span>{{ title | escape }}</span><span class="svg-wrapper">{{ 'icon-caret.svg' | inline_asset_content }}</span>
+      </summary>
+      <div class="menu-drawer__submenu ogee-drawer__level" id="OgeeDrawerPanel-{{ id }}" tabindex="-1">
+        {% render 'ogee-menu-drawer-rail' %}
+        <button type="button" class="ogee-drawer__back" on:click="header-drawer/back" aria-label="{{ 'ogee_menu.back' | t }}: {{ title | escape }}"><span class="svg-wrapper">{{ 'icon-caret.svg' | inline_asset_content }}</span>{{ title | escape }}</button>
+        <div class="ogee-drawer__body{% if panel_key == 'quizzes' %} ogee-drawer__body--quizzes{% endif %}">
+          {% if panel_key == 'all' %}
+            {% assign all_links = settings.all_menu.links | default: link.links %}
+            <ul class="ogee-drawer__links">
+              {% if all_links != blank %}
+                {% for child in all_links %}{% assign child_id = id | append: '-' | append: forloop.index %}{% render 'ogee-menu-mobile-item', title: child.title, url: child.url, link: child, settings: settings, id: child_id, depth: next_level %}{% endfor %}
+              {% else %}
+                {% assign categories = 'makeup,skincare,accessories,bundles' | split: ',' %}
+                {% for key in categories %}
+                  {% assign category = collections[key] %}{% assign child_id = id | append: '-' | append: key %}
+                  {% if category != blank %}{% render 'ogee-menu-mobile-item', title: category.title, url: category.url, settings: settings, id: child_id, depth: next_level %}{% endif %}
+                {% endfor %}
+              {% endif %}
+            </ul>
+            <a class="ogee-menu-shop-all" href="{{ routes.all_products_collection_url }}">{{ 'ogee_menu.all_products' | t }} ({{ collections.all.all_products_count }})</a>
+          {% elsif panel_key != blank %}
+            {% render 'ogee-menu-panel', key: panel_key, settings: settings, link: link %}
+          {% else %}
+            <ul class="ogee-drawer__links">{% for child in link.links %}{% assign child_id = id | append: '-' | append: forloop.index %}{% render 'ogee-menu-mobile-item', title: child.title, url: child.url, link: child, settings: settings, id: child_id, depth: next_level %}{% endfor %}</ul>
+            <a class="ogee-menu-shop-all" href="{{ url }}">{{ 'ogee_menu.shop_all' | t }} {{ title | escape }}</a>
+          {% endif %}
+        </div>
+      </div>
+    </details>
+  {% else %}
+    <a class="ogee-drawer__link" href="{{ url }}" {% if link.current %}aria-current="page"{% endif %}>{{ title | escape }}</a>
+  {% endif %}
+</li>
