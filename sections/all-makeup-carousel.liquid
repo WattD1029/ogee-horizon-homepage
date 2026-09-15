@@ -82,11 +82,12 @@
 
         {% capture slides %}
           {% for product in carousel_collection.products limit: product_limit %}
+            {% assign carousel_card_id = 'all-makeup-' | append: product.id %}
             {% capture slide_children %}
               {% render 'product-carousel-card',
                 product: product,
                 section_id: section.id,
-                card_id: 'all-makeup-' | append: product.id,
+                card_id: carousel_card_id,
                 badge_label: section.settings.badge_label,
                 badge_limit: section.settings.badge_count,
                 card_index: forloop.index,
@@ -128,10 +129,11 @@
       {% else %}
         <div class="all-makeup-carousel__placeholder-grid" aria-label="{{ section.settings.heading | escape }}">
           {% for placeholder_index in (1..4) %}
+            {% assign placeholder_card_id = 'all-makeup-placeholder-' | append: placeholder_index %}
             {% render 'product-carousel-card',
               product: blank,
               section_id: section.id,
-              card_id: 'all-makeup-placeholder-' | append: placeholder_index,
+              card_id: placeholder_card_id,
               badge_label: section.settings.badge_label,
               badge_limit: section.settings.badge_count,
               card_index: forloop.index,

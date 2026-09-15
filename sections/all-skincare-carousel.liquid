@@ -218,11 +218,12 @@
 
               {% capture slides %}
                 {% for product in tab_collection.products limit: product_limit %}
+                  {% assign carousel_card_id = tab_block.id | append: '-' | append: product.id %}
                   {% capture slide_children %}
                     {% render 'product-carousel-card',
                       product: product,
                       section_id: section.id,
-                      card_id: tab_block.id | append: '-' | append: product.id,
+                      card_id: carousel_card_id,
                       show_badge: false,
                       subtitle_source: section.settings.subtitle_source,
                       show_vendor: section.settings.show_vendor,
@@ -263,10 +264,11 @@
             {% else %}
               <div class="all-skincare-carousel__placeholder-grid" aria-label="{{ panel_label | escape }}">
                 {% for placeholder_index in (1..4) %}
+                  {% assign placeholder_card_id = tab_block.id | append: '-placeholder-' | append: placeholder_index %}
                   {% render 'product-carousel-card',
                     product: blank,
                     section_id: section.id,
-                    card_id: tab_block.id | append: '-placeholder-' | append: placeholder_index,
+                    card_id: placeholder_card_id,
                     show_badge: false,
                     show_reviews: section.settings.show_reviews,
                     show_wishlist: section.settings.show_wishlist,
@@ -322,11 +324,12 @@
 
             {% capture slides %}
               {% for product in fallback_collection.products limit: product_limit %}
+                {% assign carousel_card_id = 'fallback-' | append: product.id %}
                 {% capture slide_children %}
                   {% render 'product-carousel-card',
                     product: product,
                     section_id: section.id,
-                    card_id: 'fallback-' | append: product.id,
+                    card_id: carousel_card_id,
                     show_badge: false,
                     subtitle_source: section.settings.subtitle_source,
                     show_vendor: section.settings.show_vendor,
@@ -365,10 +368,11 @@
           {% else %}
             <div class="all-skincare-carousel__placeholder-grid" aria-label="{{ fallback_panel_label | escape }}">
               {% for placeholder_index in (1..4) %}
+                {% assign fallback_card_id = 'fallback-placeholder-' | append: placeholder_index %}
                 {% render 'product-carousel-card',
                   product: blank,
                   section_id: section.id,
-                  card_id: 'fallback-placeholder-' | append: placeholder_index,
+                  card_id: fallback_card_id,
                   show_badge: false,
                   show_reviews: section.settings.show_reviews,
                   show_wishlist: section.settings.show_wishlist,
