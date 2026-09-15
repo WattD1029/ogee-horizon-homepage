@@ -23,11 +23,14 @@
   >
     {% for resource_type in resource_types %}
       {% liquid
-        assign label_key = 'content.search_results_resource_products'
+        assign tab_label = 'Product'
+        assign view_all_label = 'View all products'
         if resource_type == 'page'
-          assign label_key = 'content.search_results_resource_pages'
+          assign tab_label = 'Page'
+          assign view_all_label = 'View all pages'
         elsif resource_type == 'article'
-          assign label_key = 'content.search_results_resource_articles'
+          assign tab_label = 'Blog'
+          assign view_all_label = 'View all blogs'
         endif
       %}
       <button
@@ -39,9 +42,10 @@
         aria-selected="{% if active_type == resource_type %}true{% else %}false{% endif %}"
         tabindex="{% if active_type == resource_type %}0{% else %}-1{% endif %}"
         data-search-resource-tab="{{ resource_type }}"
+        data-search-view-all-label="{{ view_all_label | escape }}"
         on:keydown="/onSearchTabKeyDown"
       >
-        {{ label_key | t }}
+        {{ tab_label }}
       </button>
     {% endfor %}
   </div>
@@ -52,11 +56,11 @@
   >
     {% for resource_type in resource_types %}
       {% liquid
-        assign label_key = 'content.search_results_resource_products'
+        assign tab_label = 'Product'
         if resource_type == 'page'
-          assign label_key = 'content.search_results_resource_pages'
+          assign tab_label = 'Page'
         elsif resource_type == 'article'
-          assign label_key = 'content.search_results_resource_articles'
+          assign tab_label = 'Blog'
         endif
       %}
       <a
@@ -64,7 +68,7 @@
         href="{{ routes.search_url }}?type={{ resource_type }}&q={{ encoded_terms }}"
         {% if active_type == resource_type %}aria-current="page"{% endif %}
       >
-        {{ label_key | t }}
+        {{ tab_label }}
       </a>
     {% endfor %}
   </nav>

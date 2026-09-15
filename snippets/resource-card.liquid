@@ -32,6 +32,20 @@
       assign featured_media_url = resource.featured_media.preview_image | image_url: width: image_width
     endif
   endif
+
+  assign product_subtitle = ''
+  if resource_type == 'product' and variant == 'ogee-search'
+    assign product_subtitle = resource.metafields.custom.subtitle.value
+    if product_subtitle == blank
+      assign product_subtitle = resource.metafields.custom.short_description.value
+    endif
+    if product_subtitle == blank
+      assign product_subtitle = resource.metafields.descriptors.subtitle.value
+    endif
+    if product_subtitle == blank
+      assign product_subtitle = resource.type
+    endif
+  endif
 %}
 
 {%- if resource_type == 'product' and settings.transition_to_main_product -%}
@@ -137,6 +151,18 @@
         </div>
       {%- endif -%}
     {%- endif -%}
+
+    {% if resource_type == 'product' and variant == 'ogee-search' %}
+      <button
+        type="button"
+        class="resource-card__wishlist"
+        aria-label="Save {{ resource.title | escape }}"
+      >
+        <svg viewBox="0 0 18 18" focusable="false" aria-hidden="true">
+          <path d="M9 15.2 3.4 9.7C1.9 8.2 1.8 5.8 3.2 4.4c1.3-1.3 3.5-1.3 4.8.1L9 5.6l1-1.1c1.3-1.4 3.5-1.4 4.8-.1 1.4 1.4 1.3 3.8-.2 5.3L9 15.2Z"></path>
+        </svg>
+      </button>
+    {% endif %}
   </div>
 
   <div class="resource-card__content">
@@ -145,7 +171,13 @@
     </p>
 
     {% if resource_type == 'product' %}
+      {% if product_subtitle != blank %}
+        <p class="resource-card__product-subtitle">{{ product_subtitle }}</p>
+      {% endif %}
       {% render 'price', product_resource: resource, show_unit_price: true %}
+      {% if variant == 'ogee-search' %}
+        {% render 'product-rating', product: resource %}
+      {% endif %}
     {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
       <p class="resource-card__subtext paragraph">
         {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
@@ -321,13 +353,17 @@
   }
 
   .resource-card--ogee-search .resource-card__media {
+    aspect-ratio: 1;
     overflow: hidden;
     background: rgb(var(--color-foreground-rgb) / 4%);
+    position: relative;
   }
 
   .resource-card--ogee-search .resource-card__image {
     width: 100%;
-    aspect-ratio: var(--resource-card-aspect-ratio, 1);
+    height: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
   }
 
   .resource-card--ogee-search .resource-card__content {
@@ -341,6 +377,71 @@
 
   .resource-card--ogee-search .resource-card__subtext {
     margin: 0;
+  }
+
+  .resource-card--ogee-search .resource-card__product-subtitle {
+    color: rgb(var(--color-foreground-rgb) / 58%);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    line-height: 1.25;
+    margin: 0;
+    min-height: 1.25em;
+    text-transform: uppercase;
+  }
+
+  .resource-card--ogee-search .resource-card__wishlist {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: rgb(var(--color-foreground-rgb) / 62%);
+    cursor: pointer;
+    display: grid;
+    height: 32px;
+    justify-items: center;
+    padding: 0;
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    width: 32px;
+    z-index: 2;
+  }
+
+  .resource-card--ogee-search .resource-card__wishlist svg {
+    display: block;
+    fill: none;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 1;
+    width: 18px;
+  }
+
+  .resource-card--ogee-search .product-rating {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .resource-card--ogee-search .product-rating__stars {
+    display: flex;
+    gap: 1px;
+  }
+
+  .resource-card--ogee-search .product-rating__star {
+    fill: transparent;
+    height: 10px;
+    stroke: #a98b44;
+    stroke-width: 1;
+    width: 10px;
+  }
+
+  .resource-card--ogee-search .product-rating__star--filled {
+    fill: #a98b44;
+  }
+
+  .resource-card--ogee-search .product-rating__count {
+    color: rgb(var(--color-foreground-rgb) / 58%);
+    font-size: 10px;
   }
 
   @media screen and (max-width: 749px) {

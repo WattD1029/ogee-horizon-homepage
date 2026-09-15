@@ -16,6 +16,7 @@ const SEARCH_HISTORY_LIMIT = 5;
  * @property {HTMLElement} resetButton - The reset button element.
  * @property {HTMLFormElement} [form] - The search form.
  * @property {HTMLInputElement} [searchTypeInput] - The active search resource type.
+ * @property {HTMLButtonElement} [viewAllButton] - The full search results button.
  * @extends {Component<Refs>}
  */
 class PredictiveSearchComponent extends Component {
@@ -135,11 +136,13 @@ class PredictiveSearchComponent extends Component {
   #activateTabs(group, value) {
     const tabAttribute = group === 'resource' ? 'data-search-resource-tab' : 'data-search-empty-tab';
     const panelAttribute = group === 'resource' ? 'data-search-resource-panel' : 'data-search-empty-panel';
+    let activeTab = null;
 
     this.querySelectorAll(`[${tabAttribute}]`).forEach((tab) => {
       const isActive = tab.getAttribute(tabAttribute) === value;
       tab.setAttribute('aria-selected', String(isActive));
       tab.setAttribute('tabindex', isActive ? '0' : '-1');
+      if (isActive) activeTab = tab;
     });
 
     this.querySelectorAll(`[${panelAttribute}]`).forEach((panel) => {
@@ -148,6 +151,8 @@ class PredictiveSearchComponent extends Component {
 
     if (group === 'resource' && this.refs.searchTypeInput) {
       this.refs.searchTypeInput.value = value;
+      const viewAllLabel = activeTab instanceof HTMLElement ? activeTab.dataset.searchViewAllLabel : '';
+      if (viewAllLabel && this.refs.viewAllButton) this.refs.viewAllButton.textContent = viewAllLabel;
     }
   }
 
@@ -190,6 +195,9 @@ class PredictiveSearchComponent extends Component {
   }
 
   onSearchKeyDown = (event) => {
+    const target = /** @type {HTMLElement} */ (event.target);
+    if (target.closest('[role="tab"]')) return;
+
     if (event.key === 'Escape') {
       this.#resetSearch();
       return;
@@ -280,7 +288,7 @@ class PredictiveSearchComponent extends Component {
     const url = new URL(Theme.routes.predictive_search_url, location.origin);
     url.searchParams.set('q', searchTerm);
     url.searchParams.set('resources[type]', 'query,product,page,article');
-    url.searchParams.set('resources[limit]', '10');
+    url.searchParams.set('resources[limit]', '5');
     url.searchParams.set('resources[limit_scope]', 'each');
 
     const { predictiveSearchResults } = this.refs;

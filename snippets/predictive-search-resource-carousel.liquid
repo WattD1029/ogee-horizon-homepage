@@ -12,7 +12,7 @@
 
 {% if resources.size > 0 %}
   <ul class="predictive-search-results__resource-grid list-unstyled">
-    {% for resource in resources limit: 8 %}
+    {% for resource in resources limit: 5 %}
       <li
         class="predictive-search-results__card predictive-search-results__card--{{ resource_type }}"
         ref="resultsItems[]"

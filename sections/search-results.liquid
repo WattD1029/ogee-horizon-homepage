@@ -112,7 +112,7 @@
 
   .search-results-page__tabs {
     position: sticky;
-    top: 0;
+    top: var(--header-group-height, 0px);
     z-index: var(--layer-raised);
     padding-top: 8px;
     background: var(--color-background);
@@ -120,31 +120,33 @@
 
   .search-results-page__tabs .search-resource-tabs {
     display: flex;
-    gap: 32px;
-    border-bottom: 1px solid var(--color-border);
+    gap: 12px;
+    border-bottom: 0;
   }
 
   .search-results-page__tabs .search-resource-tabs__tab {
     position: relative;
-    padding: 0 0 12px;
+    padding: 10px 16px;
+    border: 1px solid var(--color-border);
     color: rgb(var(--color-foreground-rgb) / 60%);
     text-decoration: none;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .search-results-page__tabs .search-resource-tabs__tab[aria-current='page'] {
     color: var(--color-foreground);
+    border-color: var(--color-foreground);
   }
 
   .search-results-page__tabs .search-resource-tabs__tab[aria-current='page']::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 -1px;
-    height: 1px;
-    background: currentColor;
+    content: none;
   }
 
   .search-results-page .facets-block-wrapper--clp-controls {
-    --clp-floating-controls-top: 42px;
+    --clp-floating-controls-top: calc(var(--header-group-height, 0px) + 52px);
   }
 
   .search-results-page .facets-clp-floating-nav {

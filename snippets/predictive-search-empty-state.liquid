@@ -19,13 +19,13 @@
   {% if load_empty_state %}
     <div class="predictive-search-results__inner predictive-search-results__inner--empty">
       <div class="predictive-search-results__history" data-search-history hidden>
-        <p class="predictive-search-results__history-label">{{ 'content.search_results_resource_queries' | t }}</p>
+        <p class="predictive-search-results__history-label">Recently search</p>
         <ul class="predictive-search-results__keywords" data-search-history-list></ul>
       </div>
 
       {% if settings.search_trending_menu != blank %}
         <div class="predictive-search-results__history">
-          <p class="predictive-search-results__history-label">{{ settings.search_trending_menu.title }}</p>
+          <p class="predictive-search-results__history-label">Trending search</p>
           <div class="predictive-search-results__keywords">
             {% for link in settings.search_trending_menu.links limit: 6 %}
               <a
@@ -38,11 +38,30 @@
             {% endfor %}
           </div>
         </div>
+      {% else %}
+        {% assign fallback_trending_terms = 'Bundle|Contour Collection|Gifting|Makeup Quiz|Skincare Quiz' | split: '|' %}
+        <div class="predictive-search-results__history">
+          <p class="predictive-search-results__history-label">Trending search</p>
+          <div class="predictive-search-results__keywords">
+            {% for term in fallback_trending_terms %}
+              {% assign encoded_term = term | url_param_escape %}
+              <a
+                class="predictive-search-results__keyword"
+                href="{{ routes.search_url }}?type=product&q={{ encoded_term }}"
+                data-search-keyword="{{ term | escape }}"
+              >
+                {{ term }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
       {% endif %}
 
       {% liquid
-        assign bestsellers = settings.empty_state_collection | default: collections.all
-        assign new_products = settings.search_new_collection | default: collections.all
+        assign default_bestsellers = collections['bestsellers']
+        assign default_new_products = collections['new']
+        assign bestsellers = settings.empty_state_collection | default: default_bestsellers | default: collections.all
+        assign new_products = settings.search_new_collection | default: default_new_products | default: collections.all
       %}
 
       <div class="search-empty-tabs" role="tablist" aria-label="{{ 'content.featured_products' | t }}">
@@ -56,7 +75,7 @@
           data-search-empty-tab="bestsellers"
           on:keydown="/onSearchTabKeyDown"
         >
-          {{ bestsellers.title }}
+          Bestsellers
         </button>
         <button
           class="search-empty-tabs__tab"
@@ -69,7 +88,7 @@
           data-search-empty-tab="new"
           on:keydown="/onSearchTabKeyDown"
         >
-          {{ new_products.title }}
+          New
         </button>
       </div>
 
@@ -83,9 +102,12 @@
         {% render 'predictive-search-products-list',
           products_test_id: products_test_id,
           products: bestsellers.products,
-          limit: 10,
+          limit: 5,
           list_id: 'predictive-search-bestsellers'
         %}
+        <a class="button predictive-search-results__view-all" href="{{ bestsellers.url }}">
+          View all bestsellers ({{ bestsellers.all_products_count }})
+        </a>
       </div>
 
       <div
@@ -98,9 +120,12 @@
       >
         {% render 'predictive-search-products-list',
           products: new_products.products,
-          limit: 10,
+          limit: 5,
           list_id: 'predictive-search-new'
         %}
+        <a class="button predictive-search-results__view-all" href="{{ new_products.url }}">
+          View all new ({{ new_products.all_products_count }})
+        </a>
       </div>
     </div>
   {% endif %}

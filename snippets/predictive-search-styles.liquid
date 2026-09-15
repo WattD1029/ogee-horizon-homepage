@@ -630,6 +630,10 @@
     padding-top: 24px;
   }
 
+  .predictive-search-dropdown--ogee .predictive-search-results__products {
+    padding-inline: 0;
+  }
+
   .predictive-search-results__history {
     display: grid;
     gap: 10px;
@@ -671,19 +675,22 @@
   .search-resource-tabs,
   .search-empty-tabs {
     display: flex;
-    gap: 32px;
-    border-bottom: 1px solid var(--color-border);
+    gap: 12px;
+    border-bottom: 0;
   }
 
   .search-resource-tabs__tab,
   .search-empty-tabs__tab {
     position: relative;
-    padding: 0 0 12px;
-    border: 0;
+    padding: 10px 16px;
+    border: 1px solid var(--color-border);
     background: transparent;
     color: rgb(var(--color-foreground-rgb) / 60%);
     text-decoration: none;
-    font: inherit;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     cursor: pointer;
   }
 
@@ -691,16 +698,13 @@
   .search-resource-tabs__tab[aria-current='page'],
   .search-empty-tabs__tab[aria-selected='true'] {
     color: var(--color-foreground);
+    border-color: var(--color-foreground);
   }
 
   .search-resource-tabs__tab[aria-selected='true']::after,
   .search-resource-tabs__tab[aria-current='page']::after,
   .search-empty-tabs__tab[aria-selected='true']::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 -1px;
-    height: 1px;
-    background: currentColor;
+    content: none;
   }
 
   .search-empty-tabs {
@@ -708,7 +712,7 @@
   }
 
   .predictive-search-results__panel {
-    padding-top: 24px;
+    padding-top: 18px;
   }
 
   .predictive-search-results__panel[hidden] {
@@ -723,6 +727,13 @@
     padding: 0;
   }
 
+  .predictive-search-results__view-all {
+    display: inline-flex;
+    min-width: 220px;
+    margin-top: 24px;
+    border-radius: 0;
+  }
+
   .predictive-search-results__resource-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -733,13 +744,13 @@
 
   @media screen and (max-width: 749px) {
     .predictive-search-dropdown--ogee .predictive-search-results__inner {
-      width: auto;
+      width: 100%;
       padding: 24px 20px 40px;
     }
 
     .search-resource-tabs,
     .search-empty-tabs {
-      gap: 24px;
+      gap: 10px;
       overflow-x: auto;
     }
 
@@ -751,5 +762,12 @@
     .predictive-search-results__resource-grid {
       grid-template-columns: 1fr;
       gap: 20px;
+    }
+
+    .predictive-search-results__view-all {
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      margin-top: 20px;
     }
   }{% endstylesheet %}

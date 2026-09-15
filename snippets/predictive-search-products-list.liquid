@@ -10,7 +10,7 @@
 {%- enddoc -%}
 
 {% liquid
-  assign limit = limit | default: 10
+  assign limit = limit | default: 5
   assign list_id = list_id | default: 'predictive-search-products'
 %}
 
@@ -32,11 +32,11 @@
         {% if product != blank %}
           <li class="predictive-search-results__card predictive-search-results__card--product" ref="resultsItems[]">
             {% render 'resource-card',
-              resource_type: 'product',
               resource: product,
-              image_width: 500,
+              resource_type: 'product',
+              image_aspect_ratio: '1',
               image_hover: true,
-              image_aspect_ratio: '1 / 1',
+              image_sizes: '(min-width: 750px) 180px, 45vw',
               variant: 'ogee-search'
             %}
           </li>
@@ -46,11 +46,11 @@
       {% for product in products limit: limit %}
         <li class="predictive-search-results__card predictive-search-results__card--product" ref="resultsItems[]">
           {% render 'resource-card',
-            resource_type: 'product',
             resource: product,
-            image_width: 500,
+            resource_type: 'product',
+            image_aspect_ratio: '1',
             image_hover: true,
-            image_aspect_ratio: '1 / 1',
+            image_sizes: '(min-width: 750px) 180px, 45vw',
             variant: 'ogee-search'
           %}
         </li>

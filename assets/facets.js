@@ -8,6 +8,7 @@ import { convertMoneyToMinorUnits, formatMoney } from '@theme/money-formatting';
  * @type {string}
  */
 const SEARCH_QUERY = 'q';
+const SEARCH_TYPE = 'type';
 
 /**
  * Handles the main facets form functionality
@@ -37,6 +38,9 @@ class FacetsFormComponent extends Component {
     const searchQuery = this.#getSearchQuery();
     if (searchQuery) newParameters.set(SEARCH_QUERY, searchQuery);
 
+    const searchType = this.#getSearchType();
+    if (searchType) newParameters.set(SEARCH_TYPE, searchType);
+
     return newParameters;
   }
 
@@ -47,6 +51,15 @@ class FacetsFormComponent extends Component {
   #getSearchQuery() {
     const url = new URL(window.location.href);
     return url.searchParams.get(SEARCH_QUERY) ?? '';
+  }
+
+  /**
+   * Gets the active search resource type from the current URL
+   * @returns {string} The search resource type
+   */
+  #getSearchType() {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(SEARCH_TYPE) ?? '';
   }
 
   get sectionId() {
