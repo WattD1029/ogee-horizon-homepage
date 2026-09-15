@@ -1,0 +1,41 @@
+{% doc %}
+  Curated favourite links and a collection link, using native product order and counts.
+  @param {string} key - New or bestsellers
+  @param {object} settings - Header menu settings
+  @param {number} limit - Maximum favourite links
+{% enddoc %}
+{% liquid
+  assign collection_id = key | append: '_collection'
+  assign products_id = key | append: '_products'
+  assign image_id = key | append: '_image'
+  assign menu_id = key | append: '_menu'
+  assign menu_collection = settings[collection_id] | default: collections[key]
+  assign featured_products = settings[products_id] | default: menu_collection.products
+  assign image_asset = 'ogee-menu-' | append: key | append: '.png'
+%}
+<div class="ogee-menu-favourites">
+  <div>
+    <span class="ogee-menu-heading">{{ 'ogee_menu.favourites' | t }}</span>
+    {% for featured_product in featured_products limit: limit %}<a class="ogee-menu-text-link" href="{{ featured_product.url }}">{{ featured_product.title | escape }}</a>{% endfor %}
+  </div>
+  <div>
+    <span class="ogee-menu-heading">{{ 'ogee_menu.collections' | t }}</span>
+    {% for child in settings[menu_id].links %}<a class="ogee-menu-text-link" href="{{ child.url }}">{{ child.title | escape }}</a>{% endfor %}
+    {% if menu_collection != blank %}<a class="ogee-menu-text-link" href="{{ menu_collection.url }}">{{ menu_collection.title | escape }} ({{ menu_collection.all_products_count }})</a>{% endif %}
+  </div>
+</div>
+{% if menu_collection != blank %}<a class="ogee-menu-favourites__image" href="{{ menu_collection.url }}" aria-label="{{ menu_collection.title | escape }}">{% else %}<div class="ogee-menu-favourites__image">{% endif %}
+  {% if settings[image_id] != blank %}{{ settings[image_id] | image_url: width: 750 | image_tag: loading: 'lazy', widths: '250,500,750', sizes: '250px' }}{% else %}<img src="{{ image_asset | asset_url }}" alt="" width="250" height="350" loading="lazy">{% endif %}
+{% if menu_collection != blank %}</a>{% else %}</div>{% endif %}
+{% stylesheet %}
+  .ogee-menu-panel--new,.ogee-menu-panel--bestsellers { justify-content:center; min-height:414px; }
+  .ogee-menu-favourites { display:grid; grid-template-columns:repeat(2,minmax(0,250px)); gap:15px; width:515px; }
+  .ogee-menu-favourites__image { display:block; flex:0 0 250px; }
+  .ogee-menu-favourites__image img { display:block; width:250px; height:350px; object-fit:cover; }
+  @media(max-width:749px) {
+    .ogee-menu-favourites { width:100%; display:block; }
+    .ogee-menu-favourites>div { margin-bottom:16px; }
+    .ogee-menu-favourites__image img { width:100%; height:auto; max-height:350px; }
+    .ogee-menu-panel--new,.ogee-menu-panel--bestsellers { min-height:0; }
+  }
+{% endstylesheet %}

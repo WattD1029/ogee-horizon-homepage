@@ -1,0 +1,394 @@
+{% liquid
+  assign section_settings = section.settings
+  assign heading_id = 'BeyondCleanCertificationHeading-' | append: section.id
+  assign media_asset = section_settings.media_asset | default: 'ogee-certification-media.png'
+  assign seals_asset = section_settings.seals_asset | default: 'ogee-certification-seals.png'
+  assign media_alt = section_settings.media_alt
+  assign seals_alt = section_settings.seals_alt
+  assign loading = 'lazy'
+  assign fetch_priority = 'auto'
+
+  if section_settings.media_image != blank
+    if media_alt == blank
+      assign media_alt = section_settings.media_image.alt
+    endif
+  endif
+
+  if section_settings.seals_image != blank
+    if seals_alt == blank
+      assign seals_alt = section_settings.seals_image.alt
+    endif
+  endif
+
+  if section.index <= 3
+    assign loading = 'eager'
+  endif
+
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+%}
+
+<section
+  class="beyond-clean-certification"
+  {% if section_settings.heading != blank %}
+    aria-labelledby="{{ heading_id }}"
+  {% endif %}
+  style="
+    --beyond-clean-certification-background: {{ section_settings.background_color }};
+    --beyond-clean-certification-heading: {{ section_settings.heading_color }};
+    --beyond-clean-certification-text: {{ section_settings.text_color }};
+    --beyond-clean-certification-content-width: {{ section_settings.desktop_content_width }}px;
+    --beyond-clean-certification-padding-top: {{ section_settings.padding_top }}px;
+    --beyond-clean-certification-padding-bottom: {{ section_settings.padding_bottom }}px;
+    --beyond-clean-certification-padding-top-mobile: {{ section_settings.padding_top_mobile }}px;
+    --beyond-clean-certification-padding-bottom-mobile: {{ section_settings.padding_bottom_mobile }}px;
+  "
+>
+  <div class="beyond-clean-certification__inner">
+    <div class="beyond-clean-certification__media">
+      {% if section_settings.media_image != blank %}
+        {{
+          section_settings.media_image
+          | image_url: width: 1400
+          | image_tag:
+            widths: '516, 720, 1032, 1400',
+            sizes: '(min-width: 750px) 516px, 0px',
+            loading: loading,
+            fetchpriority: fetch_priority,
+            alt: media_alt,
+            class: 'beyond-clean-certification__media-image'
+        }}
+      {% elsif media_asset != blank %}
+        <img
+          src="{{ media_asset | asset_url }}"
+          alt="{{ media_alt | escape }}"
+          width="1032"
+          height="688"
+          loading="{{ loading }}"
+          fetchpriority="{{ fetch_priority }}"
+          class="beyond-clean-certification__media-image"
+        >
+      {% endif %}
+    </div>
+
+    <div class="beyond-clean-certification__content">
+      {% if section_settings.heading != blank %}
+        <h2 id="{{ heading_id }}" class="beyond-clean-certification__heading">
+          {{ section_settings.heading | escape | newline_to_br }}
+        </h2>
+      {% endif %}
+
+      <div class="beyond-clean-certification__seals">
+        {% if section_settings.seals_image != blank %}
+          {{
+            section_settings.seals_image
+            | image_url: width: 1240
+            | image_tag:
+              widths: '310, 516, 620, 930, 1240',
+              sizes: '(min-width: 750px) 516px, 310px',
+              loading: loading,
+              fetchpriority: fetch_priority,
+              alt: seals_alt,
+              class: 'beyond-clean-certification__seals-image'
+          }}
+        {% elsif seals_asset != blank %}
+          <img
+            src="{{ seals_asset | asset_url }}"
+            alt="{{ seals_alt | escape }}"
+            width="620"
+            height="150"
+            loading="{{ loading }}"
+            fetchpriority="{{ fetch_priority }}"
+            class="beyond-clean-certification__seals-image"
+          >
+        {% endif %}
+      </div>
+
+      {% if section_settings.text != blank %}
+        <p class="beyond-clean-certification__text">{{ section_settings.text | escape }}</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .beyond-clean-certification {
+    color: var(--beyond-clean-certification-text);
+  }
+
+  .beyond-clean-certification__inner {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(0, 516px) minmax(0, 516px);
+    gap: 40px;
+    width: 100%;
+    max-width: var(--beyond-clean-certification-content-width);
+    margin-inline: auto;
+    padding: var(--beyond-clean-certification-padding-top) 64px var(--beyond-clean-certification-padding-bottom);
+    background: var(--beyond-clean-certification-background);
+  }
+
+  .beyond-clean-certification__media {
+    width: 100%;
+    aspect-ratio: 516 / 344;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .beyond-clean-certification__media-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .beyond-clean-certification__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .beyond-clean-certification__heading,
+  .beyond-clean-certification__text {
+    margin: 0;
+  }
+
+  .beyond-clean-certification__heading {
+    max-width: 516px;
+    color: var(--beyond-clean-certification-heading);
+    font-family: 'Chronicle Display', 'Chronicle Display Light', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', 'Times New Roman', serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: 0;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+    text-wrap: balance;
+  }
+
+  .beyond-clean-certification__seals {
+    width: 100%;
+    max-width: 516px;
+  }
+
+  .beyond-clean-certification__seals-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .beyond-clean-certification__text {
+    max-width: 516px;
+    color: var(--beyond-clean-certification-text);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  @media screen and (max-width: 989px) {
+    .beyond-clean-certification__inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+
+    .beyond-clean-certification__media {
+      max-width: 516px;
+      margin-inline: auto;
+    }
+
+    .beyond-clean-certification__content {
+      max-width: 516px;
+      margin-inline: auto;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .beyond-clean-certification__inner {
+      display: block;
+      max-width: 350px;
+      padding: var(--beyond-clean-certification-padding-top-mobile) 20px var(--beyond-clean-certification-padding-bottom-mobile);
+    }
+
+    .beyond-clean-certification__media {
+      display: none;
+    }
+
+    .beyond-clean-certification__content {
+      gap: 8px;
+      max-width: 310px;
+    }
+
+    .beyond-clean-certification__heading {
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    .beyond-clean-certification__seals {
+      max-width: 310px;
+    }
+
+    .beyond-clean-certification__text {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Clean certification",
+  "tag": "section",
+  "class": "beyond-clean-certification-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Uncompromising Standards\nThat Go Beyond Clean Beauty."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "We are committed to creating the ultimate certified organic collection of high-performance, multifunctional beauty. Our renowned NSF certification ensures that we adhere to the most stringent standards: utilizing a minimum percentage of 70% organic ingredients; the highest percentage in personal care."
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "media_image",
+      "label": "Desktop media image"
+    },
+    {
+      "type": "text",
+      "id": "media_asset",
+      "label": "Desktop fallback asset filename",
+      "default": "ogee-certification-media.png"
+    },
+    {
+      "type": "text",
+      "id": "media_alt",
+      "label": "Desktop media alt text"
+    },
+    {
+      "type": "image_picker",
+      "id": "seals_image",
+      "label": "Certification seals image"
+    },
+    {
+      "type": "text",
+      "id": "seals_asset",
+      "label": "Certification seals fallback asset filename",
+      "default": "ogee-certification-seals.png"
+    },
+    {
+      "type": "text",
+      "id": "seals_alt",
+      "label": "Certification seals alt text",
+      "default": "Contains organic ingredients, cruelty-free, not tested on animals, Organic Farming Research Foundation"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_width",
+      "label": "Desktop content width",
+      "min": 960,
+      "max": 1440,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f9f8f3"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#202426"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#414141"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Clean certification",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

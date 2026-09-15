@@ -12,6 +12,7 @@ import { PaginatedListAspectRatioHelper } from '@theme/paginated-list-aspect-rat
  * @property {HTMLSpanElement} [viewMorePrevious] - The view more previous button.
  * @property {HTMLSpanElement} [viewMoreNext] - The view more next button.
  * @property {HTMLParagraphElement} [viewMoreStatus] - Manual load-more status.
+ * @property {HTMLElement} [viewMoreProgress] - Manual load-more progress bar.
  * @property {HTMLButtonElement} [viewMoreNextButton] - Manual load-more button.
  * @property {HTMLElement[]} [cards] - The cards elements.
  *
@@ -167,7 +168,7 @@ export default class PaginatedList extends Component {
     this.pages.set(pageNumber, pageContent);
   }
 
-  async #renderNextPage() {
+  async #renderNextPage({ updateHistory = true } = {}) {
     const { grid } = this.refs;
 
     if (!grid) return false;
@@ -194,7 +195,9 @@ export default class PaginatedList extends Component {
 
     this.#aspectRatioHelper.processNewElements();
 
-    history.pushState('', '', nextPage.url.toString());
+    if (updateHistory) {
+      history.pushState('', '', nextPage.url.toString());
+    }
 
     requestIdleCallback(() => {
       this.#fetchPage('next');
@@ -217,7 +220,7 @@ export default class PaginatedList extends Component {
     }
 
     try {
-      await this.#renderNextPage();
+      await this.#renderManualLoadMorePage();
     } finally {
       this.#updateManualLoadMoreState();
 
@@ -228,13 +231,27 @@ export default class PaginatedList extends Component {
     }
   };
 
-  async #renderPreviousPage() {
-    const { grid } = this.refs;
-
-    if (!grid) return;
+  async #renderManualLoadMorePage() {
+    const nextPage = this.#getPage('next');
+    if (nextPage && this.#shouldUsePage(nextPage)) {
+      return this.#renderNextPage({ updateHistory: false });
+    }
 
     const previousPage = this.#getPage('previous');
-    if (!previousPage || !this.#shouldUsePage(previousPage)) return;
+    if (previousPage && this.#shouldUsePage(previousPage)) {
+      return this.#renderPreviousPage({ updateHistory: false });
+    }
+
+    return false;
+  }
+
+  async #renderPreviousPage({ updateHistory = true } = {}) {
+    const { grid } = this.refs;
+
+    if (!grid) return false;
+
+    const previousPage = this.#getPage('previous');
+    if (!previousPage || !this.#shouldUsePage(previousPage)) return false;
 
     let previousPageItemElements = this.#getGridForPage(previousPage.page);
     if (!previousPageItemElements) {
@@ -247,7 +264,7 @@ export default class PaginatedList extends Component {
 
       await promise;
       previousPageItemElements = this.#getGridForPage(previousPage.page);
-      if (!previousPageItemElements) return;
+      if (!previousPageItemElements) return false;
     }
 
     // Store the current scroll position and height of the first element
@@ -260,7 +277,9 @@ export default class PaginatedList extends Component {
 
     this.#aspectRatioHelper.processNewElements();
 
-    history.pushState('', '', previousPage.url.toString());
+    if (updateHistory) {
+      history.pushState('', '', previousPage.url.toString());
+    }
 
     // Calculate and adjust scroll position to maintain the same view
     if (firstElement) {
@@ -275,6 +294,8 @@ export default class PaginatedList extends Component {
     requestIdleCallback(() => {
       this.#fetchPage('previous');
     });
+
+    return true;
   }
 
   /**
@@ -306,31 +327,52 @@ export default class PaginatedList extends Component {
   }
 
   #updateManualLoadMoreState() {
-    const { grid, viewMoreStatus, viewMoreNextButton } = this.refs;
+    const { grid, viewMoreStatus, viewMoreProgress, viewMoreNextButton } = this.refs;
 
     if (!grid) return;
 
     const cards = Array.from(grid.querySelectorAll(':scope > [ref="cards[]"]'));
     const totalItems = Number(grid.dataset.totalItems || cards.length);
-    const currentOffset = Number(grid.dataset.currentOffset || 0);
-    const visibleCount = currentOffset + cards.length;
+    const visibleCount = Math.min(cards.length, totalItems);
 
     if (viewMoreStatus) {
       const template = viewMoreStatus.dataset.showingTemplate;
       if (template) {
-        viewMoreStatus.textContent = template
-          .replace('[count]', visibleCount.toString())
-          .replace('[total]', totalItems.toString());
+        const statusText = template.replace('[count]', visibleCount.toString()).replace('[total]', totalItems.toString());
+        viewMoreStatus.textContent = statusText;
+
+        if (viewMoreProgress) {
+          viewMoreProgress.setAttribute('aria-valuetext', statusText);
+        }
+      }
+    }
+
+    if (viewMoreProgress) {
+      const progress = totalItems > 0 ? Math.min(Math.max((visibleCount / totalItems) * 100, 0), 100) : 0;
+      viewMoreProgress.style.setProperty('--load-more-progress', `${progress}%`);
+      viewMoreProgress.setAttribute('aria-valuenow', visibleCount.toString());
+      viewMoreProgress.setAttribute('aria-valuemax', totalItems.toString());
+    }
+
+    if (viewMoreNextButton) {
+      viewMoreNextButton.hidden = false;
+      viewMoreNextButton.disabled = false;
+
+      if (!viewMoreNextButton.hasAttribute('aria-busy')) {
+        viewMoreNextButton.removeAttribute('aria-busy');
       }
     }
 
     if (!viewMoreNextButton) return;
 
     const nextPage = this.#getPage('next');
-    const hasNextPage = Boolean(nextPage && this.#shouldUsePage(nextPage));
+    const previousPage = this.#getPage('previous');
+    const hasPageToLoad = Boolean(
+      (nextPage && this.#shouldUsePage(nextPage)) || (previousPage && this.#shouldUsePage(previousPage))
+    );
     const allItemsVisible = totalItems > 0 && visibleCount >= totalItems;
 
-    if (!hasNextPage || allItemsVisible) {
+    if (!hasPageToLoad || allItemsVisible) {
       viewMoreNextButton.hidden = true;
       viewMoreNextButton.disabled = true;
       viewMoreNextButton.removeAttribute('aria-busy');

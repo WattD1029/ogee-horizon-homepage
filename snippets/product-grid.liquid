@@ -18,7 +18,20 @@
 {% liquid
   assign pagination_style = pagination_style | default: 'automatic'
   assign total_products = total_products | default: paginate.items
-  assign shown_count = paginate.current_offset | plus: products.size
+  assign shown_count = products.size
+  assign shown_count = shown_count | at_most: total_products
+  assign load_more_progress = 0
+  if total_products > 0
+    assign load_more_progress = shown_count | times: 100 | divided_by: total_products | at_most: 100
+  endif
+  assign show_load_more_button = false
+  if shown_count < total_products
+    if paginate.next
+      assign show_load_more_button = true
+    elsif paginate.previous
+      assign show_load_more_button = true
+    endif
+  endif
   assign is_clp_collection_grid = false
   if template.name == 'collection'
     assign is_clp_collection_grid = true
@@ -198,7 +211,20 @@
           >
             {{ 'content.showing_products' | t: count: shown_count, total: total_products }}
           </p>
-          {% if paginate.next %}
+          <div
+            class="product-grid__load-more-progress"
+            ref="viewMoreProgress"
+            role="progressbar"
+            aria-label="{{ 'accessibility.load_more_progress' | t }}"
+            aria-valuemin="0"
+            aria-valuemax="{{ total_products }}"
+            aria-valuenow="{{ shown_count }}"
+            aria-valuetext="{{ 'content.showing_products' | t: count: shown_count, total: total_products | escape }}"
+            style="--load-more-progress: {{ load_more_progress }}%;"
+          >
+            <span class="product-grid__load-more-progress-fill"></span>
+          </div>
+          {% if show_load_more_button %}
             <button
               class="button product-grid__load-more-button"
               type="button"
@@ -273,15 +299,34 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    gap: 12px;
     margin-block-start: 24px;
+    margin-inline: auto;
     text-align: center;
+    width: min(100%, 300px);
   }
 
   .product-grid__load-more-status {
-    color: rgb(var(--color-foreground-rgb) / 0.65);
-    font-size: 0.75rem;
-    margin: 0;
+    color: #333333;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    margin: 0 0 10px;
+  }
+
+  .product-grid__load-more-progress {
+    background: #d9d9d9;
+    display: block;
+    height: 1px;
+    margin-block-end: 16px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  .product-grid__load-more-progress-fill {
+    background: #000000;
+    display: block;
+    height: 100%;
+    width: var(--load-more-progress, 0%);
   }
 
   .product-grid__load-more-button {
@@ -289,11 +334,12 @@
     border: 1px solid #000000;
     border-radius: 0;
     color: #ffffff;
-    font-size: 0.75rem;
-    min-height: 40px;
-    min-width: 186px;
+    font-size: 0.8125rem;
+    letter-spacing: 1.3px;
+    min-height: 60px;
     padding-inline: 32px;
     text-transform: uppercase;
+    width: 100%;
   }
 
   @media screen and (min-width: 750px) {
