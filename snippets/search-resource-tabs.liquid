@@ -1,0 +1,75 @@
+{% doc %}
+  Renders the Product, Page, and Blog search resource tabs.
+
+  @param {string} context - Either 'predictive' or 'results'
+  @param {string} active_type - The active resource type
+  @param {string} [terms] - The submitted search terms for result-page URLs
+
+  @example
+  {% render 'search-resource-tabs', context: 'results', active_type: 'product', terms: search.terms %}
+{% enddoc %}
+
+{% liquid
+  assign active_type = active_type | default: 'product'
+  assign encoded_terms = terms | default: '' | url_param_escape
+  assign resource_types = 'product,page,article' | split: ','
+%}
+
+{% if context == 'predictive' %}
+  <div
+    class="search-resource-tabs search-resource-tabs--predictive"
+    role="tablist"
+    aria-label="{{ 'content.search_results_label' | t }}"
+  >
+    {% for resource_type in resource_types %}
+      {% liquid
+        assign tab_label = 'Product'
+        assign view_all_label = 'View all products'
+        if resource_type == 'page'
+          assign tab_label = 'Page'
+          assign view_all_label = 'View all pages'
+        elsif resource_type == 'article'
+          assign tab_label = 'Blog'
+          assign view_all_label = 'View all blogs'
+        endif
+      %}
+      <button
+        class="search-resource-tabs__tab"
+        type="button"
+        role="tab"
+        id="PredictiveSearchTab-{{ resource_type }}"
+        aria-controls="PredictiveSearchPanel-{{ resource_type }}"
+        aria-selected="{% if active_type == resource_type %}true{% else %}false{% endif %}"
+        tabindex="{% if active_type == resource_type %}0{% else %}-1{% endif %}"
+        data-search-resource-tab="{{ resource_type }}"
+        data-search-view-all-label="{{ view_all_label | escape }}"
+        on:keydown="/onSearchTabKeyDown"
+      >
+        {{ tab_label }}
+      </button>
+    {% endfor %}
+  </div>
+{% else %}
+  <nav
+    class="search-resource-tabs search-resource-tabs--results"
+    aria-label="{{ 'content.search_results_label' | t }}"
+  >
+    {% for resource_type in resource_types %}
+      {% liquid
+        assign tab_label = 'Product'
+        if resource_type == 'page'
+          assign tab_label = 'Page'
+        elsif resource_type == 'article'
+          assign tab_label = 'Blog'
+        endif
+      %}
+      <a
+        class="search-resource-tabs__tab"
+        href="{{ routes.search_url }}?type={{ resource_type }}&q={{ encoded_terms }}"
+        {% if active_type == resource_type %}aria-current="page"{% endif %}
+      >
+        {{ tab_label }}
+      </a>
+    {% endfor %}
+  </nav>
+{% endif %}

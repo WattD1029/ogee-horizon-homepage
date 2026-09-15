@@ -121,3 +121,9 @@
 
 [2026-09-09][REVIEW][menu-integration] Fixed full-width panel positioning inherited from relative menu items, stylesheet-order conflicts, Bundles CTA placement, locale URL matching, and drawer focus navigation.
 [2026-09-09][VERIFY][menu-integration] All changed Liquid/schema files passed Shopify validation. Local browser fixtures passed desktop panel dimensions, hover/ArrowDown/Escape, 320–1920px overflow checks, nested drawer Back/close, and short-screen reduced-motion focus cycling. Final Shopify preview sync awaits explicit user approval.
+
+[2026-09-14][PLAN] Planned the Ogee search redesign from the mobile and desktop Figma states, extending Horizon predictive search, resource tabs, search-result layouts, product facets, sorting, grid density, recent/trending terms, and sticky controls while preserving native search URLs, accessibility, AJAX rendering, and reusable card behavior.
+[2026-09-14][IMPLEMENT] Implemented the Figma-led Ogee search drawer and results experience with typed Product/Page/Blog tabs, merchant-configured trending and curated groups, local recent terms, rotating prompts, responsive resource cards, preserved product facets/sorting/density controls, and sticky results controls.
+[2026-09-14][REVIEW] Compound review preserved `type=product` through facet URLs, removed duplicate Page/Blog empty messages, stacked sticky search tabs above the shared controls, and eliminated new cross-locale key dependencies.
+[2026-09-14][VERIFY] Passed JavaScript syntax checks, JSON parsing, `git diff --check`, and official Shopify Theme Check for the changed search files; the bundled skill validator remains unavailable because its expected ESM exports do not match the installed Shopify package.
+[2026-09-14][COMPOUND] Captured the reusable typed-search-on-Horizon pattern in `docs/solutions/design-patterns/2026-09-14-figma-search-redesign-on-horizon.md`.

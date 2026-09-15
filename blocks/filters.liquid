@@ -52,7 +52,10 @@
     endcase
   endfor
 
-  if results.url
+  if template.name == 'search'
+    assign terms = results.terms | url_param_escape
+    assign results_url = routes.search_url | append: '?type=product&q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+  elsif results.url
     assign results_url = results.url
   else
     assign terms = results.terms | escape
@@ -72,6 +75,10 @@
 
   assign use_clp_controls = false
   if template.name == 'collection'
+    if block_settings.filter_style == 'horizontal'
+      assign use_clp_controls = true
+    endif
+  elsif template.name == 'search'
     if block_settings.filter_style == 'horizontal'
       assign use_clp_controls = true
     endif

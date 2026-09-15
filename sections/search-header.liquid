@@ -10,17 +10,40 @@
     {% assign heading_text = 'content.search' | t %}
 
     {% if search.performed %}
-      {% assign heading_text = 'content.search_results' | t %}
+      {% capture heading_text %}{{ 'content.search_results' | t }} for “{{ search.terms | escape }}”{% endcapture %}
     {% endif %}
 
     {% capture heading_text %}
-      <h3>{{ heading_text }}</h3>
+      <h1>{{ heading_text }}</h1>
     {% endcapture %}
 
     {% content_for 'block', id: 'heading', type: '_heading', text: heading_text %}
     {% content_for 'block', id: 'search', type: '_search-input' %}
   </div>
 </div>
+
+{% stylesheet %}
+  .search-page__header {
+    width: min(100%, 1200px);
+    margin-inline: auto;
+    gap: 24px;
+  }
+
+  .search-page__header h1 {
+    margin: 0;
+    font-size: clamp(28px, 2.1vw, 40px);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  @media screen and (max-width: 749px) {
+    .search-page__header {
+      gap: 16px;
+      padding-inline: 20px;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -31,18 +54,9 @@
       "id": "alignment",
       "label": "t:settings.alignment",
       "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.left"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.right"
-        }
+        { "value": "flex-start", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" },
+        { "value": "flex-end", "label": "t:options.right" }
       ],
       "default": "flex-start"
     },

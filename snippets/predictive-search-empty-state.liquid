@@ -1,9 +1,9 @@
 {% doc %}
-  Renders the predictive search empty state
+  Renders the Ogee predictive-search empty state.
 
-  @param {number} shadow_opacity - shadow opacity for the empty state container shadow
-  @param {string} products_test_id - a playwright test id, used to differentiate empty state from 'real' search results
-  @param {boolean} [load_empty_state] - Load the empty state or not
+  @param {number} shadow_opacity - Shadow opacity for the container
+  @param {string} products_test_id - Optional test id
+  @param {boolean} [load_empty_state] - Whether to render the state
 
   @example
   {% render 'predictive-search-empty-state', shadow_opacity: 0.1, products_test_id: 'empty-state' %}
@@ -11,34 +11,122 @@
 
 <div
   id="predictive-search-results"
-  class="predictive-search-dropdown"
+  class="predictive-search-dropdown predictive-search-dropdown--ogee"
   role="listbox"
   aria-expanded="true"
   style="--color-shadow: rgb(var(--color-foreground-rgb) / {{ shadow_opacity }});"
 >
   {% if load_empty_state %}
-    <div class="predictive-search-results__inner">
-      {% liquid
-        assign collection = settings.empty_state_collection | default: collections.all
-        assign default_title = 'content.search_results_resource_products' | t
-        assign title = settings.empty_state_collection.title | default: default_title
-      %}
-      {% paginate collection.products by 4 %}
-        {% assign products = collection.products %}
-        {% comment %} Only show products section if there are products to display {% endcomment %}
-        {% if products.size > 0 %}
-          {% render 'predictive-search-products-list',
-            products_test_id: products_test_id,
-            title: title,
-            products: products,
-            limit: 4
-          %}
-        {% else %}
-          <div class="predictive-search-results__no-results">
-            <p>{{ 'content.no_products_found' | t }}</p>
+    <div class="predictive-search-results__inner predictive-search-results__inner--empty">
+      <div class="predictive-search-results__history" data-search-history hidden>
+        <p class="predictive-search-results__history-label">Recently search</p>
+        <ul class="predictive-search-results__keywords" data-search-history-list></ul>
+      </div>
+
+      {% if settings.search_trending_menu != blank %}
+        <div class="predictive-search-results__history">
+          <p class="predictive-search-results__history-label">Trending search</p>
+          <div class="predictive-search-results__keywords">
+            {% for link in settings.search_trending_menu.links limit: 6 %}
+              <a
+                class="predictive-search-results__keyword"
+                href="{{ link.url }}"
+                data-search-keyword="{{ link.title | escape }}"
+              >
+                {{ link.title }}
+              </a>
+            {% endfor %}
           </div>
-        {% endif %}
-      {% endpaginate %}
+        </div>
+      {% else %}
+        {% assign fallback_trending_terms = 'Bundle|Contour Collection|Gifting|Makeup Quiz|Skincare Quiz' | split: '|' %}
+        <div class="predictive-search-results__history">
+          <p class="predictive-search-results__history-label">Trending search</p>
+          <div class="predictive-search-results__keywords">
+            {% for term in fallback_trending_terms %}
+              {% assign encoded_term = term | url_param_escape %}
+              <a
+                class="predictive-search-results__keyword"
+                href="{{ routes.search_url }}?type=product&q={{ encoded_term }}"
+                data-search-keyword="{{ term | escape }}"
+              >
+                {{ term }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% liquid
+        assign default_bestsellers = collections['bestsellers']
+        assign default_new_products = collections['new']
+        assign bestsellers = settings.empty_state_collection | default: default_bestsellers | default: collections.all
+        assign new_products = settings.search_new_collection | default: default_new_products | default: collections.all
+      %}
+
+      <div class="search-empty-tabs" role="tablist" aria-label="{{ 'content.featured_products' | t }}">
+        <button
+          class="search-empty-tabs__tab"
+          type="button"
+          role="tab"
+          id="SearchEmptyTab-bestsellers"
+          aria-controls="SearchEmptyPanel-bestsellers"
+          aria-selected="true"
+          data-search-empty-tab="bestsellers"
+          on:keydown="/onSearchTabKeyDown"
+        >
+          Bestsellers
+        </button>
+        <button
+          class="search-empty-tabs__tab"
+          type="button"
+          role="tab"
+          id="SearchEmptyTab-new"
+          aria-controls="SearchEmptyPanel-new"
+          aria-selected="false"
+          tabindex="-1"
+          data-search-empty-tab="new"
+          on:keydown="/onSearchTabKeyDown"
+        >
+          New
+        </button>
+      </div>
+
+      <div
+        id="SearchEmptyPanel-bestsellers"
+        class="predictive-search-results__panel"
+        role="tabpanel"
+        aria-labelledby="SearchEmptyTab-bestsellers"
+        data-search-empty-panel="bestsellers"
+      >
+        {% render 'predictive-search-products-list',
+          products_test_id: products_test_id,
+          products: bestsellers.products,
+          limit: 5,
+          list_id: 'predictive-search-bestsellers'
+        %}
+        <a class="button predictive-search-results__view-all" href="{{ bestsellers.url }}">
+          View all bestsellers ({{ bestsellers.all_products_count }})
+        </a>
+      </div>
+
+      <div
+        id="SearchEmptyPanel-new"
+        class="predictive-search-results__panel"
+        role="tabpanel"
+        aria-labelledby="SearchEmptyTab-new"
+        data-search-empty-panel="new"
+        hidden
+      >
+        {% render 'predictive-search-products-list',
+          products: new_products.products,
+          limit: 5,
+          list_id: 'predictive-search-new'
+        %}
+        <a class="button predictive-search-results__view-all" href="{{ new_products.url }}">
+          View all new ({{ new_products.all_products_count }})
+        </a>
+      </div>
     </div>
   {% endif %}
 </div>

@@ -4,61 +4,206 @@
   fetchpriority="low"
 ></script>
 
+{% liquid
+  assign active_type = search.types | first | default: 'product'
+  if active_type != 'page' and active_type != 'article'
+    assign active_type = 'product'
+  endif
+%}
+
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 
 <results-list
-  class="section product-grid-container spacing-style color-{{ section.settings.color_scheme }}"
+  class="section product-grid-container search-results-page spacing-style color-{{ section.settings.color_scheme }}"
   style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
   section-id="{{ section.id }}"
-  infinite-scroll="{{ section.settings.enable_infinite_scroll }}"
+  infinite-scroll="{% if active_type == 'product' %}{{ section.settings.enable_infinite_scroll }}{% else %}false{% endif %}"
 >
   {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
-  <div
-    class="collection-wrapper grid gap-style"
-  >
-    {% assign products_per_page = 24 %}
+  <div class="search-results-page__tabs">
+    {% render 'search-resource-tabs', context: 'results', active_type: active_type, terms: search.terms %}
+  </div>
 
-    {% if section.settings.enable_infinite_scroll == false %}
-      {% assign products_per_page = section.settings.products_per_page %}
-    {% endif %}
-
-    {% paginate search.results by products_per_page %}
-      {% if search.results_count > 0 %}
-        {% content_for 'block', type: 'filters', id: 'filters', results: search, results_size: search.results_count %}
-        {% assign products = search.results | where: 'object_type', 'product' %}
-      {% else %}
-        {% assign collection = settings.empty_state_collection | default: collections.all %}
-        {% assign default_title = 'content.search_results_resource_products' | t %}
-        {% assign title = settings.empty_state_collection.title | default: default_title %}
-        {% assign products = collection.products %}
+  {% if active_type == 'product' %}
+    <div class="collection-wrapper grid gap-style search-results-page__products">
+      {% assign products_per_page = 24 %}
+      {% if section.settings.enable_infinite_scroll == false %}
+        {% assign products_per_page = section.settings.products_per_page %}
       {% endif %}
 
-      {% capture children %}
-        {% for product in products %}
-          <li
-            id="{{ section.id }}-{{ product.id }}"
-            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-            data-page="{{ paginate.current_page }}"
-            data-product-id="{{ product.id }}"
-            ref="cards[]"
-          >
-            {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
-          </li>
-        {% endfor %}
-      {% endcapture %}
+      {% paginate search.results by products_per_page %}
+        {% if search.results_count > 0 %}
+          {% content_for 'block', type: 'filters', id: 'filters', results: search, results_size: search.results_count %}
+          {% assign products = search.results | where: 'object_type', 'product' %}
+        {% else %}
+          {% assign collection = settings.empty_state_collection | default: collections.all %}
+          {% assign default_title = 'content.search_results_resource_products' | t %}
+          {% assign title = settings.empty_state_collection.title | default: default_title %}
+          {% assign products = collection.products %}
+        {% endif %}
 
-      {% render 'product-grid',
-        section: section,
-        children: children,
-        products: products,
-        paginate: paginate,
-        enable_infinite_scroll: section.settings.enable_infinite_scroll,
-        title: title
-      %}
-    {% endpaginate %}
-  </div>
+        {% capture children %}
+          {% for product in products %}
+            <li
+              id="{{ section.id }}-{{ product.id }}"
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="{{ paginate.current_page }}"
+              data-product-id="{{ product.id }}"
+              ref="cards[]"
+            >
+              {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
+            </li>
+          {% endfor %}
+        {% endcapture %}
+
+        {% render 'product-grid',
+          section: section,
+          children: children,
+          products: products,
+          paginate: paginate,
+          enable_infinite_scroll: section.settings.enable_infinite_scroll,
+          title: title
+        %}
+      {% endpaginate %}
+    </div>
+  {% else %}
+    <div id="ResultsList" class="search-results-page__resources">
+      {% paginate search.results by 24 %}
+        <p class="search-results-page__count">
+          {{ 'content.results_count' | t: count: search.results_count }}
+        </p>
+
+        {% if search.results_count > 0 %}
+          <ul class="search-results-page__resource-grid list-unstyled">
+            {% for resource in search.results %}
+              <li class="search-results-page__resource">
+                {% render 'resource-card',
+                  resource: resource,
+                  resource_type: active_type,
+                  image_width: 720,
+                  image_aspect_ratio: '3 / 2',
+                  variant: 'ogee-search'
+                %}
+              </li>
+            {% endfor %}
+          </ul>
+
+          {% if paginate.pages > 1 %}
+            <div class="search-results-page__pagination">
+              {{ paginate | default_pagination }}
+            </div>
+          {% endif %}
+        {% else %}
+          <p class="search-results-page__empty">
+            {{ 'content.search_results_no_results_check_spelling' | t: terms: search.terms }}
+          </p>
+        {% endif %}
+      {% endpaginate %}
+    </div>
+  {% endif %}
 </results-list>
+
+{% stylesheet %}
+  .search-results-page {
+    width: min(100%, 1200px);
+    margin-inline: auto;
+  }
+
+  .search-results-page__tabs {
+    position: sticky;
+    top: var(--header-group-height, 0px);
+    z-index: var(--layer-raised);
+    padding-top: 8px;
+    background: var(--color-background);
+  }
+
+  .search-results-page__tabs .search-resource-tabs {
+    display: flex;
+    gap: 12px;
+    border-bottom: 0;
+  }
+
+  .search-results-page__tabs .search-resource-tabs__tab {
+    position: relative;
+    padding: 10px 16px;
+    border: 1px solid var(--color-border);
+    color: rgb(var(--color-foreground-rgb) / 60%);
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .search-results-page__tabs .search-resource-tabs__tab[aria-current='page'] {
+    color: var(--color-foreground);
+    border-color: var(--color-foreground);
+  }
+
+  .search-results-page__tabs .search-resource-tabs__tab[aria-current='page']::after {
+    content: none;
+  }
+
+  .search-results-page .facets-block-wrapper--clp-controls {
+    --clp-floating-controls-top: calc(var(--header-group-height, 0px) + 52px);
+  }
+
+  .search-results-page .facets-clp-floating-nav {
+    display: none;
+  }
+
+  .search-results-page__products {
+    margin-top: 20px;
+  }
+
+  .search-results-page__resources {
+    padding-top: 24px;
+  }
+
+  .search-results-page__count {
+    margin: 0 0 24px;
+    font-size: 14px;
+  }
+
+  .search-results-page__resource-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 40px 24px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .search-results-page__pagination {
+    margin-top: 48px;
+    text-align: center;
+  }
+
+  .search-results-page__empty {
+    margin-block: 48px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .search-results-page {
+      width: 100%;
+    }
+
+    .search-results-page__tabs,
+    .search-results-page__resources {
+      padding-inline: 20px;
+    }
+
+    .search-results-page__tabs .search-resource-tabs {
+      gap: 24px;
+      overflow-x: auto;
+    }
+
+    .search-results-page__resource-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -73,14 +218,8 @@
       "id": "layout_type",
       "label": "t:settings.type",
       "options": [
-        {
-          "value": "grid",
-          "label": "t:options.grid"
-        },
-        {
-          "value": "organic",
-          "label": "t:options.editorial"
-        }
+        { "value": "grid", "label": "t:options.grid" },
+        { "value": "organic", "label": "t:options.editorial" }
       ],
       "default": "grid"
     },
@@ -89,22 +228,10 @@
       "id": "product_card_size",
       "label": "t:settings.card_size",
       "options": [
-        {
-          "value": "small",
-          "label": "t:options.small"
-        },
-        {
-          "value": "medium",
-          "label": "t:options.medium"
-        },
-        {
-          "value": "large",
-          "label": "t:options.large"
-        },
-        {
-          "value": "extra-large",
-          "label": "t:options.extra_large"
-        }
+        { "value": "small", "label": "t:options.small" },
+        { "value": "medium", "label": "t:options.medium" },
+        { "value": "large", "label": "t:options.large" },
+        { "value": "extra-large", "label": "t:options.extra_large" }
       ],
       "default": "medium",
       "visible_if": "{{ section.settings.layout_type == 'grid' }}"
@@ -114,14 +241,8 @@
       "id": "mobile_product_card_size",
       "label": "t:settings.mobile_card_size",
       "options": [
-        {
-          "value": "small",
-          "label": "t:options.small"
-        },
-        {
-          "value": "large",
-          "label": "t:options.large"
-        }
+        { "value": "small", "label": "t:options.small" },
+        { "value": "large", "label": "t:options.large" }
       ],
       "default": "small"
     },
@@ -150,14 +271,8 @@
       "id": "product_grid_width",
       "label": "t:settings.width",
       "options": [
-        {
-          "value": "centered",
-          "label": "t:options.page"
-        },
-        {
-          "value": "full-width",
-          "label": "t:options.full"
-        }
+        { "value": "centered", "label": "t:options.page" },
+        { "value": "full-width", "label": "t:options.full" }
       ],
       "default": "centered"
     },

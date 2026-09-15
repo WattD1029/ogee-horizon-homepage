@@ -56,6 +56,8 @@
   assign is_clp_collection_card = false
   if template.name == 'collection'
     assign is_clp_collection_card = true
+  elsif template.name == 'search'
+    assign is_clp_collection_card = true
   endif
 %}
 
